@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>李思莹 Hana</title>
+  <meta name="description" content="李思莹 Hana 的个人网站 — 数据 · 设计 · 叙事" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fff8f0;
+      --bg-card: #fffaf5;
+      --accent-dark: #c4895a;
+      --accent-light: #e8b88a;
+      --text-dark: #2d1f0e;
+      --text-mid: #6b4c2a;
+      --text-light: #a07850;
+      --border: #e8d5be;
+      --shadow: rgba(45, 31, 14, 0.08);
+      --radius: 12px;
+      --font-serif: "Lora", Georgia, serif;
+      --font-sans: "DM Sans", system-ui, sans-serif;
+      --max-w: 1100px;
+      --transition: 0.25s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-dark);
+      font-family: var(--font-serif);
+      font-size: 16px;
+      line-height: 1.75;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0;
+    }
+    body.loaded { opacity: 1; transition: opacity 0.6s ease; }
+
+    .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    .container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+    /* ── 导航 ── */
+    #top-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 248, 240, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 56px; font-family: var(--font-sans); font-size: 14px; font-weight: 500; }
+    .nav-logo { font-family: var(--font-serif); font-size: 15px; color: var(--text-dark); text-decoration: none; font-weight: 600; }
+    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links a { color: var(--text-mid); text-decoration: none; transition: color var(--transition); }
+    .nav-links a:hover { color: var(--accent-dark); }
+    #lang-toggle {
+      background: none; border: 1.5px solid var(--accent-dark);
+      color: var(--accent-dark); font-family: var(--font-sans);
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+      padding: 4px 12px; border-radius: 20px; cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    #lang-toggle:hover { background: var(--accent-dark); color: var(--bg); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text-dark); border-radius: 2px; }
+
+    /* ── Hero ── */
+    #hero { min-height: calc(100vh - 56px); display: flex; align-items: center; padding: 80px 0 60px; }
+    .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: stretch; width: 100%; }
+    .hero-name { font-family: var(--font-serif); font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.15; color: var(--text-dark); margin-bottom: 16px; }
+    .hero-name em { display: block; font-style: normal; font-size: 0.5em; font-weight: 400; color: var(--accent-dark); letter-spacing: 0.04em; margin-top: 6px; }
+    .hero-tagline { font-family: var(--font-sans); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-dark); margin-bottom: 16px; }
+    .hero-bio { font-family: var(--font-serif); font-size: 15px; color: var(--text-mid); line-height: 1.85; max-width: 460px; }
+    .hero-bio + .hero-bio { margin-top: 12px; }
+    .hero-left { display: flex; flex-direction: column; }
+    .hero-divider { width: 48px; height: 3px; background: linear-gradient(90deg, var(--accent-dark), var(--accent-light)); border-radius: 2px; margin: 28px 0 0; }
+
+    /* ── 方案 A：主照片（3:4 竖版）── */
+    .hero-photo-frame {
+      width: 116px;
+      aspect-ratio: 3 / 4;           /* 标准 3:4 竖版 */
+      border-radius: 10px; overflow: hidden;
+      border: 3px solid var(--bg);
+      box-shadow: 0 6px 24px var(--shadow), 0 0 0 1px var(--border);
+      margin-bottom: 22px;
+      background: var(--border);
+      position: relative; flex-shrink: 0;
+    }
+    .hero-photo-frame .no-img { display: none; }
+    .hero-photo-frame img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 1;
+    }
+
+    /* ── 方案 C：三格画廊（flex 布局 + 标准比例）── */
+    /*
+     * gallery-large (moment-1)：3:4 竖版
+     * 右列两张 (moment-2/3)：4:3 横版
+     * 数学推导：large 宽占 53%，右列占 47%，两侧高度近似相等
+     */
+    .hero-gallery {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+      align-items: flex-start;
+      max-width: 480px;       /* 限制整体宽度，不铺满全页 */
+    }
+    .gallery-photo {
+      margin: 0; border-radius: var(--radius); overflow: hidden;
+      position: relative; background: var(--border);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px var(--shadow);
+    }
+    .gallery-photo.gallery-large {
+      flex: 0 0 53%;
+      aspect-ratio: 3 / 4;           /* 竖版 3:4 */
+    }
+    .gallery-right-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .gallery-right-col .gallery-photo {
+      aspect-ratio: 4 / 3;           /* 横版 4:3 */
+      width: 100%;
+    }
+    .gallery-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    .gallery-photo:hover img { transform: scale(1.04); }
+    .gallery-photo figcaption { display: none; }
+    .gallery-photo .no-img { display: none; font-family: var(--font-sans); font-size: 11px; color: var(--text-light); text-align: center; position: absolute; inset: 0; align-items: center; justify-content: center; padding: 8px; line-height: 1.5; }
+    .gallery-photo.img-error .no-img { display: flex; }
+
+    .hero-cards { display: flex; flex-direction: column; gap: 36px; padding-top: calc(clamp(2.4rem, 5vw, 3.6rem) * 1.725 + 22px); }
+    .hero-card { display: block; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px 24px; text-decoration: none; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); position: relative; overflow: hidden; }
+    .hero-card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 60%, rgba(196, 137, 90, 0.06)); pointer-events: none; }
+    .hero-card:hover { border-color: var(--accent-dark); box-shadow: 0 8px 24px var(--shadow); transform: translateY(-3px); }
+    .hero-card-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--text-dark); display: flex; align-items: center; justify-content: space-between; }
+    .hero-card-title::after { content: "→"; font-size: 14px; color: var(--accent-dark); transition: transform var(--transition); }
+    .hero-card:hover .hero-card-title::after { transform: translateX(4px); }
+    .hero-card-desc { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+    /* ── 板块通用 ── */
+    .section-title { font-family: var(--font-serif); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 700; color: var(--text-dark); margin-bottom: 40px; position: relative; display: inline-block; }
+    .section-title::after { content: ""; position: absolute; left: 0; bottom: -8px; width: 100%; height: 2px; background: linear-gradient(90deg, var(--accent-dark), transparent); }
+    section { padding: 80px 0; }
+
+    /* ── 简历 ── */
+    .resume-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      /* 左右两列之间加宽，并用竖线视觉分隔 */
+      column-gap: 80px;
+      row-gap: 40px;
+    }
+    /* 左列右侧加一条淡线 */
+    .resume-col-left {
+      padding-right: 40px;
+      border-right: 1px solid var(--border);
+    }
+
+    .resume-block-title { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; color: var(--text-dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1.5px solid var(--border); }
+    .timeline { display: flex; flex-direction: column; gap: 28px; }
+    .timeline-item { border-left: 2px solid var(--border); padding-left: 18px; position: relative; }
+    .timeline-item::before { content: ""; position: absolute; left: -5px; top: 6px; width: 8px; height: 8px; background: var(--accent-dark); border-radius: 50%; }
+    .timeline-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px; }
+    .timeline-name { font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--text-dark); }
+    button.timeline-name { background: none; border: none; padding: 0; text-align: left; }
+    .timeline-name.has-link { cursor: pointer; transition: color var(--transition); }
+    .timeline-name.has-link:hover { color: var(--accent-dark); }
+    .timeline-name.has-link .link-badge { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; color: var(--accent-dark); background: rgba(196,137,90,0.1); border-radius: 4px; padding: 1px 5px; vertical-align: middle; transition: background var(--transition); }
+    .timeline-name.has-link:hover .link-badge { background: rgba(196,137,90,0.2); }
+    /* Photo gallery inside modal */
+    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+    .photo-grid-item { border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; background: var(--border); }
+    .photo-grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-grid-caption { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); margin-top: 5px; text-align: center; }
+    @keyframes card-pulse { 0%,100%{box-shadow:0 4px 16px var(--shadow)} 40%{box-shadow:0 0 0 3px var(--accent-dark),0 8px 32px var(--shadow)} }
+    .project-card.highlight { animation: card-pulse 0.7s ease 2; }
+    .timeline-period { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); flex-shrink: 0; }
+    .timeline-sub { font-size: 13px; color: var(--accent-dark); margin-top: 3px; font-family: var(--font-sans); font-weight: 500; }
+    .timeline-desc { font-size: 14px; color: var(--text-mid); margin-top: 6px; }
+    .timeline-bullets { list-style: none; margin-top: 6px; display: flex; flex-direction: column; gap: 5px; }
+    .timeline-bullets li { font-size: 14px; color: var(--text-mid); padding-left: 14px; position: relative; }
+    .timeline-bullets li::before { content: "·"; position: absolute; left: 0; color: var(--accent-dark); font-weight: 700; }
+    .skills-grid { display: flex; flex-direction: column; gap: 20px; }
+    .skill-group-label { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { font-family: var(--font-sans); font-size: 12px; font-weight: 500; background: rgba(196, 137, 90, 0.1); color: var(--accent-dark); border: 1px solid rgba(196, 137, 90, 0.25); border-radius: 20px; padding: 3px 12px; }
+
+    /* ── 作品集 ── */
+    #portfolio { background: rgba(196, 137, 90, 0.04); }
+    .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .project-card {
+      background: var(--bg-card); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+      display: flex; flex-direction: column; gap: 12px;
+      cursor: pointer;
+    }
+    .project-card:hover { box-shadow: 0 10px 32px var(--shadow); transform: translateY(-4px); border-color: var(--accent-light); }
+    .project-card-title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; color: var(--text-dark); }
+    .project-card-desc { font-size: 14px; color: var(--text-mid); flex: 1; line-height: 1.65; }
+    .project-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .project-card-cta { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); display: flex; align-items: center; gap: 4px; }
+
+    /* ── 项目弹窗 Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(45, 31, 14, 0.5);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 36px 36px;
+      max-width: 620px; width: 100%;
+      max-height: 82vh; overflow-y: auto;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.28s ease;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+    .modal-close {
+      position: absolute; top: 16px; right: 18px;
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; color: var(--text-light);
+      line-height: 1; transition: color var(--transition);
+    }
+    .modal-close:hover { color: var(--text-dark); }
+    .modal-title { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; }
+    .modal-tags { margin-bottom: 20px; }
+    .modal-body { font-size: 14px; color: var(--text-mid); line-height: 1.8; }
+    .modal-coming-soon {
+      text-align: center; padding: 40px 20px;
+      font-family: var(--font-sans); color: var(--text-light); font-size: 15px;
+    }
+    .modal-coming-soon .cs-icon { font-size: 2.4rem; display: block; margin-bottom: 14px; }
+
+    /* ── 最近在思考 ── */
+    .thinking-list { display: flex; flex-direction: column; gap: 16px; }
+    .thinking-card { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color var(--transition), box-shadow var(--transition); }
+    .thinking-card:hover { border-color: var(--accent-light); box-shadow: 0 4px 16px var(--shadow); }
+    .thinking-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; cursor: pointer; user-select: none; gap: 12px; }
+    .thinking-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--text-dark); flex: 1; }
+    .thinking-meta { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .thinking-date { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); }
+    .thinking-toggle { font-family: var(--font-sans); font-size: 12px; color: var(--accent-dark); font-weight: 600; white-space: nowrap; }
+    .thinking-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; padding: 0 24px; }
+    .thinking-body.open { max-height: 600px; padding: 0 24px 18px; }
+    .thinking-summary { font-size: 14px; color: var(--text-mid); line-height: 1.8; border-top: 1px solid var(--border); padding-top: 14px; }
+
+    /* ── 底部 ── */
+    #footer { border-top: 1px solid var(--border); padding: 28px 0; text-align: center; }
+    .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; font-family: var(--font-sans); font-size: 13px; color: var(--text-light); }
+    .footer-links { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; }
+    .footer-links a { color: var(--text-light); text-decoration: none; transition: color var(--transition); }
+    .footer-links a:hover { color: var(--accent-dark); }
+
+    /* ── 响应式 ── */
+    @media (max-width: 900px) {
+      .resume-col-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 36px; }
+      .resume-grid { grid-template-columns: 1fr; column-gap: 0; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; gap: 0; padding: 8px 0; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px 24px; width: 100%; }
+      .hamburger { display: flex; }
+      .hero-inner { grid-template-columns: 1fr; gap: 36px; }
+      .hero-cards { padding-top: 0; }
+      .hero-gallery { flex-direction: column; }
+      .gallery-photo.gallery-large { flex: none; width: 100%; aspect-ratio: 4 / 3; }
+      .gallery-right-col { flex-direction: row; }
+      .gallery-right-col .gallery-photo { flex: 1; aspect-ratio: 1 / 1; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      section { padding: 56px 0; }
+      .modal-box { padding: 32px 20px 24px; }
+    }
+    @media (max-width: 480px) {
+      .hero-name { font-size: 2rem; }
+      .thinking-meta { flex-direction: column; align-items: flex-end; gap: 4px; }
+      .photo-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 导航 -->
+  <nav id="top-nav">
+    <div class="container nav-inner">
+      <a class="nav-logo" href="#hero">Hana</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#resume" id="nav-resume">我的简历</a></li>
+        <li><a href="#portfolio" id="nav-portfolio">项目作品集</a></li>
+        <li><a href="#thinking" id="nav-thinking">最近在思考</a></li>
+        <li><button id="lang-toggle" aria-label="切换语言">EN</button></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="打开菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-left fade-up">
+          <h1 class="hero-name" id="hero-name">李思莹<em>Hana</em></h1>
+          <p class="hero-tagline" id="hero-tagline">中山大学管理学院 · 意大利博科尼交流生</p>
+          <p class="hero-bio" id="hero-bio-1"></p>
+          <p class="hero-bio" id="hero-bio-2"></p>
+          <div class="hero-divider"></div>
+          <!-- 方案 C：三格画廊 -->
+          <div class="hero-gallery fade-up">
+            <!-- 左：竖版 3:4 -->
+            <figure class="gallery-photo gallery-large">
+              <div class="no-img">图片加载失败<br>请重新部署整个文件夹</div>
+              <img src="images/moment-1.jpg" alt="尼泊尔 · 瑜伽认证"
+                   onerror="this.style.display='none';this.parentElement.classList.add('img-error')" />
+              <figcaption id="gcap-1">尼泊尔 · 瑜伽认证</figcaption>
+            </figure>
+            <!-- 右：两张横版 4:3 -->
+            <div class="gallery-right-col">
+              <figure class="gallery-photo">
+                <div class="no-img">图片加载失败<br>请重新部署整个文件夹</div>
+                <img src="images/moment-2.jpg" alt="米兰 · 博科尼"
+                     onerror="this.style.display='none';this.parentElement.classList.add('img-error')" />
+                <figcaption id="gcap-2">米兰 · 博科尼</figcaption>
+              </figure>
+              <figure class="gallery-photo">
+                <div class="no-img">图片加载失败<br>请重新部署整个文件夹</div>
+                <img src="images/moment-3.jpg" alt="欧洲旅途"
+                     onerror="this.style.display='none';this.parentElement.classList.add('img-error')" />
+                <figcaption id="gcap-3">欧洲旅途</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+        <div class="hero-cards">
+          <a class="hero-card fade-up" href="#resume">
+            <div class="hero-card-title" id="card-resume-title">我的简历</div>
+            <div class="hero-card-desc" id="card-resume-desc">教育经历 · 项目 · 技能</div>
+          </a>
+          <a class="hero-card fade-up" href="#portfolio" style="transition-delay:.08s">
+            <div class="hero-card-title" id="card-portfolio-title">项目作品集</div>
+            <div class="hero-card-desc" id="card-portfolio-desc">数据分析 · 可视化 · 咨询</div>
+          </a>
+          <a class="hero-card fade-up" href="#thinking" style="transition-delay:.16s">
+            <div class="hero-card-title" id="card-thinking-title">最近在思考</div>
+            <div class="hero-card-desc" id="card-thinking-desc">随笔 · 观察 · 灵感碎片</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 简历 -->
+  <section id="resume">
+    <div class="container">
+      <h2 class="section-title fade-up" id="resume-title">简历</h2>
+      <div class="resume-grid">
+
+        <!-- 左列：教育 + 项目经历 -->
+        <div class="resume-col-left">
+          <div class="resume-block-title" id="resume-edu-label">教育经历</div>
+          <div class="timeline" id="resume-edu"></div>
+          <div style="margin-top:40px"></div>
+          <div class="resume-block-title" id="resume-exp-label">项目经历</div>
+          <div class="timeline" id="resume-exp"></div>
+        </div>
+
+        <!-- 右列：技能 -->
+        <div class="resume-col-right">
+          <div class="resume-block-title" id="resume-skill-label">技能</div>
+          <div class="skills-grid" id="resume-skills"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 作品集 -->
+  <section id="portfolio">
+    <div class="container">
+      <h2 class="section-title fade-up" id="portfolio-title">项目作品集</h2>
+      <p class="fade-up" style="font-family:var(--font-sans);font-size:13px;color:var(--text-light);margin-top:-28px;margin-bottom:32px" id="portfolio-hint">点击任意卡片查看详情</p>
+      <div class="portfolio-grid" id="portfolio-grid"></div>
+    </div>
+  </section>
+
+  <!-- 最近在思考 -->
+  <section id="thinking">
+    <div class="container">
+      <h2 class="section-title fade-up" id="thinking-title">最近在思考</h2>
+      <div class="thinking-list" id="thinking-list">
+        <p style="font-family:var(--font-sans);font-size:13px;color:var(--text-light)">加载中…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部 -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-links">
+          <a href="mailto:3116220254@qq.com" id="footer-email">3116220254@qq.com</a>
+          <span id="footer-wechat">公众号：这个老三样</span>
+        </div>
+        <div id="footer-copy">© 2026 李思莹 Hana</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 项目弹窗 -->
+  <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close" aria-label="关闭">✕</button>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-tags" id="modal-tags"></div>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+<script>
+// ╔══════════════════════════════════════════════════════════╗
+// ║         📝  随笔区域 —— 在这里添加你的 flomo 笔记         ║
+// ║                                                          ║
+// ║  每篇格式：                                               ║
+// ║    {                                                     ║
+// ║      title: "标题",                                      ║
+// ║      date:  "2026-04-27",   ← 年-月-日                  ║
+// ║      summary: "正文内容，支持换行用 \n 表示",             ║
+// ║    },                                                    ║
+// ║                                                          ║
+// ║  新文章加在最前面（数组第一个位置）即可，其余不用动。       ║
+// ╚══════════════════════════════════════════════════════════╝
+const MY_POSTS = [
+  {
+    title: "为什么我开始记录碎片思考",
+    date: "2026-04-10",
+    summary: "一直觉得写长文需要完整的逻辑链，但后来发现碎片本身也是一种诚实的记录方式。不是所有想法都需要完整，有时候一句话、一个场景就够了。",
+  },
+  {
+    title: "数据背后的人",
+    date: "2026-03-28",
+    summary: "做数据分析久了，有时候会忘记每一个数据点背后都是一个真实的人在做真实的决定。22,948条Airbnb数据，每一条背后都有一个房东，有一段故事。",
+  },
+];
+// ── （以上是你需要编辑的部分，下面不用动）──────────────────
+
+// ── Notion 配置（可选，配置后优先从 Notion 拉取，覆盖上方手动内容）──
+const NOTION_CONFIG = {
+  apiKey: "",
+  databaseId: "",
+  proxyUrl: "https://notion-api.splitbee.io/v1/table/",
+};
+
+// ── 双语文案 ──
+const COPY = {
+  zh: {
+    navResume: "我的简历", navPortfolio: "项目作品集", navThinking: "最近在思考",
+    heroTagline: "中山大学管理学院 · 意大利博科尼交流生",
+    heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年又通过自己申请，去到意大利博科尼商学院交流，期间利用课余时间游历欧洲，行万里路。",
+    heroBio2: "我还在探索我人生的多种面向和可能性，走走又停停。",
+    heroCardResume: "我的简历", heroCardResumeDesc: "教育经历 · 项目 · 技能",
+    heroCardPortfolio: "项目作品集", heroCardPortfolioDesc: "数据分析 · 可视化 · 咨询 · 创业项目",
+    heroCardThinking: "最近在思考", heroCardThinkingDesc: "随笔",
+    galleryCaptions: ["尼泊尔 · 瑜伽认证", "米兰 · 博科尼", "欧洲旅途"],
+    resumeTitle: "简历", resumeEduTitle: "教育经历", resumeExpTitle: "项目经历", resumeSkillTitle: "技能",
+    portfolioTitle: "项目作品集",
+    portfolioHint: "点击任意卡片查看详情",
+    thinkingTitle: "最近在思考",
+    thinkingReadMore: "展开阅读", thinkingCollapse: "收起",
+    badgePhotos: "照片", badgePortfolio: "作品集 ↗",
+    footerEmail: "3116220254@qq.com", footerWechat: "公众号：这个老三样", footerCopy: "© 2026 李思莹 Hana",
+    modalComingSoon: "这个项目尚未完工，让我们一起期待！（当然，你也可以来找我剧透一下这个项目现在的状态哈哈哈）",
+
+    education: [
+      {
+        school: "中山大学管理学院（创业学院）",
+        degree: "工商管理本科",
+        period: "2024.09 — 2028.07",
+        desc: "相关课程：管理学原理（排名前5%）、营销学原理、概率统计、数据可视化（Tableau）",
+      },
+      {
+        school: "鲁基·博科尼商业大学（Bocconi University）",
+        degree: "本科交换 · QS商业与管理全球第10",
+        period: "2026.02 — 2026.06",
+        desc: "修读课程：市场研究中的大语言模型（Claude Code）、社会网络分析（UCINET）、管理咨询导论",
+      },
+      {
+        school: "广州市执信中学",
+        degree: "初中 & 高中",
+        period: "2018 — 2024",
+        desc: "",
+      },
+    ],
+
+    // 项目经历：project = 项目名（显示大），role = 身份（显示小）
+    experience: [
+      {
+        project: "米兰短租/长租溢价分析（博科尼课程项目）",
+        role: "数据分析与可视化负责人",
+        period: "2026.02 — 至今",
+        portfolioId: "milan",
+        bullets: [
+          "基于22,948条米兰Airbnb数据与31个区域长租价格记录，完成数据清洗、聚合与溢价计算，覆盖87个街区",
+          "追溯数据缺失问题至上游时效性，推动数据刷新，实现全区域覆盖",
+          "重构分析框架，构建交互式可视化看板，支持多语言切换与移动端访问",
+        ],
+      },
+      {
+        project: "社会网络分析-并购后组织整合诊断（博科尼课程项目）",
+        role: "队员",
+        period: "2026.03 — 至今",
+        portfolioId: "sna",
+        bullets: [
+          "基于26名高管的有向通讯网络（102条连接），对模拟企业并购后整合状况进行量化诊断",
+          "通过网络指标识别沟通瓶颈与关键节点，输出优化建议，为组织协同提供数据支持",
+        ],
+      },
+      {
+        project: "布草清洗店创业公益项目（残障人士就业）",
+        role: "创始团队成员",
+        period: "2025.10 — 2026.01",
+        bullets: [
+          "实地走访周边酒店、发廊及洗衣厂房，获取定价、产能与需求侧一手数据",
+          "搭建盈亏平衡模型，测算保本处理量并验证产能与需求匹配性",
+          "输出商业可持续性分析报告，向越秀区残联领导汇报获认可",
+        ],
+      },
+      {
+        project: "校园调酒创业项目",
+        role: "微店运营负责人",
+        period: "2025.09 — 2025.11",
+        bullets: [
+          "负责微店从0到1的搭建与日常运营，优化商品结构与定价策略",
+          "基于订单数据拆分配送路径与时间优先级，提升履约效率",
+        ],
+      },
+      {
+        project: "展会外贸翻译（广州家具展 · 广交会）",
+        role: "外贸翻译员",
+        period: "2025.03 — 2025.04",
+        photoGallery: {
+          photos: ["images/fair-1.jpg", "images/fair-2.jpg", "images/fair-3.jpg", "images/fair-4.jpg"],
+          captions: ["广州家具展 · 与印度客户合影", "广交会二期 · 与欧洲买家", "广交会二期 · D1 入场", "广交会 · 与老板夫妇"],
+        },
+        bullets: [
+          "连续参与第55届广州国际家具博览会、第137届广交会二期，独立承担英语接待与客户开发辅助工作",
+          "与来自摩洛哥、印度、东欧等地区的买家展开有效对话，三天内协助收集50+份有效客户联系方式",
+          "在老板不在场时独立接待外国客户，完成需求摸排、产品介绍与后续跟进约定",
+        ],
+      },
+    ],
+
+    skills: [
+      { group: "数据分析", items: ["Tableau", "UCINET", "Excel", "Python"] },
+      { group: "AI 工具", items: ["Claude Code"] },
+      { group: "设计 / 内容", items: ["Canva", "秀米", "剪映"] },
+      { group: "语言", items: ["英语（雅思7.0 / 六级610+）", "粤语"] },
+      { group: "不务正业的", items: ["瑜伽", "羽毛球", "合唱", "吉他", "钢琴", "攀岩"] },
+    ],
+  },
+
+  en: {
+    navResume: "Resume", navPortfolio: "Portfolio", navThinking: "Thinking",
+    heroTagline: "Sun Yat-sen University · Bocconi Exchange Student",
+    heroBio1: "Hi! 👋 I'm Siying from the School of Management at Sun Yat-sen University. In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to independently apply for an exchange at Bocconi University in Milan the following year. While there, I spent my spare time traveling across Europe.",
+    heroBio2: "I'm still exploring the many facets and possibilities of my life, wandering and pausing along the way.",
+    heroCardResume: "Resume", heroCardResumeDesc: "Education · Experience · Skills",
+    heroCardPortfolio: "Portfolio", heroCardPortfolioDesc: "Data Analysis · Visualization · Consulting · Startups",
+    heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Essays",
+    galleryCaptions: ["Nepal · Yoga Cert", "Milan · Bocconi", "Traveling Europe"],
+    resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Experience", resumeSkillTitle: "Skills",
+    portfolioTitle: "Portfolio",
+    portfolioHint: "Click any card to learn more",
+    thinkingTitle: "Recently Thinking",
+    thinkingReadMore: "Read more", thinkingCollapse: "Collapse",
+    badgePhotos: "Photos", badgePortfolio: "Portfolio ↗",
+    footerEmail: "3116220254@qq.com", footerWechat: "WeChat Official: 这个老三样", footerCopy: "© 2026 Siying Li · Hana",
+    modalComingSoon: "This project is still in progress — stay tuned! (Or feel free to ask me for a sneak peek haha)",
+
+    education: [
+      {
+        school: "Sun Yat-sen University, School of Management",
+        degree: "B.B.A. in Business Administration",
+        period: "Sep 2024 — Jul 2028",
+        desc: "Courses: Principles of Management (top 5%), Marketing, Probability & Statistics, Data Visualization (Tableau)",
+      },
+      {
+        school: "Università Bocconi, Milan",
+        degree: "Exchange Student · QS Business & Management #10",
+        period: "Feb 2026 — Jun 2026",
+        desc: "Courses: LLMs in Market Research (Claude Code), Social Network Analysis (UCINET), Intro to Management Consulting",
+      },
+      {
+        school: "Zhixin School, Guangzhou",
+        degree: "Middle School & High School",
+        period: "2018 — 2024",
+        desc: "",
+      },
+    ],
+
+    experience: [
+      {
+        project: "Milan Rental Premium Analysis (Bocconi Course Project)",
+        role: "Data Analysis & Visualization Lead",
+        period: "Feb 2026 — Present",
+        portfolioId: "milan",
+        bullets: [
+          "Cleaned and aggregated 22,948 Airbnb listings and 31 long-term rental records into an 87-neighborhood premium dataset",
+          "Identified upstream data staleness; drove refresh to achieve full district coverage",
+          "Rebuilt analytical framework; built interactive multilingual dashboard with mobile support",
+        ],
+      },
+      {
+        project: "Social Network Analysis — Post-M&A Integration Diagnosis (Bocconi Course Project)",
+        role: "Team Member",
+        period: "Mar 2026 — Present",
+        portfolioId: "sna",
+        bullets: [
+          "Quantitatively diagnosed post-merger integration using a directed network of 26 executives (102 links)",
+          "Applied network metrics to identify bottlenecks and key nodes; produced optimization recommendations",
+        ],
+      },
+      {
+        project: "Linen Laundry Social Enterprise (Employment for People with Disabilities)",
+        role: "Co-founding Team Member",
+        period: "Oct 2025 — Jan 2026",
+        bullets: [
+          "Field research at hotels, salons, and laundry facilities to collect first-hand pricing and demand data",
+          "Built break-even model to validate capacity-demand alignment",
+          "Delivered sustainability report; presented to Yuexiu District government and received formal approval",
+        ],
+      },
+      {
+        project: "Campus Cocktail Startup",
+        role: "Online Store Operations Lead",
+        period: "Sep 2025 — Nov 2025",
+        bullets: [
+          "Built and operated a WeChat mini-store from scratch; optimized product mix and pricing",
+          "Analyzed order data to segment delivery routes and prioritize time slots",
+        ],
+      },
+      {
+        project: "Trade Fair Interpreter — CIFF & Canton Fair",
+        role: "English Interpreter & Sales Support",
+        period: "Mar 2025 — Apr 2025",
+        photoGallery: {
+          photos: ["images/fair-1.jpg", "images/fair-2.jpg", "images/fair-3.jpg", "images/fair-4.jpg"],
+          captions: ["CIFF · With clients from India", "Canton Fair · With European buyers", "Canton Fair Phase 2 · Day 1", "Canton Fair · With the boss couple"],
+        },
+        bullets: [
+          "Served as on-the-floor English interpreter at the 55th China International Furniture Fair and Canton Fair Phase 2 (137th edition)",
+          "Initiated conversations with and introduced products to buyers from Morocco, India, Eastern Europe and beyond; helped collect 50+ qualified leads in three days",
+          "Handled client reception independently when the boss was unavailable — qualifying needs, presenting products, and arranging factory visit follow-ups",
+        ],
+      },
+    ],
+
+    skills: [
+      { group: "Data Analysis", items: ["Tableau", "UCINET", "Excel", "Python"] },
+      { group: "AI Tools", items: ["Claude Code"] },
+      { group: "Design / Content", items: ["Canva", "Xiumi", "CapCut"] },
+      { group: "Languages", items: ["English (IELTS 7.0 / CET-6 610+)", "Cantonese"] },
+      { group: "Off the Clock", items: ["Yoga", "Badminton", "Choir", "Guitar", "Piano", "Rock Climbing"] },
+    ],
+  },
+};
+
+// ── 项目数据（title = 项目名，detail = 详细内容，留空则显示 coming soon）──
+const PROJECTS = {
+  zh: [
+    {
+      id: "milan",
+      title: "米兰短租/长租溢价分析",
+      desc: "基于22,948条Airbnb数据与31个区域长租记录，构建覆盖87个街区的短租溢价数据集，并搭建交互式可视化看板。",
+      tags: ["数据分析", "可视化", "Tableau", "Python"],
+      detail: "",
+    },
+    {
+      id: "sna",
+      title: "社会网络分析-并购后组织整合诊断",
+      desc: "对26名高管的有向通讯网络（102条连接）进行社会网络分析，量化识别沟通瓶颈与关键节点，输出整合优化建议。",
+      tags: ["社会网络分析", "UCINET", "咨询"],
+      detail: "",
+    },
+    {
+      id: "yacht",
+      title: "全球超级游艇行业咨询",
+      desc: "参与模拟私募股权顾问项目，覆盖9家核心企业，负责KSF分析模块；用Claude Code构建40+条行业数据指标体系。",
+      tags: ["行业研究", "咨询", "Claude Code"],
+      detail: "",
+    },
+    {
+      id: "network",
+      title: "商业网络构建研究",
+      desc: "使用Claude Code优化Python代码，从10,000+份企业年报文件中提取业务文本，用于多头注意力商业网络构建研究。",
+      tags: ["Python", "Claude Code", "NLP"],
+      detail: "",
+    },
+  ],
+  en: [
+    {
+      id: "milan",
+      title: "Milan Rental Premium Analysis",
+      desc: "Built an 87-neighborhood premium dataset from 22,948 Airbnb listings and 31 long-term rental records; delivered an interactive multilingual dashboard.",
+      tags: ["Data Analysis", "Visualization", "Tableau", "Python"],
+      detail: "",
+    },
+    {
+      id: "sna",
+      title: "Social Network Analysis — Post-M&A Integration Diagnosis",
+      desc: "Applied social network analysis to a directed network of 26 executives (102 links) to quantify bottlenecks and produce integration recommendations.",
+      tags: ["Social Network Analysis", "UCINET", "Consulting"],
+      detail: "",
+    },
+    {
+      id: "yacht",
+      title: "Global Superyacht Industry Consulting",
+      desc: "Simulated PE advisory project covering 9 core companies; led KSF analysis and built a 40+ indicator dataset using Claude Code.",
+      tags: ["Industry Research", "Consulting", "Claude Code"],
+      detail: "",
+    },
+    {
+      id: "network",
+      title: "Business Network Construction Research",
+      desc: "Used Claude Code to optimize Python pipelines extracting business text from 10,000+ annual reports for a multi-head attention network study.",
+      tags: ["Python", "Claude Code", "NLP"],
+      detail: "",
+    },
+  ],
+};
+
+// MY_POSTS 已在文件顶部定义，这里不再重复
+
+// ─────────────────────────────────────────────────────────
+// 逻辑
+// ─────────────────────────────────────────────────────────
+let currentLang = "zh";
+
+function formatDate(str) {
+  if (!str) return "";
+  const d = new Date(str);
+  if (isNaN(d)) return str;
+  return d.toLocaleDateString(currentLang === "zh" ? "zh-CN" : "en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+function renderTags(tags) {
+  return tags.map(t => `<span class="tag">${t}</span>`).join("");
+}
+
+function renderNav(lang) {
+  const c = COPY[lang];
+  document.getElementById("nav-resume").textContent = c.navResume;
+  document.getElementById("nav-portfolio").textContent = c.navPortfolio;
+  document.getElementById("nav-thinking").textContent = c.navThinking;
+}
+
+function renderHero(lang) {
+  const c = COPY[lang];
+  document.getElementById("hero-name").innerHTML = lang === "zh" ? "李思莹<em>Hana</em>" : "Siying Li<em>Hana</em>";
+  document.getElementById("hero-tagline").textContent = c.heroTagline;
+  document.getElementById("hero-bio-1").textContent = c.heroBio1;
+  document.getElementById("hero-bio-2").textContent = c.heroBio2;
+  c.galleryCaptions.forEach((cap, i) => {
+    const el = document.getElementById(`gcap-${i + 1}`);
+    if (el) el.textContent = cap;
+  });
+  document.getElementById("card-resume-title").textContent = c.heroCardResume;
+  document.getElementById("card-resume-desc").textContent = c.heroCardResumeDesc;
+  document.getElementById("card-portfolio-title").textContent = c.heroCardPortfolio;
+  document.getElementById("card-portfolio-desc").textContent = c.heroCardPortfolioDesc;
+  document.getElementById("card-thinking-title").textContent = c.heroCardThinking;
+  document.getElementById("card-thinking-desc").textContent = c.heroCardThinkingDesc;
+}
+
+function renderResume(lang) {
+  const c = COPY[lang];
+  document.getElementById("resume-title").textContent = c.resumeTitle;
+  document.getElementById("resume-edu-label").textContent = c.resumeEduTitle;
+  document.getElementById("resume-exp-label").textContent = c.resumeExpTitle;
+  document.getElementById("resume-skill-label").textContent = c.resumeSkillTitle;
+
+  document.getElementById("resume-edu").innerHTML = c.education.map(e => `
+    <div class="timeline-item fade-up">
+      <div class="timeline-head">
+        <span class="timeline-name">${e.school}</span>
+        <span class="timeline-period">${e.period}</span>
+      </div>
+      <div class="timeline-sub">${e.degree}</div>
+      ${e.desc ? `<div class="timeline-desc">${e.desc}</div>` : ""}
+    </div>`).join("");
+
+  // 项目名为大标题，身份角色为小字；有 portfolioId 或 photoGallery 的标题可点击
+  const expEl = document.getElementById("resume-exp");
+  expEl.innerHTML = c.experience.map((e, idx) => {
+    const hasPortfolio = !!e.portfolioId;
+    const hasPhotos = !!(e.photoGallery && e.photoGallery.photos);
+    const badge = hasPhotos
+      ? `<span class="link-badge">${c.badgePhotos}</span>`
+      : hasPortfolio ? `<span class="link-badge">${c.badgePortfolio}</span>` : "";
+    const nameHtml = (hasPortfolio || hasPhotos)
+      ? `<button class="timeline-name has-link${hasPhotos ? " has-photo" : ""}" data-exp-idx="${idx}">${e.project}${badge}</button>`
+      : `<span class="timeline-name">${e.project}</span>`;
+    return `
+    <div class="timeline-item fade-up">
+      <div class="timeline-head">
+        ${nameHtml}
+        <span class="timeline-period">${e.period}</span>
+      </div>
+      <div class="timeline-sub">${e.role}</div>
+      <ul class="timeline-bullets">${e.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+    </div>`;
+  }).join("");
+
+  expEl.querySelectorAll(".timeline-name.has-link[data-exp-idx]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const e = c.experience[+btn.dataset.expIdx];
+      if (e.photoGallery) openPhotoGallery(e.photoGallery, e.project);
+      else if (e.portfolioId) scrollToPortfolioCard(e.portfolioId);
+    });
+  });
+
+  document.getElementById("resume-skills").innerHTML = c.skills.map(sg => `
+    <div class="fade-up">
+      <div class="skill-group-label">${sg.group}</div>
+      <div class="tags">${renderTags(sg.items)}</div>
+    </div>`).join("");
+}
+
+function renderPortfolio(lang) {
+  const c = COPY[lang];
+  document.getElementById("portfolio-title").textContent = c.portfolioTitle;
+  document.getElementById("portfolio-hint").textContent = c.portfolioHint;
+
+  document.getElementById("portfolio-grid").innerHTML = PROJECTS[lang].map((p, i) => `
+    <div class="project-card fade-up" data-index="${i}" data-portfolio-id="${p.id || ''}">
+      <div class="project-card-title">${p.title}</div>
+      <div class="project-card-desc">${p.desc}</div>
+      <div class="project-card-footer">
+        <div class="tags">${renderTags(p.tags)}</div>
+        <span class="project-card-cta">查看详情 →</span>
+      </div>
+    </div>`).join("");
+
+  document.querySelectorAll(".project-card").forEach(card => {
+    card.addEventListener("click", () => openModal(parseInt(card.dataset.index), currentLang));
+  });
+}
+
+function renderThinkingCards(posts, lang) {
+  const c = COPY[lang];
+  document.getElementById("thinking-list").innerHTML = posts.map((post, i) => `
+    <div class="thinking-card fade-up">
+      <div class="thinking-header" data-index="${i}">
+        <div class="thinking-title">${post.title}</div>
+        <div class="thinking-meta">
+          <span class="thinking-date">${formatDate(post.date)}</span>
+          <span class="thinking-toggle">${c.thinkingReadMore}</span>
+        </div>
+      </div>
+      <div class="thinking-body" id="thinking-body-${i}">
+        <div class="thinking-summary">${post.summary}</div>
+      </div>
+    </div>`).join("");
+
+  document.querySelectorAll(".thinking-header").forEach(h => {
+    h.addEventListener("click", () => {
+      const body = document.getElementById(`thinking-body-${h.dataset.index}`);
+      const toggle = h.querySelector(".thinking-toggle");
+      const open = body.classList.toggle("open");
+      toggle.textContent = open ? COPY[currentLang].thinkingCollapse : COPY[currentLang].thinkingReadMore;
+    });
+  });
+}
+
+function renderFooter(lang) {
+  const c = COPY[lang];
+  document.getElementById("footer-email").textContent = c.footerEmail;
+  document.getElementById("footer-wechat").textContent = c.footerWechat;
+  document.getElementById("footer-copy").textContent = c.footerCopy;
+}
+
+// ── 照片画廊弹窗 ──
+function openPhotoGallery(gallery, title) {
+  document.getElementById("modal-title").textContent = title;
+  document.getElementById("modal-tags").innerHTML = "";
+  document.getElementById("modal-content").innerHTML = `
+    <div class="photo-grid">
+      ${gallery.photos.map((src, i) => `
+        <div>
+          <div class="photo-grid-item">
+            <img src="${src}" alt="${gallery.captions?.[i] || ''}" loading="lazy" />
+          </div>
+          ${gallery.captions?.[i] ? `<div class="photo-grid-caption">${gallery.captions[i]}</div>` : ""}
+        </div>`).join("")}
+    </div>`;
+  document.getElementById("modal-overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+// ── 跳转到作品集并高亮对应卡片 ──
+function scrollToPortfolioCard(portfolioId) {
+  document.getElementById("portfolio").scrollIntoView({ behavior: "smooth" });
+  setTimeout(() => {
+    const card = document.querySelector(`[data-portfolio-id="${portfolioId}"]`);
+    if (!card) return;
+    card.classList.add("highlight");
+    card.addEventListener("animationend", () => card.classList.remove("highlight"), { once: true });
+    setTimeout(() => openModal(
+      PROJECTS[currentLang].findIndex(p => p.id === portfolioId),
+      currentLang
+    ), 400);
+  }, 700);
+}
+
+// ── 项目弹窗 ──
+function openModal(index, lang) {
+  const p = PROJECTS[lang][index];
+  const c = COPY[lang];
+  document.getElementById("modal-title").textContent = p.title;
+  document.getElementById("modal-tags").innerHTML = renderTags(p.tags);
+  document.getElementById("modal-content").innerHTML = p.detail
+    ? `<div class="modal-body">${p.detail}</div>`
+    : `<div class="modal-coming-soon"><span class="cs-icon">🌱</span>${c.modalComingSoon}</div>`;
+  document.getElementById("modal-overlay").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("modal-overlay").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+// ── Notion ──
+async function loadNotionPosts() {
+  document.getElementById("thinking-title").textContent = COPY[currentLang].thinkingTitle;
+  if (!NOTION_CONFIG.databaseId) { renderThinkingCards(MY_POSTS, currentLang); return; }
+  try {
+    const res = await fetch(NOTION_CONFIG.proxyUrl + NOTION_CONFIG.databaseId, { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const posts = Array.isArray(data) ? data.slice(0, 8).map(row => ({
+      title: row.title || row.Title || row.Name || "（无标题）",
+      date: row.Date || row.date || "",
+      summary: row.Summary || row.summary || row.description || "",
+    })) : [];
+    if (!posts.length) throw new Error();
+    renderThinkingCards(posts, currentLang);
+  } catch { renderThinkingCards(MY_POSTS, currentLang); }
+}
+
+// ── 动效 ──
+function observeFadeUp() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll(".fade-up").forEach(el => { el.classList.remove("visible"); obs.observe(el); });
+}
+
+// ── 语言切换 ──
+function switchLang(lang) {
+  currentLang = lang;
+  document.getElementById("lang-toggle").textContent = lang === "zh" ? "EN" : "ZH";
+  renderNav(lang); renderHero(lang); renderResume(lang); renderPortfolio(lang);
+  renderFooter(lang); renderThinkingCards(MY_POSTS, lang);
+  observeFadeUp();
+}
+
+// ── 初始化 ──
+document.addEventListener("DOMContentLoaded", async () => {
+  renderNav(currentLang); renderHero(currentLang); renderResume(currentLang);
+  renderPortfolio(currentLang); renderFooter(currentLang);
+  await loadNotionPosts();
+  observeFadeUp();
+
+  document.getElementById("lang-toggle").addEventListener("click", () => switchLang(currentLang === "zh" ? "en" : "zh"));
+
+  // 弹窗关闭
+  document.getElementById("modal-close").addEventListener("click", closeModal);
+  document.getElementById("modal-overlay").addEventListener("click", e => { if (e.target === e.currentTarget) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  // 移动端汉堡菜单
+  const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("nav-links");
+  hamburger.addEventListener("click", () => navLinks.classList.toggle("open"));
+  navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
+
+  requestAnimationFrame(() => document.body.classList.add("loaded"));
+});
+</script>
+</body>
+</html>

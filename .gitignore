@@ -1,0 +1,16 @@
+# Notion API 配置（含密钥，不提交到 Git）
+config.js
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+
+# Claude Code 内部数据
+.claude/
+
+# 依赖（如果以后引入 Node 工具链）
+node_modules/
