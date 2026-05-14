@@ -191,7 +191,7 @@
     .timeline-bullets li { font-size: 14px; color: var(--text-mid); padding-left: 14px; position: relative; }
     .timeline-bullets li::before { content: "·"; position: absolute; left: 0; color: var(--accent-dark); font-weight: 700; }
     .skills-grid { display: flex; flex-direction: column; gap: 20px; }
-    .skill-group-label { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
+    .skill-group-label { font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag { font-family: var(--font-sans); font-size: 12px; font-weight: 500; background: rgba(196, 137, 90, 0.1); color: var(--accent-dark); border: 1px solid rgba(196, 137, 90, 0.25); border-radius: 20px; padding: 3px 12px; }
 
@@ -449,7 +449,23 @@
 // ║                                                          ║
 // ║  新文章加在最前面（数组第一个位置）即可，其余不用动。       ║
 // ╚══════════════════════════════════════════════════════════╝
-const MY_POSTS = [];
+const MY_POSTS = [
+  {
+    title: "AI 加速的是什么？",
+    date: "2026-05-12",
+    summary: "claude code的强大一下子加速了人们的工作进展——就好像是人走上了机场里的水平传送带那样加了速。然而，越是学习ai，越发现这些东西永远不是一劳永逸——更快的速度不代表人可以更懒地思考。比方说ai强大的检索能力，使得研究者可以轻松获取多渠道的信息，然而搜集信息其实只是研究的第一步，往下走是理解、整合、判断和洞察——这些才是研究真正发生的地方；再比方说，如果人懒得去思考整个工作流，如果人对AI做的这些事情甚至都不是清清楚楚的，那么这样子的人得到AI给出的看似非常完整和高级的output，其实是没有意义的。AI似乎只是在比较浅的层次上极大地提了速，但越往深走，人的不可替代性反而越强。<br><br>比较反直觉的是：现在AI越来越强，对人的思维质量要求反而越高，毕竟获取信息的门槛降低了——原本在这一步上面就已经能够划分出人与人的差异（不一定是差距）——所以现在就只剩下，我们要怎么去用这些基本上大家都能够得到的材料了。",
+  },
+  {
+    title: "阅读，是更好使用 AI 的前提",
+    date: "2026-04-19",
+    summary: "阅读其实可以帮助你更好地使用ai——只有你自己读过了一本书而不是让ai帮你读一本书，你才会知道这本书真的给你带来了什么，并且才会真的生发出一些关于『如何使用』这本书的想法。于是在给prompt给ai的时候，你才知道在这个领域，你应该让它去学习哪一本书或者是运用哪一个理论（以及如何运用）。",
+  },
+  {
+    title: "很庆幸自己在二十岁出来旅行",
+    date: "2026-03-23",
+    summary: "很庆幸自己选择的在自己的 20 岁出来这样旅行，因为我不确定自己在 30 岁或者 40 岁的时候，还能不能有同样的能力——忍受着前一天因为打球而酸痛的臀肌和背肌，同时从温暖的朋友的家里离开，重新回到一个人的旅途当中；在经过了 4 个小时的大巴车程之后，在晚上 8 点的巴黎一个人对着导航找路，坐大半小时的车回到青旅，然后再随便找一个餐厅应付一顿；接着回到四人男女混住的青旅里面，发现里面睡着两位男性，但还能为有一位友好的女性而感到庆幸的时候，在纠结选择到底洗不洗澡，洗不洗头，还是明天再洗的选择之间还是选择了延迟满足，先把自己弄得干干净净的，然后再上床睡觉。<br><br>上了床之后 double check 离开的机票，发现买了最不被推荐以及最偏远的那个机场，然后又开始准备各种去往机场的方法，甚至看了一下是否需要重新买一份航班……<br><br>这件事情我不知道我在 30 岁 40 岁还有没有精力去处理，或许有或许没有，但是我也不是很确定在三四十岁的时候再出来旅游，还会不会是同样的模样，或许那个时候我有自己的家庭，我不再是一个人了，又或许当那个时候我已经比较有钱，可能不需要住这种男女混住上下铺的青旅了。但无论如何，我觉得，二十岁的这些经历是我未来不可能再有的了。所以依然很庆幸自己做出了这样的选择。",
+  },
+];
 // ── （以上是你需要编辑的部分，下面不用动）──────────────────
 
 // ── Notion 配置（可选，配置后优先从 Notion 拉取，覆盖上方手动内容）──
@@ -464,7 +480,7 @@ const COPY = {
   zh: {
     navResume: "我的简历", navPortfolio: "项目作品集", navThinking: "最近在思考",
     heroTagline: "中山大学管理学院 · 意大利博科尼交流生",
-    heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年又通过自己申请，去到意大利博科尼商学院交流，期间利用课余时间游历欧洲，行万里路。",
+    heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。<br>我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年通过自己申请，去到了意大利博科尼商学院交流学习，幸遇十分优秀的教授们，带我走进了AI Agent的世界、带我学习了组织网络分析的领域、带我了解到一个训练有素的咨询师应该是怎样的……等等。与此同时，我也利用在博科尼这学期的一些小长假四处游历欧洲，行万里路。",
     heroBio2: "我还在探索我人生的多种面向和可能性，走走又停停。",
     heroCardResume: "我的简历", heroCardResumeDesc: "教育经历 · 项目 · 技能",
     heroCardPortfolio: "项目作品集", heroCardPortfolioDesc: "数据分析 · 可视化 · 咨询 · 创业项目",
@@ -559,8 +575,8 @@ const COPY = {
     ],
 
     skills: [
-      { group: "数据分析", items: ["Tableau", "UCINET", "Excel", "Python"] },
-      { group: "AI 工具", items: ["Claude Code"] },
+      { group: "数据分析", items: ["Tableau", "UCINET", "Excel", "Python（基础/辅助使用）", "SQL（基础/辅助使用）"] },
+      { group: "AI 工具", items: ["Claude Code", "Codex"] },
       { group: "设计 / 内容", items: ["Canva", "秀米", "剪映"] },
       { group: "语言", items: ["英语（雅思7.0 / 六级610+）", "粤语"] },
       { group: "不务正业的", items: ["瑜伽", "羽毛球", "合唱", "吉他", "钢琴", "攀岩"] },
@@ -570,11 +586,11 @@ const COPY = {
   en: {
     navResume: "Resume", navPortfolio: "Portfolio", navThinking: "Thinking",
     heroTagline: "Sun Yat-sen University · Bocconi Exchange Student",
-    heroBio1: "Hi! 👋 I'm Siying from the School of Management at Sun Yat-sen University. In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to independently apply for an exchange at Bocconi University in Milan the following year. While there, I spent my spare time traveling across Europe.",
+    heroBio1: "Hi! 👋 I'm Siying Li from the School of Management at Sun Yat-sen University.<br>In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to independently apply for an exchange at Bocconi University in Milan the following year. There I was lucky to learn from brilliant professors who introduced me to the world of AI Agents, organizational network analysis, and what it truly means to be a trained consultant… among other things. I also made the most of Bocconi's long weekends to travel across Europe.",
     heroBio2: "I'm still exploring the many facets and possibilities of my life, wandering and pausing along the way.",
     heroCardResume: "Resume", heroCardResumeDesc: "Education · Experience · Skills",
     heroCardPortfolio: "Portfolio", heroCardPortfolioDesc: "Data Analysis · Visualization · Consulting · Startups",
-    heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Essays",
+    heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Thoughts",
     galleryCaptions: ["Nepal · Yoga Cert", "Milan · Bocconi", "Traveling Europe"],
     resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Experience", resumeSkillTitle: "Skills",
     portfolioTitle: "Portfolio",
@@ -664,8 +680,8 @@ const COPY = {
     ],
 
     skills: [
-      { group: "Data Analysis", items: ["Tableau", "UCINET", "Excel", "Python"] },
-      { group: "AI Tools", items: ["Claude Code"] },
+      { group: "Data Analysis", items: ["Tableau", "UCINET", "Excel", "Python (basic/assisted)", "SQL (basic/assisted)"] },
+      { group: "AI Tools", items: ["Claude Code", "Codex"] },
       { group: "Design / Content", items: ["Canva", "Xiumi", "CapCut"] },
       { group: "Languages", items: ["English (IELTS 7.0 / CET-6 610+)", "Cantonese"] },
       { group: "Off the Clock", items: ["Yoga", "Badminton", "Choir", "Guitar", "Piano", "Rock Climbing"] },
@@ -680,22 +696,15 @@ const PROJECTS = {
       id: "milan",
       title: "米兰短租/长租溢价分析",
       desc: "基于22,948条Airbnb数据与31个区域长租记录，构建覆盖87个街区的短租溢价数据集，并搭建交互式可视化看板。",
-      tags: ["数据分析", "可视化", "Tableau", "Python"],
-      detail: "",
+      tags: ["数据分析", "可视化", "Python", "Claude Code"],
+      detail: `<p style="margin-bottom:16px">米兰每年接待超过1000万名访客。对于房东而言，核心问题只有一个：<strong>把公寓挂上 Airbnb，还是出长租，哪个更划算？</strong>这个答案因街区而异——差距可以高达3倍。</p><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">核心发现</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>短租溢价在 <strong>+40% 至 +141%</strong> 之间，Duomo 位列第一（141.5%）</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>高溢价不只出现在旅游中心区——S. Siro、Baggio 等外围街区同样上榜，底租低是关键</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>长租价格水平仅能解释溢价差异的 <strong>5%</strong>（R² = 0.05）——"越贵的区越适合 Airbnb"这个直觉是错的</li></ul></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://milanorental.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">查看 Dashboard →</a><a href="files/milan-final-report.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">完整报告</a><a href="files/milan-final-slides.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">演示幻灯片</a></div><div style="font-family:var(--font-sans);font-size:12px;color:var(--text-light);line-height:1.65">数据来源：Inside Airbnb 22,948 条房源 · Immobiliare.it 31 个租赁区 · 覆盖米兰 87 个街区。工具：Python · Claude Code。</div>`,
     },
     {
       id: "sna",
       title: "社会网络分析-并购后组织整合诊断",
       desc: "对26名高管的有向通讯网络（102条连接）进行社会网络分析，量化识别沟通瓶颈与关键节点，输出整合优化建议。",
       tags: ["社会网络分析", "UCINET", "咨询"],
-      detail: "",
-    },
-    {
-      id: "yacht",
-      title: "全球超级游艇行业咨询",
-      desc: "参与模拟私募股权顾问项目，覆盖9家核心企业，负责KSF分析模块；用Claude Code构建40+条行业数据指标体系。",
-      tags: ["行业研究", "咨询", "Claude Code"],
-      detail: "",
+      detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://organizatinetwork.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">查看研究成果 →</a></div>`,
     },
     {
       id: "network",
@@ -710,22 +719,15 @@ const PROJECTS = {
       id: "milan",
       title: "Milan Rental Premium Analysis",
       desc: "Built an 87-neighborhood premium dataset from 22,948 Airbnb listings and 31 long-term rental records; delivered an interactive multilingual dashboard.",
-      tags: ["Data Analysis", "Visualization", "Tableau", "Python"],
-      detail: "",
+      tags: ["Data Analysis", "Visualization", "Python", "Claude Code"],
+      detail: `<p style="margin-bottom:16px">Milan hosts over 10 million visitors a year. For property owners, one question matters: <strong>is listing on Airbnb more profitable than a long-term lease?</strong> The answer depends entirely on the neighbourhood — and the gap can be as wide as 3×.</p><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Key Findings</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Short-term rental premiums range from <strong>+40% to +141%</strong>, with Duomo ranking first at 141.5%</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>High premiums appear in peripheral areas (S. Siro, Baggio) as well as central ones — low baseline rent is the mechanism, not tourism alone</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Long-term rent level explains only <strong>5%</strong> of premium variation (R² = 0.05) — the intuition that "expensive areas = better Airbnb" doesn't hold</li></ul></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://milanorental.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">View Dashboard →</a><a href="files/milan-final-report.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Full Report</a><a href="files/milan-final-slides.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Slides</a></div><div style="font-family:var(--font-sans);font-size:12px;color:var(--text-light);line-height:1.65">Data: 22,948 Inside Airbnb listings · 31 Immobiliare.it rent zones · 87 Milan neighbourhoods. Tools: Python · Claude Code.</div>`,
     },
     {
       id: "sna",
       title: "Social Network Analysis — Post-M&A Integration Diagnosis",
       desc: "Applied social network analysis to a directed network of 26 executives (102 links) to quantify bottlenecks and produce integration recommendations.",
       tags: ["Social Network Analysis", "UCINET", "Consulting"],
-      detail: "",
-    },
-    {
-      id: "yacht",
-      title: "Global Superyacht Industry Consulting",
-      desc: "Simulated PE advisory project covering 9 core companies; led KSF analysis and built a 40+ indicator dataset using Claude Code.",
-      tags: ["Industry Research", "Consulting", "Claude Code"],
-      detail: "",
+      detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://organizatinetwork.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">View Project →</a></div>`,
     },
     {
       id: "network",
@@ -766,7 +768,7 @@ function renderHero(lang) {
   const c = COPY[lang];
   document.getElementById("hero-name").innerHTML = lang === "zh" ? "李思莹<em>Hana</em>" : "Siying Li<em>Hana</em>";
   document.getElementById("hero-tagline").textContent = c.heroTagline;
-  document.getElementById("hero-bio-1").textContent = c.heroBio1;
+  document.getElementById("hero-bio-1").innerHTML = c.heroBio1;
   document.getElementById("hero-bio-2").textContent = c.heroBio2;
   c.galleryCaptions.forEach((cap, i) => {
     const el = document.getElementById(`gcap-${i + 1}`);
