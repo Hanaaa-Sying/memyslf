@@ -18,3 +18,26 @@
 3. `git push origin main`
 
 确保 GitHub 仓库与本地文件始终保持同步。
+
+---
+
+## 参考文档
+
+### [`debug-rules.md`](debug-rules.md) — 网站维护 Debug 规则
+记录在构建和维护本网站过程中遇到的常见问题及规则，包括：
+- 文件路径与 `files/` 目录规范
+- PPT 在线浏览 vs 下载的实现方式
+- GitHub Pages 部署状态检查
+- 浏览器缓存刷新方法
+- 中英文双语同步要求
+- `portfolioId` 与 `PROJECTS.id` 一致性
+
+### [`prompts-archive.md`](prompts-archive.md) — 常用 Prompt 模板
+记录维护本网站时反复使用的高效 Prompt，包括：
+- 添加新经历、新作品集卡片
+- 调整卡片顺序、修改标题
+- 添加 PDF / PPT / 外链按钮
+- 双语同步通用要求
+
+### [`claude+python.md`](claude+python.md) — Python 数据处理问题指南
+记录在 Windows 11 + Miniconda + Claude Code 环境下运行 Python 脚本时的常见问题，适用于为本网站做数据分析（如米兰租金项目）的场景。

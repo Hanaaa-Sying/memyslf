@@ -100,3 +100,7 @@
 **规则**：
 - 放入 `files/` 或 `images/` 时，重命名为不含空格的名字（用连字符 `-` 代替空格）。
 - 例：`mega yachts final.pptx` → `yacht-final-slides.pptx`
+
+---
+
+> Python 数据处理相关问题（conda 环境、GBK 编码、matplotlib 后端等）见 [`claude+python.md`](claude+python.md)
