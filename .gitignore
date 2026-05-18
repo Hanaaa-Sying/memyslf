@@ -14,3 +14,7 @@ Thumbs.db
 
 # 依赖（如果以后引入 Node 工具链）
 node_modules/
+
+# Python 缓存
+__pycache__/
+*.pyc
