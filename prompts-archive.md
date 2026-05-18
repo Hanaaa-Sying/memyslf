@@ -128,3 +128,25 @@
 - 每张图的说明文字：[...]
 - 图片请放进 images/ 目录。
 ```
+
+---
+
+## 九、给作品集卡片加分类标签 + filter 筛选按钮
+
+```
+我想在作品集大标题下方加一栏 filter 筛选按钮，把项目分成 [分类A] 和 [分类B] 两类。
+- 默认展示全部卡片
+- 点击某个分类按钮，只显示该类卡片
+- 切换语言时 filter 自动重置为"全部"
+- 同时给以下项目标题统一加前缀 [前缀文字]：[项目1、项目2、……]
+
+分类规则：
+- [分类A 标签名]：[项目ID列表]
+- [分类B 标签名]：[项目ID列表]
+```
+
+**实现要点：**
+- 每个 PROJECTS 对象加 `category` 字段（值与 `data-filter` 对应）
+- filter 按钮的显示文字放入 COPY（中英双语各一份）
+- `renderPortfolio` 拆分出 `renderFilteredCards(lang, filter)`，按 category 过滤后用 `indexOf` 保留原始 index（保证 modal 弹窗数据正确）
+- 切换语言时在 `renderPortfolio` 内重置 `currentFilter = "all"`

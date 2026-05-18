@@ -197,6 +197,10 @@
 
     /* ── 作品集 ── */
     #portfolio { background: rgba(196, 137, 90, 0.04); }
+    .portfolio-filter { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+    .filter-btn { font-family: var(--font-sans); font-size: 13px; font-weight: 600; padding: 7px 20px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--text-mid); cursor: pointer; transition: all .2s; }
+    .filter-btn:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
+    .filter-btn.active { background: var(--accent-dark); color: #fff; border-color: var(--accent-dark); }
     .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
     .project-card {
       background: var(--bg-card); border: 1.5px solid var(--border);
@@ -398,7 +402,12 @@
   <section id="portfolio">
     <div class="container">
       <h2 class="section-title fade-up" id="portfolio-title">项目作品集</h2>
-      <p class="fade-up" style="font-family:var(--font-sans);font-size:13px;color:var(--text-light);margin-top:-28px;margin-bottom:32px" id="portfolio-hint">点击任意卡片查看详情</p>
+      <p class="fade-up" style="font-family:var(--font-sans);font-size:13px;color:var(--text-light);margin-top:-28px;margin-bottom:24px" id="portfolio-hint">点击任意卡片查看详情</p>
+      <div class="portfolio-filter fade-up" id="portfolio-filter">
+        <button class="filter-btn active" id="filter-all" data-filter="all">全部</button>
+        <button class="filter-btn" id="filter-web" data-filter="web">Vibe Coding</button>
+        <button class="filter-btn" id="filter-research" data-filter="research">研究分析</button>
+      </div>
       <div class="portfolio-grid" id="portfolio-grid"></div>
     </div>
   </section>
@@ -489,6 +498,7 @@ const COPY = {
     resumeTitle: "简历", resumeEduTitle: "教育经历", resumeExpTitle: "项目经历", resumeSkillTitle: "技能",
     portfolioTitle: "项目作品集",
     portfolioHint: "点击任意卡片查看详情",
+    portfolioFilterAll: "全部", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "研究分析",
     thinkingTitle: "最近在思考",
     thinkingReadMore: "展开阅读", thinkingCollapse: "收起",
     badgePhotos: "照片", badgePortfolio: "作品集 ↗",
@@ -606,6 +616,7 @@ const COPY = {
     resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Experience", resumeSkillTitle: "Skills",
     portfolioTitle: "Portfolio",
     portfolioHint: "Click any card to learn more",
+    portfolioFilterAll: "All", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "Research",
     thinkingTitle: "Recently Thinking",
     thinkingReadMore: "Read more", thinkingCollapse: "Collapse",
     badgePhotos: "Photos", badgePortfolio: "Portfolio ↗",
@@ -716,6 +727,7 @@ const PROJECTS = {
   zh: [
     {
       id: "bocconi-finals",
+      category: "web",
       title: "【VibeCoding】管理博科尼期末月待办事项的个人calendar",
       desc: "博科尼期末月同时面对3个小组作业（各有不同时间线）与4门期末考试，Vibe Coding了这样一个外置大脑Dashboard，把所有任务与时间线统一管起来。",
       tags: ["Vibe Coding", "产品设计", "个人工具"],
@@ -723,28 +735,32 @@ const PROJECTS = {
     },
     {
       id: "milan",
-      title: "米兰短租/长租溢价分析",
+      category: "research",
+      title: "【研究分析】米兰短租/长租溢价分析",
       desc: "基于22,948条Airbnb数据与31个区域长租记录，构建覆盖87个街区的短租溢价数据集，并搭建交互式可视化看板。",
       tags: ["数据分析", "可视化", "Python", "Claude Code"],
       detail: `<p style="margin-bottom:16px">米兰每年接待超过1000万名访客。对于房东而言，核心问题只有一个：<strong>把公寓挂上 Airbnb，还是出长租，哪个更划算？</strong>这个答案因街区而异——差距可以高达3倍。</p><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">核心发现</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>短租溢价在 <strong>+40% 至 +141%</strong> 之间，Duomo 位列第一（141.5%）</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>高溢价不只出现在旅游中心区——S. Siro、Baggio 等外围街区同样上榜，底租低是关键</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>长租价格水平仅能解释溢价差异的 <strong>5%</strong>（R² = 0.05）——"越贵的区越适合 Airbnb"这个直觉是错的</li></ul></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://milanorental.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">查看 Dashboard →</a><a href="files/milan-final-report.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">完整报告</a><a href="files/milan-final-slides.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">演示幻灯片</a></div><div style="font-family:var(--font-sans);font-size:12px;color:var(--text-light);line-height:1.65">数据来源：Inside Airbnb 22,948 条房源 · Immobiliare.it 31 个租赁区 · 覆盖米兰 87 个街区。工具：Python · Claude Code。</div>`,
     },
     {
       id: "sna",
-      title: "社会网络分析-并购后组织整合诊断",
+      category: "research",
+      title: "【研究分析】社会网络分析-并购后组织整合诊断",
       desc: "对26名高管的有向通讯网络（102条连接）进行社会网络分析，量化识别沟通瓶颈与关键节点，输出整合优化建议。",
       tags: ["社会网络分析", "UCINET", "咨询"],
       detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://organizatinetwork.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">查看研究成果 →</a></div>`,
     },
     {
       id: "yacht",
-      title: "全球超级游艇行业研究咨询",
+      category: "research",
+      title: "【研究分析】全球超级游艇行业研究咨询",
       desc: "模拟私募股权顾问项目，覆盖9家全球超级游艇核心企业，负责KSF分析模块，并使用Claude Code构建40+条行业数据指标体系。",
       tags: ["行业研究", "咨询", "Claude Code"],
       detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="files/yacht-final-slides.pptx" download style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">PPT ↓</a></div>`,
     },
     {
       id: "network",
-      title: "商业网络构建研究",
+      category: "research",
+      title: "【研究分析】多头注意力商业网络构建研究",
       desc: "使用Claude Code优化Python代码，从10,000+份企业年报文件中提取业务文本，用于多头注意力商业网络构建研究。",
       tags: ["Python", "Claude Code", "NLP"],
       detail: "",
@@ -753,6 +769,7 @@ const PROJECTS = {
   en: [
     {
       id: "bocconi-finals",
+      category: "web",
       title: "【VibeCoding】A Personal Calendar for Bocconi Finals Month",
       desc: "Facing 3 group projects with different timelines and 4 final exams in a single month, I vibe-coded an external-brain dashboard to track all tasks and deadlines in one place.",
       tags: ["Vibe Coding", "Product Design", "Personal Tool"],
@@ -760,28 +777,32 @@ const PROJECTS = {
     },
     {
       id: "milan",
-      title: "Milan Rental Premium Analysis",
+      category: "research",
+      title: "【Research】Milan Rental Premium Analysis",
       desc: "Built an 87-neighborhood premium dataset from 22,948 Airbnb listings and 31 long-term rental records; delivered an interactive multilingual dashboard.",
       tags: ["Data Analysis", "Visualization", "Python", "Claude Code"],
       detail: `<p style="margin-bottom:16px">Milan hosts over 10 million visitors a year. For property owners, one question matters: <strong>is listing on Airbnb more profitable than a long-term lease?</strong> The answer depends entirely on the neighbourhood — and the gap can be as wide as 3×.</p><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Key Findings</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Short-term rental premiums range from <strong>+40% to +141%</strong>, with Duomo ranking first at 141.5%</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>High premiums appear in peripheral areas (S. Siro, Baggio) as well as central ones — low baseline rent is the mechanism, not tourism alone</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Long-term rent level explains only <strong>5%</strong> of premium variation (R² = 0.05) — the intuition that "expensive areas = better Airbnb" doesn't hold</li></ul></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://milanorental.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">View Dashboard →</a><a href="files/milan-final-report.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Full Report</a><a href="files/milan-final-slides.pdf" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(196,137,90,.1);color:var(--accent-dark);border:1.5px solid rgba(196,137,90,.3);font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Slides</a></div><div style="font-family:var(--font-sans);font-size:12px;color:var(--text-light);line-height:1.65">Data: 22,948 Inside Airbnb listings · 31 Immobiliare.it rent zones · 87 Milan neighbourhoods. Tools: Python · Claude Code.</div>`,
     },
     {
       id: "sna",
-      title: "Social Network Analysis — Post-M&A Integration Diagnosis",
+      category: "research",
+      title: "【Research】Social Network Analysis — Post-M&A Integration Diagnosis",
       desc: "Applied social network analysis to a directed network of 26 executives (102 links) to quantify bottlenecks and produce integration recommendations.",
       tags: ["Social Network Analysis", "UCINET", "Consulting"],
       detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="https://organizatinetwork.netlify.app/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">View Project →</a></div>`,
     },
     {
       id: "yacht",
-      title: "Global Superyacht Industry Research & Advisory",
+      category: "research",
+      title: "【Research】Global Superyacht Industry Research & Advisory",
       desc: "Simulated private equity advisory project covering 9 core global superyacht companies; led KSF analysis and built a 40+ indicator industry data system using Claude Code.",
       tags: ["Industry Research", "Consulting", "Claude Code"],
       detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="files/yacht-final-slides.pptx" download style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">PPT ↓</a></div>`,
     },
     {
       id: "network",
-      title: "Business Network Construction Research",
+      category: "research",
+      title: "【Research】Multi-Head Attention Business Network Construction",
       desc: "Used Claude Code to optimize Python pipelines extracting business text from 10,000+ annual reports for a multi-head attention network study.",
       tags: ["Python", "Claude Code", "NLP"],
       detail: "",
@@ -795,6 +816,7 @@ const PROJECTS = {
 // 逻辑
 // ─────────────────────────────────────────────────────────
 let currentLang = "zh";
+let currentFilter = "all";
 
 function formatDate(str) {
   if (!str) return "";
@@ -886,24 +908,46 @@ function renderResume(lang) {
     </div>`).join("");
 }
 
-function renderPortfolio(lang) {
-  const c = COPY[lang];
-  document.getElementById("portfolio-title").textContent = c.portfolioTitle;
-  document.getElementById("portfolio-hint").textContent = c.portfolioHint;
-
-  document.getElementById("portfolio-grid").innerHTML = PROJECTS[lang].map((p, i) => `
-    <div class="project-card fade-up" data-index="${i}" data-portfolio-id="${p.id || ''}">
+function renderFilteredCards(lang, filter) {
+  const all = PROJECTS[lang];
+  const filtered = filter === "all" ? all : all.filter(p => p.category === filter);
+  document.getElementById("portfolio-grid").innerHTML = filtered.map(p => {
+    const originalIndex = all.indexOf(p);
+    return `<div class="project-card fade-up" data-index="${originalIndex}" data-portfolio-id="${p.id || ''}">
       <div class="project-card-title">${p.title}</div>
       <div class="project-card-desc">${p.desc}</div>
       <div class="project-card-footer">
         <div class="tags">${renderTags(p.tags)}</div>
         <span class="project-card-cta">查看详情 →</span>
       </div>
-    </div>`).join("");
-
+    </div>`;
+  }).join("");
   document.querySelectorAll(".project-card").forEach(card => {
     card.addEventListener("click", () => openModal(parseInt(card.dataset.index), currentLang));
   });
+}
+
+function renderPortfolio(lang) {
+  const c = COPY[lang];
+  document.getElementById("portfolio-title").textContent = c.portfolioTitle;
+  document.getElementById("portfolio-hint").textContent = c.portfolioHint;
+  document.getElementById("filter-all").textContent = c.portfolioFilterAll;
+  document.getElementById("filter-web").textContent = c.portfolioFilterWeb;
+  document.getElementById("filter-research").textContent = c.portfolioFilterResearch;
+
+  // 切换语言时重置为全部
+  currentFilter = "all";
+  document.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.filter === "all");
+    btn.onclick = () => {
+      currentFilter = btn.dataset.filter;
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderFilteredCards(currentLang, currentFilter);
+    };
+  });
+
+  renderFilteredCards(lang, "all");
 }
 
 function renderThinkingCards(posts, lang) {
