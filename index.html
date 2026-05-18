@@ -922,8 +922,12 @@ function renderFilteredCards(lang, filter) {
       </div>
     </div>`;
   }).join("");
-  document.querySelectorAll(".project-card").forEach(card => {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll(".project-card.fade-up").forEach(card => {
     card.addEventListener("click", () => openModal(parseInt(card.dataset.index), currentLang));
+    obs.observe(card);
   });
 }
 
