@@ -123,4 +123,24 @@
 
 ---
 
+---
+
+## 规则 10：动态重渲染的 DOM 节点需重新注册 IntersectionObserver
+
+**现象**：给作品集加 filter 按钮后，点击筛选类别，卡片区域空白（点击空白处却能弹出 modal，说明数据正确）。
+
+**原因**：`observeFadeUp()` 只在页面初始化时运行一次，之后通过 `innerHTML` 动态插入的 `.fade-up` 节点不在观察列表里，`visible` 类永远无法被添加，元素停留在 `opacity: 0`。
+
+**规则**：凡是通过 `innerHTML` 重新渲染的节点（如 filter 后的卡片），必须在渲染后对新节点重新创建并运行一次 `IntersectionObserver`，或直接调用 `el.classList.add("visible")`。
+
+```js
+// 在 renderFilteredCards 末尾对新卡片补跑 observer
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll(".project-card.fade-up").forEach(el => obs.observe(el));
+```
+
+---
+
 > Python 数据处理相关问题（conda 环境、GBK 编码、matplotlib 后端等）见 [`claude+python.md`](claude+python.md)
