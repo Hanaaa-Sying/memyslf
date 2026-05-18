@@ -115,4 +115,12 @@
 
 ---
 
+## 规则 9：网站必须保持单文件架构（index.html 自包含）
+
+**背景**：网站最初是多文件方案（`index.html` + `style.css` + `main.js` + `content.js`），但本地双击打开时浏览器 CORS 策略会阻止跨文件加载，页面无法正常运行。
+
+**规则**：所有样式和脚本保持内联在 `index.html` 中，不拆分为外部文件。根目录留存的 `style.css` / `main.js` / `config.js` / `content.js` 是历史遗留文件，不再使用，以 `index.html` 为准。
+
+---
+
 > Python 数据处理相关问题（conda 环境、GBK 编码、matplotlib 后端等）见 [`claude+python.md`](claude+python.md)
