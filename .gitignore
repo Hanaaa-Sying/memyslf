@@ -18,3 +18,6 @@ node_modules/
 # Python 缓存
 __pycache__/
 *.pyc
+
+# 求职 Notion 映射（含个人 Notion 页面 ID，不提交）
+job-applications/notion-ids.json
