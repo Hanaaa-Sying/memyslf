@@ -150,3 +150,42 @@
 - filter 按钮的显示文字放入 COPY（中英双语各一份）
 - `renderPortfolio` 拆分出 `renderFilteredCards(lang, filter)`，按 category 过滤后用 `indexOf` 保留原始 index（保证 modal 弹窗数据正确）
 - 切换语言时在 `renderPortfolio` 内重置 `currentFilter = "all"`
+
+---
+
+## 十、求职 Tracker 新增投递
+
+**场景：** 在实习僧/Boss直聘看到新岗位并投递后，让 Claude 自动抓取 JD 并写入 tracker.md + Notion。
+
+```
+帮我把这个岗位加进 tracker：
+[粘贴岗位链接]
+
+（或：直接粘贴 JD 文本）
+```
+
+**Claude 执行流程：**
+1. 抓取 JD（URL → WebFetch；Boss直聘若需登录则提示粘贴文本）
+2. 评定优先级 A/B/C、生成差距分析
+3. 写入 tracker.md 新行（投递渠道自动填"实习僧"或"Boss直聘"，当前进度填"已投递"）
+4. 同步到 Notion，追加 notion-ids.json
+
+---
+
+## 十一、求职 Tracker 批量状态同步
+
+**场景：** 每天/隔天检查平台"我的投递"后，批量同步状态变化到 tracker.md + Notion。
+
+```
+帮我同步以下投递状态：
+[粘贴实习僧"我的投递"列表文本，或直接截图发给 Claude]
+
+（Boss直聘同理，可分开发两次，也可合并）
+```
+
+**Claude 执行流程：**
+1. 从文本/图片提取 `公司 × 岗位 × 最新状态`
+2. 与 tracker.md 当前状态 diff，仅更新有变化的行
+3. 同步到 Notion，输出变化摘要（如"埃森哲：已投递 → HR已查看"）
+
+**注意：** 只改状态列，不动差距分析列。
