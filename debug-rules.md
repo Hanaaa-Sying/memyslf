@@ -144,3 +144,13 @@ document.querySelectorAll(".project-card.fade-up").forEach(el => obs.observe(el)
 ---
 
 > Python 数据处理相关问题（conda 环境、GBK 编码、matplotlib 后端等）见 [`claude+python.md`](claude+python.md)
+
+---
+
+### 2026年05月20日 — JS 字符串中的中文双引号导致整页空白
+
+**现象：** 网站打开后页面完全空白，浏览器 Console 报 `Uncaught SyntaxError: Unexpected identifier '市场研究中的大语言模型'`。
+
+**原因：** 在 `PROJECTS` 数据里，desc 字段使用 ASCII 双引号 `"` 作为 JS 字符串分隔符，但字段内容中包含中文直角引号 `"市场研究中的大语言模型"` —— 这两种引号字形相同，JS 引擎把内容里的 `"` 当作字符串结束符，导致后续词被识别为 unexpected identifier，整个脚本报错。`body` 的 `opacity` 永远停在 `0`，页面空白。
+
+**规则/解决：** JS 中凡 `desc`、`title` 等字段内容含有中文直角引号 `"..."` 时，外层分隔符必须改用反引号模板字符串，或将内容中的引号替换为书名号 `「」`。已将该条目 desc 改为反引号 + 书名号。
