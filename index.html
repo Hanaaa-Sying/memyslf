@@ -407,6 +407,7 @@
         <button class="filter-btn active" id="filter-all" data-filter="all">全部</button>
         <button class="filter-btn" id="filter-web" data-filter="web">Vibe Coding</button>
         <button class="filter-btn" id="filter-research" data-filter="research">研究分析</button>
+        <button class="filter-btn" id="filter-content" data-filter="content">内容运营</button>
       </div>
       <div class="portfolio-grid" id="portfolio-grid"></div>
     </div>
@@ -498,7 +499,7 @@ const COPY = {
     resumeTitle: "简历", resumeEduTitle: "教育经历", resumeExpTitle: "项目经历", resumeSkillTitle: "技能",
     portfolioTitle: "项目作品集",
     portfolioHint: "点击任意卡片查看详情",
-    portfolioFilterAll: "全部", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "研究分析",
+    portfolioFilterAll: "全部", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "研究分析", portfolioFilterContent: "内容运营",
     thinkingTitle: "最近在思考",
     thinkingReadMore: "展开阅读", thinkingCollapse: "收起",
     badgePhotos: "照片", badgePortfolio: "作品集 ↗",
@@ -616,7 +617,7 @@ const COPY = {
     resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Experience", resumeSkillTitle: "Skills",
     portfolioTitle: "Portfolio",
     portfolioHint: "Click any card to learn more",
-    portfolioFilterAll: "All", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "Research",
+    portfolioFilterAll: "All", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "Research", portfolioFilterContent: "Content",
     thinkingTitle: "Recently Thinking",
     thinkingReadMore: "Read more", thinkingCollapse: "Collapse",
     badgePhotos: "Photos", badgePortfolio: "Portfolio ↗",
@@ -766,6 +767,14 @@ const PROJECTS = {
       detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="files/yacht-final-slides.pptx" download style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">PPT ↓</a></div>`,
     },
     {
+      id: "wechat-claude-agent",
+      category: "content",
+      title: "【内容运营】Claude课程recap：关于此Agent的一些知识点",
+      desc: "博科尼"市场研究中的大语言模型"课后心得。用通俗易懂的语言，把 Agent 与 Chatbot 的本质区别、Claude Code 的 Agent Loop，以及 CLAUDE.md / Context Window / Plan Mode 三个增强agent表现稳定性的核心，写成一篇面向普通人的 Claude Code 入门科普。",
+      tags: ["内容运营", "公众号", "Claude Code", "AI科普"],
+      detail: `<p style="margin-bottom:16px">博科尼"市场研究中的大语言模型"课后整理的学习笔记。从 Agent 与 Chatbot 的本质区别切入，解释 Claude Code 的 Agent Loop 运作机制，再用"渣男记忆"、"脑容量"等类比，把 CLAUDE.md、Context Window、Plan Mode 三个防 Claude Code"发疯"的核心概念讲清楚——写给那些听过 AI Agent 但还说不清楚它能做什么的人。</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://mp.weixin.qq.com/s/EQ4JT2q0t9YJ-8klIT6IEQ" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">在公众号阅读 →</a></div>`,
+    },
+    {
       id: "network",
       category: "research",
       title: "【研究分析】多头注意力商业网络构建研究",
@@ -814,6 +823,14 @@ const PROJECTS = {
       desc: "Simulated private equity advisory project covering 9 core global superyacht companies; led KSF analysis and built a 40+ indicator industry data system using Claude Code.",
       tags: ["Industry Research", "Consulting", "Claude Code"],
       detail: `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><a href="files/yacht-final-slides.pptx" download style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">PPT ↓</a></div>`,
+    },
+    {
+      id: "wechat-claude-agent",
+      category: "content",
+      title: "【Content】Claude Course Recap: Key Things to Know About AI Agents",
+      desc: "A post-course recap from Bocconi's \"LLMs in Market Research\" class. Breaks down the real difference between AI agents and chatbots, how Claude Code's agent loop works, and three key concepts — CLAUDE.md, Context Window, and Plan Mode — using everyday analogies to make it accessible to a general audience.",
+      tags: ["Content", "WeChat", "Claude Code", "AI Explainer"],
+      detail: `<p style="margin-bottom:16px">A learning recap written after Bocconi's "LLMs in Market Research" course. Starts with the fundamental difference between AI agents and chatbots, explains how Claude Code's agent loop works step by step, then breaks down CLAUDE.md, Context Window, and Plan Mode — the three concepts that keep Claude Code from "going crazy" — using relatable analogies throughout for a general audience.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://mp.weixin.qq.com/s/EQ4JT2q0t9YJ-8klIT6IEQ" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Read on WeChat →</a></div>`,
     },
     {
       id: "network",
@@ -954,6 +971,7 @@ function renderPortfolio(lang) {
   document.getElementById("filter-all").textContent = c.portfolioFilterAll;
   document.getElementById("filter-web").textContent = c.portfolioFilterWeb;
   document.getElementById("filter-research").textContent = c.portfolioFilterResearch;
+  document.getElementById("filter-content").textContent = c.portfolioFilterContent;
 
   // 切换语言时重置为全部
   currentFilter = "all";
