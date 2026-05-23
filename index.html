@@ -314,10 +314,14 @@
     .booking-day-modal-close:hover { color: var(--text-dark); }
     .booking-day-modal-duration { padding: 14px 22px; border-bottom: 1px solid var(--border); }
     .booking-day-modal-duration > span { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); display: block; margin-bottom: 8px; letter-spacing: .03em; text-transform: uppercase; }
-    .bdm-duration-btns { display: flex; gap: 8px; }
+    .bdm-duration-btns { display: flex; gap: 8px; flex-wrap: wrap; }
     .bdm-dur-btn { font-family: var(--font-sans); font-size: 13px; padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: all var(--transition); }
     .bdm-dur-btn:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
     .bdm-dur-btn.selected { border-color: var(--accent-dark); background: var(--accent-dark); color: #fff; }
+    .bdm-custom-wrap { display: none; align-items: center; gap: 8px; margin-top: 10px; }
+    .bdm-custom-input { font-family: var(--font-sans); font-size: 13px; width: 72px; padding: 5px 8px; border: 1.5px solid var(--accent-dark); border-radius: 6px; color: var(--text-dark); background: var(--bg-card); outline: none; -moz-appearance: textfield; }
+    .bdm-custom-input::-webkit-outer-spin-button, .bdm-custom-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .bdm-custom-hint { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); }
     .booking-day-modal-timeline { overflow-y: auto; flex: 1; }
     .bdm-slot-row { display: flex; align-items: center; padding: 12px 22px; gap: 16px; border-bottom: 1px solid var(--border); min-height: 52px; }
     .bdm-slot-time { font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); min-width: 88px; line-height: 1.4; }
@@ -660,6 +664,8 @@ const COPY = {
     bookingTzLabel: "你的时区",
     bookingLoading: "正在读取我的日历……",
     bookingDurationLabel: "聊多久？",
+    bookingDurationCustom: "自定义",
+    bookingDurationMaxHint: "最长",
     bookingSelect: "选这个",
     bookingBusy: "已约",
     bookingContactNote: "邮箱和微信至少填一个，方便我联系到你 ↓",
@@ -800,12 +806,14 @@ const COPY = {
     heroCardResume: "Resume", heroCardResumeDesc: "Education · Experience · Skills",
     heroCardPortfolio: "Portfolio", heroCardPortfolioDesc: "Data Analysis · Visualization · Consulting · Startups",
     heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Thoughts",
-    heroCardBooking: "Let's Chat!", heroCardBookingDesc: "Pick a time, let's talk",
+    heroCardBooking: "Do you wanna chat?", heroCardBookingDesc: "choose a time slot",
     bookingSectionTitle: "Let's Chat!",
     bookingIntro: "Choose the time slot that works for you, send your invite, and I'll get back to you to confirm ASAP.",
     bookingTzLabel: "Your timezone",
     bookingLoading: "Loading my calendar…",
     bookingDurationLabel: "For how long?",
+    bookingDurationCustom: "Custom",
+    bookingDurationMaxHint: "max",
     bookingSelect: "Pick this",
     bookingBusy: "Booked",
     bookingContactNote: "Please fill in at least one — email or WeChat — so I can reach you ↓",
@@ -1374,6 +1382,8 @@ let _calYear, _calMonth;
 let _selectedDate = null, _selectedTime = null;
 let _visitorTz = "Asia/Shanghai";
 let _selectedDuration = 60;
+let _isCustomDuration = false;
+let _dayMaxDuration = 840;
 const _busyCache = {};
 
 function renderBookingCopy(lang) {
@@ -1384,6 +1394,7 @@ function renderBookingCopy(lang) {
   el("booking-intro").textContent = c.bookingIntro;
   el("booking-tz-label").textContent = c.bookingTzLabel;
   el("bdm-duration-label").textContent = c.bookingDurationLabel;
+  el("bdm-custom-btn").textContent = c.bookingDurationCustom;
   el("booking-contact-note").textContent = c.bookingContactNote;
   el("b-email-label").textContent = c.bookingEmailLabel;
   el("b-wechat-label").textContent = c.bookingWechatLabel;
@@ -1433,15 +1444,41 @@ function initBooking() {
   document.getElementById("bdm-close").addEventListener("click", closeDayModal);
   document.getElementById("bdm-overlay").addEventListener("click", closeDayModal);
 
-  document.querySelectorAll(".bdm-dur-btn").forEach(btn => {
+  document.querySelectorAll(".bdm-dur-btn:not(#bdm-custom-btn)").forEach(btn => {
     btn.addEventListener("click", () => {
       _selectedDuration = parseInt(btn.dataset.min);
+      _isCustomDuration = false;
       renderDurationBtns();
       if (document.getElementById("booking-day-modal").style.display !== "none" && _selectedDate) {
         const cacheKey = `${_selectedDate.slice(0,4)}-${_selectedDate.slice(5,7)}`;
         renderDayTimeline(_selectedDate, _busyCache[cacheKey] || []);
       }
     });
+  });
+
+  document.getElementById("bdm-custom-btn").addEventListener("click", () => {
+    _isCustomDuration = true;
+    renderDurationBtns();
+    const input = document.getElementById("bdm-custom-input");
+    input.max = _dayMaxDuration;
+    if (!input.value || parseInt(input.value) < 1) input.value = _selectedDuration;
+    input.focus();
+    input.select();
+    if (document.getElementById("booking-day-modal").style.display !== "none" && _selectedDate) {
+      const cacheKey = `${_selectedDate.slice(0,4)}-${_selectedDate.slice(5,7)}`;
+      renderDayTimeline(_selectedDate, _busyCache[cacheKey] || []);
+    }
+  });
+
+  document.getElementById("bdm-custom-input").addEventListener("input", () => {
+    const val = parseInt(document.getElementById("bdm-custom-input").value);
+    if (val && val >= 1) {
+      _selectedDuration = Math.min(val, _dayMaxDuration);
+      if (_selectedDate) {
+        const cacheKey = `${_selectedDate.slice(0,4)}-${_selectedDate.slice(5,7)}`;
+        renderDayTimeline(_selectedDate, _busyCache[cacheKey] || []);
+      }
+    }
   });
 
   document.getElementById("booking-form").addEventListener("submit", onBookingSubmit);
@@ -1563,6 +1600,25 @@ function hktToVisitorTimeStr(dateStr, hktHour) {
   });
 }
 
+function getMaxDurationForDay(dateStr, busyIntervals) {
+  let maxMin = 0;
+  for (let startH = HANA_AVAIL.startH; startH <= HANA_AVAIL.endH; startH++) {
+    const slotStartMs = new Date(`${dateStr}T${String(startH).padStart(2,"0")}:00:00+08:00`).getTime();
+    const dayEndMs = new Date(`${dateStr}T22:00:00+08:00`).getTime();
+    let earliest = dayEndMs;
+    for (const b of busyIntervals) {
+      const bs = new Date(b.start).getTime();
+      const be = new Date(b.end).getTime();
+      if (be <= slotStartMs) continue;
+      if (bs <= slotStartMs) { earliest = slotStartMs; break; }
+      if (bs < earliest) earliest = bs;
+    }
+    const avail = Math.floor((earliest - slotStartMs) / 60000);
+    if (avail > maxMin) maxMin = avail;
+  }
+  return maxMin || (HANA_AVAIL.endH - HANA_AVAIL.startH + 1) * 60;
+}
+
 function openDayModal(dateStr) {
   _selectedDate = dateStr;
   _selectedTime = null;
@@ -1577,18 +1633,27 @@ function openDayModal(dateStr) {
     : new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
   document.getElementById("bdm-date-label").textContent = dateLabel;
 
-  renderDurationBtns();
   const cacheKey = `${dateStr.slice(0,4)}-${dateStr.slice(5,7)}`;
-  renderDayTimeline(dateStr, _busyCache[cacheKey] || []);
+  const busyIntervals = _busyCache[cacheKey] || [];
+  _dayMaxDuration = getMaxDurationForDay(dateStr, busyIntervals);
+  const c = COPY[_bookingLang];
+  document.getElementById("bdm-custom-hint").textContent = `${c.bookingDurationMaxHint} ${_dayMaxDuration} min`;
+  document.getElementById("bdm-custom-input").max = _dayMaxDuration;
+
+  renderDurationBtns();
+  renderDayTimeline(dateStr, busyIntervals);
 
   document.getElementById("booking-day-modal").style.display = "flex";
   document.getElementById("booking-form-wrap").style.display = "none";
 }
 
 function renderDurationBtns() {
-  document.querySelectorAll(".bdm-dur-btn").forEach(btn => {
-    btn.classList.toggle("selected", parseInt(btn.dataset.min) === _selectedDuration);
+  document.querySelectorAll(".bdm-dur-btn:not(#bdm-custom-btn)").forEach(btn => {
+    btn.classList.toggle("selected", !_isCustomDuration && parseInt(btn.dataset.min) === _selectedDuration);
   });
+  document.getElementById("bdm-custom-btn").classList.toggle("selected", _isCustomDuration);
+  const wrap = document.getElementById("bdm-custom-wrap");
+  wrap.style.display = _isCustomDuration ? "flex" : "none";
 }
 
 function renderDayTimeline(dateStr, busyIntervals) {
@@ -1721,9 +1786,15 @@ function toDateStr(date) {
     <div class="booking-day-modal-duration">
       <span id="bdm-duration-label"></span>
       <div class="bdm-duration-btns">
+        <button class="bdm-dur-btn" data-min="15">15 min</button>
         <button class="bdm-dur-btn" data-min="30">30 min</button>
         <button class="bdm-dur-btn" data-min="45">45 min</button>
         <button class="bdm-dur-btn selected" data-min="60">60 min</button>
+        <button class="bdm-dur-btn" data-min="custom" id="bdm-custom-btn"></button>
+      </div>
+      <div class="bdm-custom-wrap" id="bdm-custom-wrap" style="display:none">
+        <input type="number" class="bdm-custom-input" id="bdm-custom-input" min="1" step="1" />
+        <span class="bdm-custom-hint" id="bdm-custom-hint"></span>
       </div>
     </div>
     <div class="booking-day-modal-timeline" id="bdm-timeline"></div>
