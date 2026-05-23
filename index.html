@@ -282,6 +282,7 @@
       .resume-grid { grid-template-columns: 1fr; column-gap: 0; }
       .exp-grid { grid-template-columns: 1fr; }
     }
+    .resume-full { display: flex; flex-direction: column; gap: 48px; }
     @media (max-width: 768px) {
       .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; gap: 0; padding: 8px 0; }
       .nav-links.open { display: flex; }
@@ -380,26 +381,26 @@
   <section id="resume">
     <div class="container">
       <h2 class="section-title fade-up" id="resume-title">简历</h2>
-      <div class="resume-grid">
+      <div class="resume-full">
 
-        <!-- 左列：教育 -->
-        <div class="resume-col-left">
+        <!-- 教育经历 全宽 -->
+        <div>
           <div class="resume-block-title" id="resume-edu-label">教育经历</div>
           <div class="timeline" id="resume-edu"></div>
         </div>
 
-        <!-- 右列：技能 -->
-        <div class="resume-col-right">
+        <!-- 项目经历 全宽 2列 -->
+        <div>
+          <div class="resume-block-title" id="resume-exp-label">项目经历</div>
+          <div class="exp-grid" id="resume-exp"></div>
+        </div>
+
+        <!-- 技能 全宽 -->
+        <div>
           <div class="resume-block-title" id="resume-skill-label">技能</div>
           <div class="skills-grid" id="resume-skills"></div>
         </div>
 
-      </div>
-
-      <!-- 全宽：项目经历（2列网格） -->
-      <div style="margin-top:48px">
-        <div class="resume-block-title" id="resume-exp-label">项目经历</div>
-        <div class="exp-grid" id="resume-exp"></div>
       </div>
     </div>
   </section>
