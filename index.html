@@ -301,12 +301,30 @@
     .booking-day.available:hover { background: var(--accent-dark); color: #fff; transform: scale(1.08); }
     .booking-day.selected { background: var(--accent-dark); color: #fff; font-weight: 600; }
     @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
-    .booking-slots-wrap { margin-top: 28px; }
-    .booking-slots-label { font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 12px; }
-    .booking-slots-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-    .booking-slot { font-family: var(--font-sans); font-size: 13px; padding: 8px 18px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: border-color var(--transition), color var(--transition), background var(--transition); }
-    .booking-slot:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
-    .booking-slot.selected { border-color: var(--accent-dark); background: var(--accent-dark); color: #fff; }
+    .booking-tz-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .booking-tz-label { font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); white-space: nowrap; }
+    .booking-tz-select { font-family: var(--font-sans); font-size: 13px; color: var(--text-dark); background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; max-width: 280px; }
+    .booking-tz-select:focus { outline: 1px solid var(--accent-dark); border-color: var(--accent-dark); }
+    .booking-day-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; }
+    .booking-day-modal-overlay { position: absolute; inset: 0; background: rgba(45,31,14,0.45); }
+    .booking-day-modal-box { position: relative; z-index: 201; background: var(--bg-card); border-radius: 16px; width: 92%; max-width: 400px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(45,31,14,0.18); overflow: hidden; }
+    .booking-day-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; border-bottom: 1px solid var(--border); }
+    .booking-day-modal-header span { font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--text-dark); }
+    .booking-day-modal-close { background: none; border: none; font-size: 17px; color: var(--text-light); cursor: pointer; padding: 4px; line-height: 1; transition: color var(--transition); }
+    .booking-day-modal-close:hover { color: var(--text-dark); }
+    .booking-day-modal-duration { padding: 14px 22px; border-bottom: 1px solid var(--border); }
+    .booking-day-modal-duration > span { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); display: block; margin-bottom: 8px; letter-spacing: .03em; text-transform: uppercase; }
+    .bdm-duration-btns { display: flex; gap: 8px; }
+    .bdm-dur-btn { font-family: var(--font-sans); font-size: 13px; padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: all var(--transition); }
+    .bdm-dur-btn:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
+    .bdm-dur-btn.selected { border-color: var(--accent-dark); background: var(--accent-dark); color: #fff; }
+    .booking-day-modal-timeline { overflow-y: auto; flex: 1; }
+    .bdm-slot-row { display: flex; align-items: center; padding: 12px 22px; gap: 16px; border-bottom: 1px solid var(--border); min-height: 52px; }
+    .bdm-slot-time { font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); min-width: 88px; line-height: 1.4; }
+    .bdm-slot-time .bdm-utc8 { font-size: 11px; color: var(--text-light); display: block; }
+    .bdm-slot-btn { font-family: var(--font-sans); font-size: 13px; padding: 6px 16px; border: 1.5px solid var(--accent-dark); border-radius: 8px; background: transparent; color: var(--accent-dark); cursor: pointer; transition: all var(--transition); white-space: nowrap; }
+    .bdm-slot-btn:hover, .bdm-slot-btn.selected { background: var(--accent-dark); color: #fff; }
+    .bdm-slot-unavailable { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); font-style: italic; }
     .booking-form-wrap { margin-top: 32px; max-width: 520px; }
     .booking-selected-summary { font-family: var(--font-sans); font-size: 13px; color: var(--accent-dark); margin-bottom: 20px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
     .booking-field { margin-bottom: 16px; }
@@ -477,6 +495,12 @@
       <h2 class="section-title fade-up" id="booking-section-title">聊天时间到！</h2>
       <p class="booking-intro fade-up" id="booking-intro"></p>
 
+      <!-- 时区选择器 -->
+      <div class="booking-tz-wrap fade-up">
+        <label class="booking-tz-label" id="booking-tz-label"></label>
+        <select class="booking-tz-select" id="booking-tz-select"></select>
+      </div>
+
       <!-- 日历 -->
       <div class="booking-cal-wrap fade-up">
         <div class="booking-cal-nav">
@@ -485,12 +509,6 @@
           <button id="cal-next">›</button>
         </div>
         <div class="booking-cal-grid" id="booking-cal-grid"></div>
-      </div>
-
-      <!-- 时间段（选日期后显示） -->
-      <div class="booking-slots-wrap" id="booking-slots-wrap" style="display:none">
-        <div class="booking-slots-label" id="booking-slots-label"></div>
-        <div class="booking-slots-grid" id="booking-slots-grid"></div>
       </div>
 
       <!-- 表单（选时间段后显示） -->
@@ -605,21 +623,26 @@ const EMAILJS_PUBLIC_KEY  = "_DrYLZ8UugAJCTSqp";
 const EMAILJS_SERVICE_ID  = "service_dt7yu9e";
 const EMAILJS_TEMPLATE_ID = "template_6744rc9";
 
-// 可预约时段定义（用户可自定义）
-const BOOKING_CONFIG = {
-  timezoneLabel: "UTC+8（北京时间）",
-  daysAhead: 30,
-  // 每周各天可选小时（24小时制），空数组 = 该天不开放
-  weeklyHours: {
-    0: [],                       // 周日
-    1: [10, 11, 14, 15, 16],     // 周一
-    2: [10, 11, 14, 15, 16],     // 周二
-    3: [10, 11, 14, 15, 16],     // 周三
-    4: [10, 11, 14, 15, 16],     // 周四
-    5: [10, 11, 14, 15],         // 周五
-    6: [],                       // 周六
-  },
-};
+// Hana 可用时间窗口（UTC+8），睡眠段为 22:00-07:30，可预约时段 08:00-21:00（整点起，60分钟内结束于22:00）
+const HANA_AVAIL = { startH: 8, endH: 21 };
+const DAYS_AHEAD = 30;
+
+const COMMON_TIMEZONES = [
+  { zh: "北京/上海 (UTC+8)", en: "Beijing/Shanghai (UTC+8)", value: "Asia/Shanghai" },
+  { zh: "香港/台北 (UTC+8)", en: "Hong Kong/Taipei (UTC+8)", value: "Asia/Hong_Kong" },
+  { zh: "新加坡 (UTC+8)", en: "Singapore (UTC+8)", value: "Asia/Singapore" },
+  { zh: "东京/首尔 (UTC+9)", en: "Tokyo/Seoul (UTC+9)", value: "Asia/Tokyo" },
+  { zh: "曼谷/胡志明 (UTC+7)", en: "Bangkok/Ho Chi Minh (UTC+7)", value: "Asia/Bangkok" },
+  { zh: "迪拜 (UTC+4)", en: "Dubai (UTC+4)", value: "Asia/Dubai" },
+  { zh: "孟买 (UTC+5:30)", en: "Mumbai (UTC+5:30)", value: "Asia/Kolkata" },
+  { zh: "莫斯科 (UTC+3)", en: "Moscow (UTC+3)", value: "Europe/Moscow" },
+  { zh: "柏林/巴黎 (UTC+1/2)", en: "Berlin/Paris (UTC+1/2)", value: "Europe/Berlin" },
+  { zh: "伦敦 (UTC+0/1)", en: "London (UTC+0/1)", value: "Europe/London" },
+  { zh: "纽约 (UTC-5/-4)", en: "New York (UTC-5/-4)", value: "America/New_York" },
+  { zh: "芝加哥 (UTC-6/-5)", en: "Chicago (UTC-6/-5)", value: "America/Chicago" },
+  { zh: "洛杉矶 (UTC-8/-7)", en: "Los Angeles (UTC-8/-7)", value: "America/Los_Angeles" },
+  { zh: "悉尼 (UTC+10/11)", en: "Sydney (UTC+10/11)", value: "Australia/Sydney" },
+];
 
 // ── 双语文案 ──
 const COPY = {
@@ -633,16 +656,19 @@ const COPY = {
     heroCardThinking: "最近在思考", heroCardThinkingDesc: "随笔",
     heroCardBooking: "聊天时间到！", heroCardBookingDesc: "选个时间，咱们聊聊",
     bookingSectionTitle: "聊天时间到！",
-    bookingIntro: "选一个你方便的时间，提交邀约，我会尽快回复确认。时区：UTC+8（北京时间）",
+    bookingIntro: "选一个你方便的时间，发送邀请，我会尽快回复确认。",
+    bookingTzLabel: "你的时区",
     bookingLoading: "正在读取我的日历……",
-    bookingSlotsLabel: "可选时间段",
+    bookingDurationLabel: "聊多久？",
+    bookingSelect: "选这个",
+    bookingBusy: "已约",
     bookingContactNote: "邮箱和微信至少填一个，方便我联系到你 ↓",
     bookingEmailLabel: "邮箱（Email）",
     bookingWechatLabel: "微信号（WeChat ID）",
     bookingNameLabel: "如何称呼你？ *",
     bookingExtraLabel: "性别 / 年龄 / 职业（选填）",
     bookingTopicLabel: "想聊什么？ *",
-    bookingSubmit: "递交邀约",
+    bookingSubmit: "发送邀请",
     bookingSubmitting: "发送中……",
     bookingError: "发送失败，请稍后重试或直接发邮件联系我。",
     bookingValidationError: "请至少填写邮箱或微信号 ✦",
@@ -776,16 +802,19 @@ const COPY = {
     heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Thoughts",
     heroCardBooking: "Let's Chat!", heroCardBookingDesc: "Pick a time, let's talk",
     bookingSectionTitle: "Let's Chat!",
-    bookingIntro: "Pick a time that works for you, submit your request, and I'll get back to you to confirm. Timezone: UTC+8 (Beijing Time)",
+    bookingIntro: "Choose the time slot that works for you, send your invite, and I'll get back to you to confirm ASAP.",
+    bookingTzLabel: "Your timezone",
     bookingLoading: "Loading my calendar…",
-    bookingSlotsLabel: "Available Time Slots",
+    bookingDurationLabel: "For how long?",
+    bookingSelect: "Pick this",
+    bookingBusy: "Booked",
     bookingContactNote: "Please fill in at least one — email or WeChat — so I can reach you ↓",
     bookingEmailLabel: "Email",
     bookingWechatLabel: "WeChat ID",
     bookingNameLabel: "What should I call you? *",
     bookingExtraLabel: "Gender / Age / Occupation (optional)",
     bookingTopicLabel: "What would you like to chat about? *",
-    bookingSubmit: "Send Request",
+    bookingSubmit: "Send Invite",
     bookingSubmitting: "Sending…",
     bookingError: "Failed to send. Please try again or email me directly.",
     bookingValidationError: "Please fill in at least your email or WeChat ✦",
@@ -1343,7 +1372,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 let _bookingLang = "zh";
 let _calYear, _calMonth;
 let _selectedDate = null, _selectedTime = null;
-// 缓存 freeBusy 查询结果 { "YYYY-MM": [busyInterval,...] }
+let _visitorTz = "Asia/Shanghai";
+let _selectedDuration = 60;
 const _busyCache = {};
 
 function renderBookingCopy(lang) {
@@ -1352,6 +1382,8 @@ function renderBookingCopy(lang) {
   const el = id => document.getElementById(id);
   el("booking-section-title").textContent = c.bookingSectionTitle;
   el("booking-intro").textContent = c.bookingIntro;
+  el("booking-tz-label").textContent = c.bookingTzLabel;
+  el("bdm-duration-label").textContent = c.bookingDurationLabel;
   el("booking-contact-note").textContent = c.bookingContactNote;
   el("b-email-label").textContent = c.bookingEmailLabel;
   el("b-wechat-label").textContent = c.bookingWechatLabel;
@@ -1364,11 +1396,24 @@ function renderBookingCopy(lang) {
   el("b-name").placeholder = lang === "zh" ? "必填" : "required";
   el("b-topic").placeholder = lang === "zh" ? "大概描述一下想聊的内容～" : "Describe what you'd like to chat about~";
   el("b-extra").placeholder = lang === "zh" ? "例：女 / 22 / 产品实习生" : "e.g. Female / 22 / Product intern";
-  // 若已选时段，更新摘要文案
-  if (_selectedDate && _selectedTime) updateSelectedSummary();
+  populateTzSelect();
+  if (_selectedDate && _selectedTime !== null) updateSelectedSummary();
 }
 
 function initBooking() {
+  try {
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (COMMON_TIMEZONES.some(t => t.value === detected)) _visitorTz = detected;
+  } catch(e) {}
+
+  populateTzSelect();
+  const sel = document.getElementById("booking-tz-select");
+  sel.value = _visitorTz;
+  sel.addEventListener("change", () => {
+    _visitorTz = sel.value;
+    renderCalendar(_calYear, _calMonth);
+  });
+
   const now = new Date();
   _calYear = now.getFullYear();
   _calMonth = now.getMonth();
@@ -1385,11 +1430,33 @@ function initBooking() {
     renderCalendar(_calYear, _calMonth);
   });
 
+  document.getElementById("bdm-close").addEventListener("click", closeDayModal);
+  document.getElementById("bdm-overlay").addEventListener("click", closeDayModal);
+
+  document.querySelectorAll(".bdm-dur-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      _selectedDuration = parseInt(btn.dataset.min);
+      renderDurationBtns();
+      if (document.getElementById("booking-day-modal").style.display !== "none" && _selectedDate) {
+        const cacheKey = `${_selectedDate.slice(0,4)}-${_selectedDate.slice(5,7)}`;
+        renderDayTimeline(_selectedDate, _busyCache[cacheKey] || []);
+      }
+    });
+  });
+
   document.getElementById("booking-form").addEventListener("submit", onBookingSubmit);
 }
 
+function populateTzSelect() {
+  const sel = document.getElementById("booking-tz-select");
+  const cur = sel.value || _visitorTz;
+  sel.innerHTML = COMMON_TIMEZONES.map(tz =>
+    `<option value="${tz.value}">${_bookingLang === "zh" ? tz.zh : tz.en}</option>`
+  ).join("");
+  sel.value = cur;
+}
+
 function renderCalendar(year, month) {
-  const c = COPY[_bookingLang];
   const monthNames = _bookingLang === "zh"
     ? ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
     : ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -1405,7 +1472,7 @@ function renderCalendar(year, month) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrev = new Date(year, month, 0).getDate();
   const today = new Date(); today.setHours(0,0,0,0);
-  const maxDate = new Date(today); maxDate.setDate(today.getDate() + BOOKING_CONFIG.daysAhead);
+  const maxDate = new Date(today); maxDate.setDate(today.getDate() + DAYS_AHEAD);
 
   let cells = "";
   for (let i = 0; i < firstDay; i++) {
@@ -1414,17 +1481,11 @@ function renderCalendar(year, month) {
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d);
     const dateStr = toDateStr(date);
-    const dow = date.getDay();
-    const hours = BOOKING_CONFIG.weeklyHours[dow] || [];
     const isPast = date < today;
     const isTooFar = date > maxDate;
-    const hasHours = hours.length > 0;
-    let cls = "booking-day";
-    if (!hasHours || isPast || isTooFar) {
-      cls += isPast ? " past" : "";
-      cells += `<div class="${cls}">${d}</div>`;
+    if (isPast || isTooFar) {
+      cells += `<div class="booking-day${isPast ? " past" : ""}">${d}</div>`;
     } else {
-      // 标记 loading，等 freeBusy 结果填充
       const isSelected = dateStr === _selectedDate;
       cells += `<div class="booking-day loading${isSelected ? " selected" : ""}" data-date="${dateStr}" id="bday-${dateStr}">${d}</div>`;
     }
@@ -1436,19 +1497,15 @@ function renderCalendar(year, month) {
   }
   grid.innerHTML = headerHtml + cells;
 
-  // 拿到这个月所有候选时段，查询 freeBusy
   fetchFreeBusy(year, month).then(busyIntervals => {
-    const allDayEls = grid.querySelectorAll(".booking-day.loading");
-    allDayEls.forEach(el => {
+    grid.querySelectorAll(".booking-day.loading").forEach(el => {
       const dateStr = el.dataset.date;
-      const date = new Date(dateStr + "T00:00:00");
-      const dow = date.getDay();
-      const hours = BOOKING_CONFIG.weeklyHours[dow] || [];
-      const hasAvail = hours.some(h => !isSlotBusy(dateStr, h, busyIntervals));
+      const hasAvail = Array.from({length: HANA_AVAIL.endH - HANA_AVAIL.startH + 1}, (_, i) => i + HANA_AVAIL.startH)
+        .some(h => !isSlotBusyForDuration(dateStr, h, _selectedDuration, busyIntervals));
       el.classList.remove("loading");
       if (hasAvail) {
         el.classList.add("available");
-        el.addEventListener("click", () => onDayClick(dateStr));
+        el.addEventListener("click", () => openDayModal(dateStr));
       }
     });
   });
@@ -1462,7 +1519,6 @@ async function fetchFreeBusy(year, month) {
   const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
 
   if (GOOGLE_CALENDAR_ID === "YOUR_CALENDAR_ID" || GOOGLE_API_KEY === "YOUR_GOOGLE_API_KEY") {
-    // 未配置时，所有候选时段视为 available
     _busyCache[cacheKey] = [];
     return [];
   }
@@ -1485,9 +1541,11 @@ async function fetchFreeBusy(year, month) {
   }
 }
 
-function isSlotBusy(dateStr, hour, busyIntervals) {
+function isSlotBusyForDuration(dateStr, hour, durationMin, busyIntervals) {
   const slotStart = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:00:00+08:00`).getTime();
-  const slotEnd = slotStart + 60 * 60 * 1000;
+  const slotEnd = slotStart + durationMin * 60 * 1000;
+  const dayEnd = new Date(`${dateStr}T22:00:00+08:00`).getTime();
+  if (slotEnd > dayEnd) return true;
   return busyIntervals.some(b => {
     const bs = new Date(b.start).getTime();
     const be = new Date(b.end).getTime();
@@ -1495,63 +1553,103 @@ function isSlotBusy(dateStr, hour, busyIntervals) {
   });
 }
 
-function onDayClick(dateStr) {
+function hktToVisitorTimeStr(dateStr, hktHour) {
+  const d = new Date(`${dateStr}T${String(hktHour).padStart(2,"0")}:00:00+08:00`);
+  return d.toLocaleTimeString("en-US", {
+    timeZone: _visitorTz,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+function openDayModal(dateStr) {
   _selectedDate = dateStr;
   _selectedTime = null;
 
-  // 高亮选中日
   document.querySelectorAll(".booking-day.selected").forEach(el => el.classList.remove("selected"));
   const dayEl = document.getElementById(`bday-${dateStr}`);
   if (dayEl) dayEl.classList.add("selected");
 
-  // 显示时间段
-  const date = new Date(dateStr + "T00:00:00");
-  const dow = date.getDay();
-  const hours = BOOKING_CONFIG.weeklyHours[dow] || [];
-  const cacheKey = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`;
-  const busyIntervals = _busyCache[cacheKey] || [];
-
-  const availHours = hours.filter(h => !isSlotBusy(dateStr, h, busyIntervals));
-  if (!availHours.length) return;
-
-  const c = COPY[_bookingLang];
   const [y, m, d] = dateStr.split("-");
   const dateLabel = _bookingLang === "zh"
     ? `${y}年${parseInt(m)}月${parseInt(d)}日`
     : new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
+  document.getElementById("bdm-date-label").textContent = dateLabel;
 
-  document.getElementById("booking-slots-label").textContent = `${c.bookingSlotsLabel} · ${dateLabel}`;
-  document.getElementById("booking-slots-grid").innerHTML = availHours.map(h =>
-    `<button class="booking-slot" data-hour="${h}">${String(h).padStart(2,"0")}:00</button>`
-  ).join("");
-  document.getElementById("booking-slots-grid").querySelectorAll(".booking-slot").forEach(btn => {
-    btn.addEventListener("click", () => onSlotClick(btn.dataset.hour));
-  });
+  renderDurationBtns();
+  const cacheKey = `${dateStr.slice(0,4)}-${dateStr.slice(5,7)}`;
+  renderDayTimeline(dateStr, _busyCache[cacheKey] || []);
 
-  const wrap = document.getElementById("booking-slots-wrap");
-  wrap.style.display = "";
+  document.getElementById("booking-day-modal").style.display = "flex";
   document.getElementById("booking-form-wrap").style.display = "none";
-  document.getElementById("booking-success").style.display = "none";
 }
 
-function onSlotClick(hour) {
-  _selectedTime = hour;
-  document.querySelectorAll(".booking-slot.selected").forEach(el => el.classList.remove("selected"));
-  document.querySelector(`.booking-slot[data-hour="${hour}"]`)?.classList.add("selected");
-  updateSelectedSummary();
-  document.getElementById("booking-form-wrap").style.display = "";
-  document.getElementById("booking-error").style.display = "none";
+function renderDurationBtns() {
+  document.querySelectorAll(".bdm-dur-btn").forEach(btn => {
+    btn.classList.toggle("selected", parseInt(btn.dataset.min) === _selectedDuration);
+  });
+}
+
+function renderDayTimeline(dateStr, busyIntervals) {
+  const c = COPY[_bookingLang];
+  const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
+  const timeline = document.getElementById("bdm-timeline");
+
+  let rows = "";
+  for (let h = HANA_AVAIL.startH; h <= HANA_AVAIL.endH; h++) {
+    const hktStr = `${String(h).padStart(2,"0")}:00`;
+    const visStr = hktToVisitorTimeStr(dateStr, h);
+    const busy = isSlotBusyForDuration(dateStr, h, _selectedDuration, busyIntervals);
+    const timeDisplay = isSameZone
+      ? `<span>${hktStr}</span>`
+      : `<span>${visStr}</span><span class="bdm-utc8">${hktStr} UTC+8</span>`;
+
+    if (busy) {
+      rows += `<div class="bdm-slot-row">
+        <div class="bdm-slot-time">${timeDisplay}</div>
+        <span class="bdm-slot-unavailable">${c.bookingBusy}</span>
+      </div>`;
+    } else {
+      const isSelected = _selectedTime === h;
+      rows += `<div class="bdm-slot-row">
+        <div class="bdm-slot-time">${timeDisplay}</div>
+        <button class="bdm-slot-btn${isSelected ? " selected" : ""}" data-hour="${h}">${c.bookingSelect}</button>
+      </div>`;
+    }
+  }
+  timeline.innerHTML = rows;
+
+  timeline.querySelectorAll(".bdm-slot-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      _selectedTime = parseInt(btn.dataset.hour);
+      closeDayModal();
+      updateSelectedSummary();
+      document.getElementById("booking-form-wrap").style.display = "";
+      document.getElementById("booking-error").style.display = "none";
+    });
+  });
+}
+
+function closeDayModal() {
+  document.getElementById("booking-day-modal").style.display = "none";
 }
 
 function updateSelectedSummary() {
-  if (!_selectedDate || !_selectedTime) return;
+  if (!_selectedDate || _selectedTime === null) return;
   const [y, m, d] = _selectedDate.split("-");
   const dateLabel = _bookingLang === "zh"
     ? `${y}年${parseInt(m)}月${parseInt(d)}日`
     : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const timeLabel = `${String(_selectedTime).padStart(2,"0")}:00 (${BOOKING_CONFIG.timezoneLabel})`;
+  const hktStr = `${String(_selectedTime).padStart(2,"0")}:00 UTC+8`;
+  const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
+  const visStr = hktToVisitorTimeStr(_selectedDate, _selectedTime);
+  const timeLabel = isSameZone ? hktStr : `${visStr}（${hktStr}）`;
+  const durationLabel = `${_selectedDuration} min`;
   document.getElementById("booking-selected-summary").textContent =
-    _bookingLang === "zh" ? `已选：${dateLabel} ${timeLabel}` : `Selected: ${dateLabel} ${timeLabel}`;
+    _bookingLang === "zh"
+      ? `已选：${dateLabel} ${timeLabel}，时长 ${durationLabel}`
+      : `Selected: ${dateLabel} ${timeLabel}, ${durationLabel}`;
 }
 
 async function onBookingSubmit(e) {
@@ -1580,19 +1678,21 @@ async function onBookingSubmit(e) {
   const dateLabel = _bookingLang === "zh"
     ? `${y}年${parseInt(m)}月${parseInt(d)}日`
     : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const timeLabel = `${String(_selectedTime).padStart(2,"0")}:00 (UTC+8)`;
+  const hktStr = `${String(_selectedTime).padStart(2,"0")}:00 UTC+8`;
+  const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
+  const visStr = hktToVisitorTimeStr(_selectedDate, _selectedTime);
+  const timeLabel = isSameZone ? hktStr : `${visStr} (visitor TZ) / ${hktStr}`;
 
   try {
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       visitor_name: name,
       contact: email ? `邮箱: ${email}` : `微信: ${wechat}`,
       booking_date: dateLabel,
-      booking_time: timeLabel,
+      booking_time: `${timeLabel}，${_selectedDuration} 分钟`,
       topic: topic,
       extra: extra || "（未填写）",
     });
     document.getElementById("booking-form-wrap").style.display = "none";
-    document.getElementById("booking-slots-wrap").style.display = "none";
     const successEl = document.getElementById("booking-success");
     document.getElementById("booking-success-main").textContent = c.bookingSuccessMain;
     document.getElementById("booking-success-sub").textContent = c.bookingSuccessSub;
@@ -1609,6 +1709,27 @@ function toDateStr(date) {
   return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 }
 </script>
+
+<!-- 日程弹窗 -->
+<div class="booking-day-modal" id="booking-day-modal" style="display:none">
+  <div class="booking-day-modal-overlay" id="bdm-overlay"></div>
+  <div class="booking-day-modal-box">
+    <div class="booking-day-modal-header">
+      <span id="bdm-date-label"></span>
+      <button class="booking-day-modal-close" id="bdm-close">✕</button>
+    </div>
+    <div class="booking-day-modal-duration">
+      <span id="bdm-duration-label"></span>
+      <div class="bdm-duration-btns">
+        <button class="bdm-dur-btn" data-min="30">30 min</button>
+        <button class="bdm-dur-btn" data-min="45">45 min</button>
+        <button class="bdm-dur-btn selected" data-min="60">60 min</button>
+      </div>
+    </div>
+    <div class="booking-day-modal-timeline" id="bdm-timeline"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   if (typeof emailjs !== "undefined" && EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
