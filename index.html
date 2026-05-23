@@ -186,9 +186,9 @@
     .project-card.highlight { animation: card-pulse 0.7s ease 2; }
     .timeline-period { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); flex-shrink: 0; }
     .timeline-sub { font-size: 13px; color: var(--accent-dark); margin-top: 3px; font-family: var(--font-sans); font-weight: 500; }
-    .timeline-desc { font-size: 14px; color: var(--text-mid); margin-top: 6px; }
+    .timeline-desc { font-size: 28px; color: var(--text-mid); margin-top: 6px; }
     .timeline-bullets { list-style: none; margin-top: 6px; display: flex; flex-direction: column; gap: 5px; }
-    .timeline-bullets li { font-size: 14px; color: var(--text-mid); padding-left: 14px; position: relative; }
+    .timeline-bullets li { font-size: 28px; color: var(--text-mid); padding-left: 14px; position: relative; }
     .timeline-bullets li::before { content: "·"; position: absolute; left: 0; color: var(--accent-dark); font-weight: 700; }
     .skills-grid { display: flex; flex-direction: column; gap: 20px; }
     .skill-group-label { font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
@@ -523,19 +523,27 @@ const COPY = {
         school: "中山大学管理学院（创业学院）",
         degree: "工商管理本科·辅修信息管理",
         period: "2024.09 — 2028.07",
-        desc: "绩点年级排名前15%<br>相关课程：管理学原理（排名前5%）、营销学原理、概率统计、数据可视化（Tableau）",
+        bullets: [
+          "绩点年级排名前15%",
+          "相关课程：管理学原理（排名前5%）、营销学原理、概率统计、数据可视化（Tableau）",
+        ],
       },
       {
         school: "鲁基·博科尼商业大学（Bocconi University）",
         degree: "本科交换 · QS商业与管理全球第10",
         period: "2026.02 — 2026.06",
-        desc: "相关课程：市场研究中的大语言模型（Claude Code）、社会网络分析（UCINET）、管理咨询导论",
+        bullets: [
+          "相关课程：市场研究中的大语言模型（Claude Code）、社会网络分析（UCINET）、管理咨询导论",
+        ],
       },
       {
         school: "广州市执信中学",
         degree: "初中 & 高中",
         period: "2018 — 2024",
-        desc: "",
+        bullets: [
+          "多次作为学生代表，在百日誓师、毕业典礼和高三开学仪式进行演讲",
+          "担任文学社文编长，并与同学创办杂志《INFINITY》，兼顾撰稿、排版、印刷对接的任务，发行过5期实体杂志",
+        ],
       },
     ],
 
@@ -641,19 +649,27 @@ const COPY = {
         school: "Sun Yat-sen University, School of Management",
         degree: "B.B.A. in Business Administration · Minor in Information Management",
         period: "Sep 2024 — Jul 2028",
-        desc: "GPA Ranking: Top 15% in cohort<br>Courses: Principles of Management (top 5%), Marketing, Probability & Statistics, Data Visualization (Tableau)",
+        bullets: [
+          "GPA Ranking: Top 15% in cohort",
+          "Courses: Principles of Management (top 5%), Marketing, Probability & Statistics, Data Visualization (Tableau)",
+        ],
       },
       {
         school: "Università Bocconi, Milan",
         degree: "Exchange Student · QS Business & Management #10",
         period: "Feb 2026 — Jun 2026",
-        desc: "Courses: LLMs in Market Research (Claude Code), Social Network Analysis (UCINET), Intro to Management Consulting",
+        bullets: [
+          "Courses: LLMs in Market Research (Claude Code), Social Network Analysis (UCINET), Intro to Management Consulting",
+        ],
       },
       {
         school: "Zhixin School, Guangzhou",
         degree: "Middle School & High School",
         period: "2018 — 2024",
-        desc: "",
+        bullets: [
+          "Represented students as speaker at multiple school ceremonies — 100-Day Pledge, graduation, and senior year opening",
+          "Served as Editor-in-Chief of the Literary Society; co-founded the magazine INFINITY with classmates, overseeing writing, layout design, and print coordination — publishing 5 physical issues",
+        ],
       },
     ],
 
@@ -929,7 +945,7 @@ function renderResume(lang) {
         <span class="timeline-period">${e.period}</span>
       </div>
       <div class="timeline-sub">${e.degree}</div>
-      ${e.desc ? `<div class="timeline-desc">${e.desc}</div>` : ""}
+      ${e.bullets && e.bullets.length ? `<ul class="timeline-bullets">${e.bullets.map(b => `<li>${b}</li>`).join("")}</ul>` : e.desc ? `<div class="timeline-desc">${e.desc}</div>` : ""}
     </div>`).join("");
 
   // 项目名为大标题，身份角色为小字；有 portfolioId 或 photoGallery 的标题可点击
