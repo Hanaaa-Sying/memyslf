@@ -283,6 +283,43 @@
       .exp-grid { grid-template-columns: 1fr; }
     }
     .resume-full { display: flex; flex-direction: column; gap: 48px; }
+
+    /* ── Booking 预约模块 ── */
+    .booking-intro { font-family: var(--font-sans); font-size: 13px; color: var(--text-light); margin-top: -20px; margin-bottom: 32px; }
+    .booking-cal-wrap { max-width: 480px; }
+    .booking-cal-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; font-family: var(--font-sans); }
+    .booking-cal-nav button { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 16px; color: var(--text-mid); transition: border-color var(--transition); }
+    .booking-cal-nav button:hover { border-color: var(--accent-dark); }
+    .booking-cal-nav span { font-size: 15px; font-weight: 600; color: var(--text-dark); flex: 1; text-align: center; }
+    .booking-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .booking-cal-weekday { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); text-align: center; padding: 4px 0; }
+    .booking-day { font-family: var(--font-sans); font-size: 13px; text-align: center; padding: 8px 4px; border-radius: 6px; color: var(--text-light); cursor: default; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+    .booking-day.other-month { opacity: 0.3; }
+    .booking-day.past { opacity: 0.25; }
+    .booking-day.loading { background: var(--bg-card); animation: pulse 1.4s ease-in-out infinite; }
+    .booking-day.available { background: var(--bg-card); border: 1.5px solid var(--accent-dark); color: var(--accent-dark); cursor: pointer; font-weight: 600; transition: background var(--transition), transform var(--transition); }
+    .booking-day.available:hover { background: var(--accent-dark); color: #fff; transform: scale(1.08); }
+    .booking-day.selected { background: var(--accent-dark); color: #fff; font-weight: 600; }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
+    .booking-slots-wrap { margin-top: 28px; }
+    .booking-slots-label { font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--text-dark); margin-bottom: 12px; }
+    .booking-slots-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .booking-slot { font-family: var(--font-sans); font-size: 13px; padding: 8px 18px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: border-color var(--transition), color var(--transition), background var(--transition); }
+    .booking-slot:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
+    .booking-slot.selected { border-color: var(--accent-dark); background: var(--accent-dark); color: #fff; }
+    .booking-form-wrap { margin-top: 32px; max-width: 520px; }
+    .booking-selected-summary { font-family: var(--font-sans); font-size: 13px; color: var(--accent-dark); margin-bottom: 20px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
+    .booking-field { margin-bottom: 16px; }
+    .booking-field label { display: block; font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); margin-bottom: 6px; }
+    .booking-field input, .booking-field textarea { width: 100%; font-family: var(--font-sans); font-size: 14px; color: var(--text-dark); background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 14px; box-sizing: border-box; outline: none; transition: border-color var(--transition); resize: vertical; }
+    .booking-field input:focus, .booking-field textarea:focus { border-color: var(--accent-dark); }
+    .booking-contact-note { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); margin-bottom: 16px; }
+    .booking-submit { font-family: var(--font-sans); font-size: 14px; font-weight: 600; background: var(--accent-dark); color: #fff; border: none; border-radius: 8px; padding: 12px 32px; cursor: pointer; transition: opacity var(--transition); }
+    .booking-submit:hover { opacity: 0.85; }
+    .booking-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .booking-error { font-family: var(--font-sans); font-size: 13px; color: #c0392b; margin-top: 12px; display: none; }
+    .booking-success { font-family: var(--font-serif); font-size: 18px; color: var(--accent-dark); text-align: center; padding: 48px 24px; line-height: 1.8; }
+    .booking-success span { display: block; font-family: var(--font-sans); font-size: 13px; color: var(--text-light); margin-top: 12px; }
     @media (max-width: 768px) {
       .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; gap: 0; padding: 8px 0; }
       .nav-links.open { display: flex; }
@@ -372,6 +409,10 @@
             <div class="hero-card-title" id="card-thinking-title">最近在思考</div>
             <div class="hero-card-desc" id="card-thinking-desc">随笔 · 观察 · 灵感碎片</div>
           </a>
+          <a class="hero-card fade-up" href="#booking" style="transition-delay:.24s">
+            <div class="hero-card-title" id="card-booking-title">聊天时间到！</div>
+            <div class="hero-card-desc" id="card-booking-desc">选个时间，咱们聊聊</div>
+          </a>
         </div>
       </div>
     </div>
@@ -426,6 +467,66 @@
       <h2 class="section-title fade-up" id="thinking-title">最近在思考</h2>
       <div class="thinking-list" id="thinking-list">
         <p style="font-family:var(--font-sans);font-size:13px;color:var(--text-light)">加载中…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 聊天预约 -->
+  <section id="booking">
+    <div class="container">
+      <h2 class="section-title fade-up" id="booking-section-title">聊天时间到！</h2>
+      <p class="booking-intro fade-up" id="booking-intro"></p>
+
+      <!-- 日历 -->
+      <div class="booking-cal-wrap fade-up">
+        <div class="booking-cal-nav">
+          <button id="cal-prev">‹</button>
+          <span id="cal-month-label"></span>
+          <button id="cal-next">›</button>
+        </div>
+        <div class="booking-cal-grid" id="booking-cal-grid"></div>
+      </div>
+
+      <!-- 时间段（选日期后显示） -->
+      <div class="booking-slots-wrap" id="booking-slots-wrap" style="display:none">
+        <div class="booking-slots-label" id="booking-slots-label"></div>
+        <div class="booking-slots-grid" id="booking-slots-grid"></div>
+      </div>
+
+      <!-- 表单（选时间段后显示） -->
+      <div class="booking-form-wrap" id="booking-form-wrap" style="display:none">
+        <div class="booking-selected-summary" id="booking-selected-summary"></div>
+        <p class="booking-contact-note" id="booking-contact-note"></p>
+        <form id="booking-form" novalidate>
+          <div class="booking-field">
+            <label id="b-email-label"></label>
+            <input type="email" id="b-email" autocomplete="email">
+          </div>
+          <div class="booking-field">
+            <label id="b-wechat-label"></label>
+            <input type="text" id="b-wechat">
+          </div>
+          <div class="booking-field">
+            <label id="b-name-label"></label>
+            <input type="text" id="b-name" required>
+          </div>
+          <div class="booking-field">
+            <label id="b-extra-label"></label>
+            <input type="text" id="b-extra">
+          </div>
+          <div class="booking-field">
+            <label id="b-topic-label"></label>
+            <textarea id="b-topic" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="booking-submit" id="b-submit"></button>
+          <p class="booking-error" id="booking-error"></p>
+        </form>
+      </div>
+
+      <!-- 成功提示 -->
+      <div class="booking-success" id="booking-success" style="display:none">
+        <span id="booking-success-main"></span>
+        <span id="booking-success-sub"></span>
       </div>
     </div>
   </section>
@@ -497,6 +598,29 @@ const NOTION_CONFIG = {
   proxyUrl: "https://notion-api.splitbee.io/v1/table/",
 };
 
+// ── Booking 配置（用户填写） ──
+const GOOGLE_CALENDAR_ID  = "YOUR_CALENDAR_ID";   // Google Calendar 设置页的 Calendar ID
+const GOOGLE_API_KEY      = "YOUR_GOOGLE_API_KEY"; // Google Cloud Console 的 API Key
+const EMAILJS_PUBLIC_KEY  = "YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID  = "YOUR_EMAILJS_SERVICE_ID";
+const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID";
+
+// 可预约时段定义（用户可自定义）
+const BOOKING_CONFIG = {
+  timezoneLabel: "UTC+8（北京时间）",
+  daysAhead: 30,
+  // 每周各天可选小时（24小时制），空数组 = 该天不开放
+  weeklyHours: {
+    0: [],                       // 周日
+    1: [10, 11, 14, 15, 16],     // 周一
+    2: [10, 11, 14, 15, 16],     // 周二
+    3: [10, 11, 14, 15, 16],     // 周三
+    4: [10, 11, 14, 15, 16],     // 周四
+    5: [10, 11, 14, 15],         // 周五
+    6: [],                       // 周六
+  },
+};
+
 // ── 双语文案 ──
 const COPY = {
   zh: {
@@ -507,6 +631,23 @@ const COPY = {
     heroCardResume: "我的简历", heroCardResumeDesc: "教育经历 · 项目 · 技能",
     heroCardPortfolio: "项目作品集", heroCardPortfolioDesc: "数据分析 · 可视化 · 咨询 · 创业项目",
     heroCardThinking: "最近在思考", heroCardThinkingDesc: "随笔",
+    heroCardBooking: "聊天时间到！", heroCardBookingDesc: "选个时间，咱们聊聊",
+    bookingSectionTitle: "聊天时间到！",
+    bookingIntro: "选一个你方便的时间，提交邀约，我会尽快回复确认。时区：UTC+8（北京时间）",
+    bookingLoading: "正在读取我的日历……",
+    bookingSlotsLabel: "可选时间段",
+    bookingContactNote: "邮箱和微信至少填一个，方便我联系到你 ↓",
+    bookingEmailLabel: "邮箱（Email）",
+    bookingWechatLabel: "微信号（WeChat ID）",
+    bookingNameLabel: "如何称呼你？ *",
+    bookingExtraLabel: "性别 / 年龄 / 职业（选填）",
+    bookingTopicLabel: "想聊什么？ *",
+    bookingSubmit: "递交邀约",
+    bookingSubmitting: "发送中……",
+    bookingError: "发送失败，请稍后重试或直接发邮件联系我。",
+    bookingValidationError: "请至少填写邮箱或微信号 ✦",
+    bookingSuccessMain: "我已经收到了你的邀约，会尽快回复并与你确认！",
+    bookingSuccessSub: "请留意你填写的邮箱 / 微信，期待和你聊聊 ✦",
     galleryCaptions: ["尼泊尔 · 瑜伽认证", "米兰 · 博科尼", "欧洲旅途"],
     resumeTitle: "简历", resumeEduTitle: "教育经历", resumeExpTitle: "项目经历", resumeSkillTitle: "技能",
     portfolioTitle: "项目作品集",
@@ -633,6 +774,23 @@ const COPY = {
     heroCardResume: "Resume", heroCardResumeDesc: "Education · Experience · Skills",
     heroCardPortfolio: "Portfolio", heroCardPortfolioDesc: "Data Analysis · Visualization · Consulting · Startups",
     heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Thoughts",
+    heroCardBooking: "Let's Chat!", heroCardBookingDesc: "Pick a time, let's talk",
+    bookingSectionTitle: "Let's Chat!",
+    bookingIntro: "Pick a time that works for you, submit your request, and I'll get back to you to confirm. Timezone: UTC+8 (Beijing Time)",
+    bookingLoading: "Loading my calendar…",
+    bookingSlotsLabel: "Available Time Slots",
+    bookingContactNote: "Please fill in at least one — email or WeChat — so I can reach you ↓",
+    bookingEmailLabel: "Email",
+    bookingWechatLabel: "WeChat ID",
+    bookingNameLabel: "What should I call you? *",
+    bookingExtraLabel: "Gender / Age / Occupation (optional)",
+    bookingTopicLabel: "What would you like to chat about? *",
+    bookingSubmit: "Send Request",
+    bookingSubmitting: "Sending…",
+    bookingError: "Failed to send. Please try again or email me directly.",
+    bookingValidationError: "Please fill in at least your email or WeChat ✦",
+    bookingSuccessMain: "Your request has been received! I'll reply to confirm as soon as I can.",
+    bookingSuccessSub: "Keep an eye on your email / WeChat. Looking forward to chatting! ✦",
     galleryCaptions: ["Nepal · Yoga Cert", "Milan · Bocconi", "Traveling Europe"],
     resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Experience", resumeSkillTitle: "Skills",
     portfolioTitle: "Portfolio",
@@ -929,6 +1087,8 @@ function renderHero(lang) {
   document.getElementById("card-portfolio-desc").textContent = c.heroCardPortfolioDesc;
   document.getElementById("card-thinking-title").textContent = c.heroCardThinking;
   document.getElementById("card-thinking-desc").textContent = c.heroCardThinkingDesc;
+  document.getElementById("card-booking-title").textContent = c.heroCardBooking;
+  document.getElementById("card-booking-desc").textContent = c.heroCardBookingDesc;
 }
 
 function renderResume(lang) {
@@ -1147,14 +1307,14 @@ function switchLang(lang) {
   currentLang = lang;
   document.getElementById("lang-toggle").textContent = lang === "zh" ? "EN" : "ZH";
   renderNav(lang); renderHero(lang); renderResume(lang); renderPortfolio(lang);
-  renderFooter(lang); renderThinkingCards(MY_POSTS, lang);
+  renderFooter(lang); renderThinkingCards(MY_POSTS, lang); renderBookingCopy(lang);
   observeFadeUp();
 }
 
 // ── 初始化 ──
 document.addEventListener("DOMContentLoaded", async () => {
   renderNav(currentLang); renderHero(currentLang); renderResume(currentLang);
-  renderPortfolio(currentLang); renderFooter(currentLang);
+  renderPortfolio(currentLang); renderFooter(currentLang); renderBookingCopy(currentLang);
   await loadNotionPosts();
   observeFadeUp();
 
@@ -1172,7 +1332,287 @@ document.addEventListener("DOMContentLoaded", async () => {
   navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
 
   requestAnimationFrame(() => document.body.classList.add("loaded"));
+
+  // ── Booking 模块初始化 ──
+  initBooking();
 });
+
+// ══════════════════════════════════════════════
+//  BOOKING MODULE
+// ══════════════════════════════════════════════
+let _bookingLang = "zh";
+let _calYear, _calMonth;
+let _selectedDate = null, _selectedTime = null;
+// 缓存 freeBusy 查询结果 { "YYYY-MM": [busyInterval,...] }
+const _busyCache = {};
+
+function renderBookingCopy(lang) {
+  _bookingLang = lang;
+  const c = COPY[lang];
+  const el = id => document.getElementById(id);
+  el("booking-section-title").textContent = c.bookingSectionTitle;
+  el("booking-intro").textContent = c.bookingIntro;
+  el("booking-contact-note").textContent = c.bookingContactNote;
+  el("b-email-label").textContent = c.bookingEmailLabel;
+  el("b-wechat-label").textContent = c.bookingWechatLabel;
+  el("b-name-label").textContent = c.bookingNameLabel;
+  el("b-extra-label").textContent = c.bookingExtraLabel;
+  el("b-topic-label").textContent = c.bookingTopicLabel;
+  el("b-submit").textContent = c.bookingSubmit;
+  el("b-email").placeholder = lang === "zh" ? "选填" : "optional";
+  el("b-wechat").placeholder = lang === "zh" ? "选填" : "optional";
+  el("b-name").placeholder = lang === "zh" ? "必填" : "required";
+  el("b-topic").placeholder = lang === "zh" ? "大概描述一下想聊的内容～" : "Describe what you'd like to chat about~";
+  el("b-extra").placeholder = lang === "zh" ? "例：女 / 22 / 产品实习生" : "e.g. Female / 22 / Product intern";
+  // 若已选时段，更新摘要文案
+  if (_selectedDate && _selectedTime) updateSelectedSummary();
+}
+
+function initBooking() {
+  const now = new Date();
+  _calYear = now.getFullYear();
+  _calMonth = now.getMonth();
+  renderCalendar(_calYear, _calMonth);
+
+  document.getElementById("cal-prev").addEventListener("click", () => {
+    _calMonth--;
+    if (_calMonth < 0) { _calMonth = 11; _calYear--; }
+    renderCalendar(_calYear, _calMonth);
+  });
+  document.getElementById("cal-next").addEventListener("click", () => {
+    _calMonth++;
+    if (_calMonth > 11) { _calMonth = 0; _calYear++; }
+    renderCalendar(_calYear, _calMonth);
+  });
+
+  document.getElementById("booking-form").addEventListener("submit", onBookingSubmit);
+}
+
+function renderCalendar(year, month) {
+  const c = COPY[_bookingLang];
+  const monthNames = _bookingLang === "zh"
+    ? ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+    : ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("cal-month-label").textContent = `${year}  ${monthNames[month]}`;
+
+  const grid = document.getElementById("booking-cal-grid");
+  const weekdays = _bookingLang === "zh"
+    ? ["日","一","二","三","四","五","六"]
+    : ["Su","Mo","Tu","We","Th","Fr","Sa"];
+  const headerHtml = weekdays.map(d => `<div class="booking-cal-weekday">${d}</div>`).join("");
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const maxDate = new Date(today); maxDate.setDate(today.getDate() + BOOKING_CONFIG.daysAhead);
+
+  let cells = "";
+  for (let i = 0; i < firstDay; i++) {
+    cells += `<div class="booking-day other-month">${daysInPrev - firstDay + 1 + i}</div>`;
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const dateStr = toDateStr(date);
+    const dow = date.getDay();
+    const hours = BOOKING_CONFIG.weeklyHours[dow] || [];
+    const isPast = date < today;
+    const isTooFar = date > maxDate;
+    const hasHours = hours.length > 0;
+    let cls = "booking-day";
+    if (!hasHours || isPast || isTooFar) {
+      cls += isPast ? " past" : "";
+      cells += `<div class="${cls}">${d}</div>`;
+    } else {
+      // 标记 loading，等 freeBusy 结果填充
+      const isSelected = dateStr === _selectedDate;
+      cells += `<div class="booking-day loading${isSelected ? " selected" : ""}" data-date="${dateStr}" id="bday-${dateStr}">${d}</div>`;
+    }
+  }
+  const totalCells = firstDay + daysInMonth;
+  const remainder = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remainder; i++) {
+    cells += `<div class="booking-day other-month">${i}</div>`;
+  }
+  grid.innerHTML = headerHtml + cells;
+
+  // 拿到这个月所有候选时段，查询 freeBusy
+  fetchFreeBusy(year, month).then(busyIntervals => {
+    const allDayEls = grid.querySelectorAll(".booking-day.loading");
+    allDayEls.forEach(el => {
+      const dateStr = el.dataset.date;
+      const date = new Date(dateStr + "T00:00:00");
+      const dow = date.getDay();
+      const hours = BOOKING_CONFIG.weeklyHours[dow] || [];
+      const hasAvail = hours.some(h => !isSlotBusy(dateStr, h, busyIntervals));
+      el.classList.remove("loading");
+      if (hasAvail) {
+        el.classList.add("available");
+        el.addEventListener("click", () => onDayClick(dateStr));
+      }
+    });
+  });
+}
+
+async function fetchFreeBusy(year, month) {
+  const cacheKey = `${year}-${String(month+1).padStart(2,"0")}`;
+  if (_busyCache[cacheKey]) return _busyCache[cacheKey];
+
+  const timeMin = new Date(year, month, 1).toISOString();
+  const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+
+  if (GOOGLE_CALENDAR_ID === "YOUR_CALENDAR_ID" || GOOGLE_API_KEY === "YOUR_GOOGLE_API_KEY") {
+    // 未配置时，所有候选时段视为 available
+    _busyCache[cacheKey] = [];
+    return [];
+  }
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/calendar/v3/freeBusy?key=${GOOGLE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timeMin, timeMax, items: [{ id: GOOGLE_CALENDAR_ID }] }),
+      }
+    );
+    const data = await res.json();
+    const busy = data.calendars?.[GOOGLE_CALENDAR_ID]?.busy || [];
+    _busyCache[cacheKey] = busy;
+    return busy;
+  } catch {
+    _busyCache[cacheKey] = [];
+    return [];
+  }
+}
+
+function isSlotBusy(dateStr, hour, busyIntervals) {
+  const slotStart = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:00:00+08:00`).getTime();
+  const slotEnd = slotStart + 60 * 60 * 1000;
+  return busyIntervals.some(b => {
+    const bs = new Date(b.start).getTime();
+    const be = new Date(b.end).getTime();
+    return slotStart < be && slotEnd > bs;
+  });
+}
+
+function onDayClick(dateStr) {
+  _selectedDate = dateStr;
+  _selectedTime = null;
+
+  // 高亮选中日
+  document.querySelectorAll(".booking-day.selected").forEach(el => el.classList.remove("selected"));
+  const dayEl = document.getElementById(`bday-${dateStr}`);
+  if (dayEl) dayEl.classList.add("selected");
+
+  // 显示时间段
+  const date = new Date(dateStr + "T00:00:00");
+  const dow = date.getDay();
+  const hours = BOOKING_CONFIG.weeklyHours[dow] || [];
+  const cacheKey = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`;
+  const busyIntervals = _busyCache[cacheKey] || [];
+
+  const availHours = hours.filter(h => !isSlotBusy(dateStr, h, busyIntervals));
+  if (!availHours.length) return;
+
+  const c = COPY[_bookingLang];
+  const [y, m, d] = dateStr.split("-");
+  const dateLabel = _bookingLang === "zh"
+    ? `${y}年${parseInt(m)}月${parseInt(d)}日`
+    : new Date(dateStr + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
+
+  document.getElementById("booking-slots-label").textContent = `${c.bookingSlotsLabel} · ${dateLabel}`;
+  document.getElementById("booking-slots-grid").innerHTML = availHours.map(h =>
+    `<button class="booking-slot" data-hour="${h}">${String(h).padStart(2,"0")}:00</button>`
+  ).join("");
+  document.getElementById("booking-slots-grid").querySelectorAll(".booking-slot").forEach(btn => {
+    btn.addEventListener("click", () => onSlotClick(btn.dataset.hour));
+  });
+
+  const wrap = document.getElementById("booking-slots-wrap");
+  wrap.style.display = "";
+  document.getElementById("booking-form-wrap").style.display = "none";
+  document.getElementById("booking-success").style.display = "none";
+}
+
+function onSlotClick(hour) {
+  _selectedTime = hour;
+  document.querySelectorAll(".booking-slot.selected").forEach(el => el.classList.remove("selected"));
+  document.querySelector(`.booking-slot[data-hour="${hour}"]`)?.classList.add("selected");
+  updateSelectedSummary();
+  document.getElementById("booking-form-wrap").style.display = "";
+  document.getElementById("booking-error").style.display = "none";
+}
+
+function updateSelectedSummary() {
+  if (!_selectedDate || !_selectedTime) return;
+  const [y, m, d] = _selectedDate.split("-");
+  const dateLabel = _bookingLang === "zh"
+    ? `${y}年${parseInt(m)}月${parseInt(d)}日`
+    : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
+  const timeLabel = `${String(_selectedTime).padStart(2,"0")}:00 (${BOOKING_CONFIG.timezoneLabel})`;
+  document.getElementById("booking-selected-summary").textContent =
+    _bookingLang === "zh" ? `已选：${dateLabel} ${timeLabel}` : `Selected: ${dateLabel} ${timeLabel}`;
+}
+
+async function onBookingSubmit(e) {
+  e.preventDefault();
+  const c = COPY[_bookingLang];
+  const email = document.getElementById("b-email").value.trim();
+  const wechat = document.getElementById("b-wechat").value.trim();
+  const name = document.getElementById("b-name").value.trim();
+  const extra = document.getElementById("b-extra").value.trim();
+  const topic = document.getElementById("b-topic").value.trim();
+  const errEl = document.getElementById("booking-error");
+
+  if (!email && !wechat) {
+    errEl.textContent = c.bookingValidationError;
+    errEl.style.display = "";
+    return;
+  }
+  if (!name || !topic) return;
+
+  const btn = document.getElementById("b-submit");
+  btn.disabled = true;
+  btn.textContent = c.bookingSubmitting;
+  errEl.style.display = "none";
+
+  const [y, m, d] = _selectedDate.split("-");
+  const dateLabel = _bookingLang === "zh"
+    ? `${y}年${parseInt(m)}月${parseInt(d)}日`
+    : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
+  const timeLabel = `${String(_selectedTime).padStart(2,"0")}:00 (UTC+8)`;
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      visitor_name: name,
+      contact: email ? `邮箱: ${email}` : `微信: ${wechat}`,
+      booking_date: dateLabel,
+      booking_time: timeLabel,
+      topic: topic,
+      extra: extra || "（未填写）",
+    });
+    document.getElementById("booking-form-wrap").style.display = "none";
+    document.getElementById("booking-slots-wrap").style.display = "none";
+    const successEl = document.getElementById("booking-success");
+    document.getElementById("booking-success-main").textContent = c.bookingSuccessMain;
+    document.getElementById("booking-success-sub").textContent = c.bookingSuccessSub;
+    successEl.style.display = "";
+  } catch {
+    errEl.textContent = c.bookingError;
+    errEl.style.display = "";
+    btn.disabled = false;
+    btn.textContent = c.bookingSubmit;
+  }
+}
+
+function toDateStr(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  if (typeof emailjs !== "undefined" && EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY") {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  }
 </script>
 </body>
 </html>
