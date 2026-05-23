@@ -563,6 +563,7 @@
               <input type="text" id="b-wechat">
             </div>
           </div>
+          <p class="booking-error" id="booking-error"></p>
           <!-- 称呼 + 基本信息 并排 -->
           <div class="booking-form-row">
             <div class="booking-field">
@@ -582,7 +583,6 @@
           <div class="booking-submit-wrap">
             <button type="submit" class="booking-submit" id="b-submit"></button>
           </div>
-          <p class="booking-error" id="booking-error"></p>
         </form>
       </div>
 
@@ -1899,7 +1899,7 @@ async function onBookingSubmit(e) {
 
   if (!email && !wechat) {
     errEl.textContent = c.bookingValidationError;
-    errEl.style.display = "";
+    errEl.style.display = "block";
     return;
   }
   if (!name || !topic) return;
