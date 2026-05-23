@@ -282,6 +282,12 @@
       .resume-grid { grid-template-columns: 1fr; column-gap: 0; }
       .exp-grid { grid-template-columns: 1fr; }
     }
+    /* 手机端：弹窗退回竖向布局 */
+    @media (max-width: 600px) {
+      .booking-day-modal-box { flex-direction: column; height: auto; max-height: 92vh; width: 96%; }
+      .bdm-left { width: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
+      .bdm-pick-hint { display: none; }
+    }
     .resume-full { display: flex; flex-direction: column; gap: 48px; }
 
     /* ── Booking 预约模块 ── */
@@ -301,20 +307,24 @@
     .booking-day.available:hover { background: var(--accent-dark); color: #fff; transform: scale(1.08); }
     .booking-day.selected { background: var(--accent-dark); color: #fff; font-weight: 600; }
     @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
-    .booking-tz-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-    .booking-tz-label { font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); white-space: nowrap; }
-    .booking-tz-select { font-family: var(--font-sans); font-size: 13px; color: var(--text-dark); background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; max-width: 280px; }
-    .booking-tz-select:focus { outline: 1px solid var(--accent-dark); border-color: var(--accent-dark); }
     .booking-day-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; }
     .booking-day-modal-overlay { position: absolute; inset: 0; background: rgba(45,31,14,0.45); }
-    .booking-day-modal-box { position: relative; z-index: 201; background: var(--bg-card); border-radius: 16px; width: 92%; max-width: 400px; max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(45,31,14,0.18); overflow: hidden; }
-    .booking-day-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; border-bottom: 1px solid var(--border); }
-    .booking-day-modal-header span { font-family: var(--font-sans); font-size: 15px; font-weight: 600; color: var(--text-dark); }
-    .booking-day-modal-close { background: none; border: none; font-size: 17px; color: var(--text-light); cursor: pointer; padding: 4px; line-height: 1; transition: color var(--transition); }
+    /* ── 横向 4:3 弹窗 ── */
+    .booking-day-modal-box { position: relative; z-index: 201; background: var(--bg-card); border-radius: 16px; width: 94%; max-width: 860px; height: 580px; max-height: 90vh; display: flex; flex-direction: row; box-shadow: 0 20px 60px rgba(45,31,14,0.18); overflow: hidden; }
+    /* 左侧控制面板 */
+    .bdm-left { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--bg); padding: 22px 20px 20px; overflow-y: auto; }
+    .bdm-left-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; }
+    .bdm-date-display { font-family: var(--font-sans); font-size: 15px; font-weight: 700; color: var(--text-dark); line-height: 1.4; }
+    .booking-day-modal-close { background: none; border: none; font-size: 17px; color: var(--text-light); cursor: pointer; padding: 2px 4px; line-height: 1; transition: color var(--transition); flex-shrink: 0; }
     .booking-day-modal-close:hover { color: var(--text-dark); }
-    .booking-day-modal-duration { padding: 14px 22px; border-bottom: 1px solid var(--border); }
-    .booking-day-modal-duration > span { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); display: block; margin-bottom: 8px; letter-spacing: .03em; text-transform: uppercase; }
-    .bdm-duration-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .bdm-section { margin-bottom: 20px; }
+    .bdm-section-label { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+    .bdm-tz-select { width: 100%; font-family: var(--font-sans); font-size: 12px; color: var(--text-dark); background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 7px 8px; cursor: pointer; }
+    .bdm-tz-select:focus { outline: 1px solid var(--accent-dark); border-color: var(--accent-dark); }
+    .bdm-pick-hint { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); line-height: 1.6; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
+    /* 右侧时间轴 */
+    .bdm-right { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .bdm-duration-btns { display: flex; gap: 6px; flex-wrap: wrap; }
     .bdm-dur-btn { font-family: var(--font-sans); font-size: 13px; padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: all var(--transition); }
     .bdm-dur-btn:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
     .bdm-dur-btn.selected { border-color: var(--accent-dark); background: var(--accent-dark); color: #fff; }
@@ -324,25 +334,29 @@
     .bdm-custom-hint { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); }
     .booking-day-modal-timeline { overflow-y: auto; flex: 1; user-select: none; }
     .bdm-grid { position: relative; }
-    .bdm-cell { height: 24px; display: flex; align-items: stretch; border-bottom: 1px solid rgba(232,213,190,0.35); position: relative; }
+    .bdm-cell { height: 28px; display: flex; align-items: stretch; border-bottom: 1px solid rgba(232,213,190,0.35); position: relative; box-sizing: border-box; }
     .bdm-cell.hour-start { border-bottom-color: var(--border); }
-    .bdm-cell-label { width: 52px; flex-shrink: 0; padding-top: 3px; padding-left: 10px; font-family: var(--font-sans); font-size: 10px; color: var(--text-light); pointer-events: none; line-height: 1.3; }
-    .bdm-cell-label .bdm-utc8 { font-size: 9px; display: block; }
-    .bdm-cell-bar { flex: 1; height: 100%; transition: background 0.08s; }
+    /* suppress internal border inside consecutive busy blocks */
+    .bdm-cell.busy:not(.busy-last):not(.busy-solo) { border-bottom: none; }
+    .bdm-cell-label { width: 56px; flex-shrink: 0; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; font-family: var(--font-sans); font-size: 10px; color: var(--text-light); pointer-events: none; line-height: 1.2; }
+    .bdm-cell-label .bdm-utc8 { font-size: 9px; }
+    .bdm-cell-bar { flex: 1; transition: background 0.08s; border-radius: 0; }
     .bdm-cell.available { cursor: pointer; }
     .bdm-cell.available:hover .bdm-cell-bar { background: rgba(196,137,90,0.13); }
     .bdm-cell.preview .bdm-cell-bar { background: rgba(196,137,90,0.22); }
     .bdm-cell.preview-first .bdm-cell-bar { border-radius: 4px 4px 0 0; }
     .bdm-cell.preview-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
+    .bdm-cell.preview.preview-first.preview-last .bdm-cell-bar { border-radius: 4px; }
     .bdm-cell.selected .bdm-cell-bar { background: var(--accent-dark); }
     .bdm-cell.selected-first .bdm-cell-bar { border-radius: 4px 4px 0 0; }
     .bdm-cell.selected-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
-    .bdm-cell.selected-first::after { content: attr(data-time); position: absolute; left: 56px; top: 50%; transform: translateY(-50%); font-family: var(--font-sans); font-size: 11px; color: #fff; font-weight: 600; pointer-events: none; z-index: 1; }
+    .bdm-cell.selected.selected-first.selected-last .bdm-cell-bar { border-radius: 4px; }
+    .bdm-cell.selected-first::after { content: attr(data-time); position: absolute; left: 62px; top: 5px; font-family: var(--font-sans); font-size: 11px; color: #fff; font-weight: 600; pointer-events: none; z-index: 1; line-height: 1; }
     .bdm-cell.busy { cursor: default; }
-    .bdm-cell.busy .bdm-cell-bar { background: rgba(107,76,42,0.1); }
-    .bdm-cell.busy-first .bdm-cell-bar { border-radius: 4px 4px 0 0; background: rgba(107,76,42,0.14); }
-    .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 4px 4px; border-bottom: 1px solid rgba(107,76,42,0.12); }
-    .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 4px; background: rgba(107,76,42,0.14); }
+    .bdm-cell.busy .bdm-cell-bar { background: rgba(107,76,42,0.09); }
+    .bdm-cell.busy-first .bdm-cell-bar { border-radius: 4px 4px 0 0; background: rgba(107,76,42,0.13); }
+    .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
+    .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 4px; background: rgba(107,76,42,0.13); }
     .booking-form-wrap { margin-top: 32px; max-width: 520px; }
     .booking-selected-summary { font-family: var(--font-sans); font-size: 13px; color: var(--accent-dark); margin-bottom: 20px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
     .booking-field { margin-bottom: 16px; }
@@ -513,12 +527,6 @@
       <h2 class="section-title fade-up" id="booking-section-title">聊天时间到！</h2>
       <p class="booking-intro fade-up" id="booking-intro"></p>
 
-      <!-- 时区选择器 -->
-      <div class="booking-tz-wrap fade-up">
-        <label class="booking-tz-label" id="booking-tz-label"></label>
-        <select class="booking-tz-select" id="booking-tz-select"></select>
-      </div>
-
       <!-- 日历 -->
       <div class="booking-cal-wrap fade-up">
         <div class="booking-cal-nav">
@@ -676,6 +684,7 @@ const COPY = {
     bookingSectionTitle: "聊天时间到！",
     bookingIntro: "选一个你方便的时间，发送邀请，我会尽快回复确认。",
     bookingTzLabel: "你的时区",
+    bookingPickHint: "在右侧点击空白格，选择你方便的开始时间",
     bookingLoading: "正在读取我的日历……",
     bookingDurationLabel: "聊多久？",
     bookingDurationCustom: "自定义",
@@ -824,6 +833,7 @@ const COPY = {
     bookingSectionTitle: "Let's Chat!",
     bookingIntro: "Choose the time slot that works for you, send your invite, and I'll get back to you to confirm ASAP.",
     bookingTzLabel: "Your timezone",
+    bookingPickHint: "Click an available slot on the right to set your start time",
     bookingLoading: "Loading my calendar…",
     bookingDurationLabel: "For how long?",
     bookingDurationCustom: "Custom",
@@ -1407,8 +1417,9 @@ function renderBookingCopy(lang) {
   const el = id => document.getElementById(id);
   el("booking-section-title").textContent = c.bookingSectionTitle;
   el("booking-intro").textContent = c.bookingIntro;
-  el("booking-tz-label").textContent = c.bookingTzLabel;
+  el("bdm-tz-label").textContent = c.bookingTzLabel;
   el("bdm-duration-label").textContent = c.bookingDurationLabel;
+  el("bdm-pick-hint").textContent = c.bookingPickHint;
   el("bdm-custom-btn").textContent = c.bookingDurationCustom;
   el("booking-contact-note").textContent = c.bookingContactNote;
   el("b-email-label").textContent = c.bookingEmailLabel;
@@ -1433,11 +1444,13 @@ function initBooking() {
   } catch(e) {}
 
   populateTzSelect();
-  const sel = document.getElementById("booking-tz-select");
-  sel.value = _visitorTz;
-  sel.addEventListener("change", () => {
-    _visitorTz = sel.value;
-    renderCalendar(_calYear, _calMonth);
+  document.getElementById("bdm-tz-select").value = _visitorTz;
+  document.getElementById("bdm-tz-select").addEventListener("change", () => {
+    _visitorTz = document.getElementById("bdm-tz-select").value;
+    if (_selectedDate && document.getElementById("booking-day-modal").style.display !== "none") {
+      const cacheKey = `${_selectedDate.slice(0,4)}-${_selectedDate.slice(5,7)}`;
+      renderDayTimeline(_selectedDate, _busyCache[cacheKey] || []);
+    }
   });
 
   const now = new Date();
@@ -1500,7 +1513,7 @@ function initBooking() {
 }
 
 function populateTzSelect() {
-  const sel = document.getElementById("booking-tz-select");
+  const sel = document.getElementById("bdm-tz-select");
   const cur = sel.value || _visitorTz;
   sel.innerHTML = COMMON_TIMEZONES.map(tz =>
     `<option value="${tz.value}">${_bookingLang === "zh" ? tz.zh : tz.en}</option>`
@@ -1890,29 +1903,46 @@ function toDateStr(date) {
 }
 </script>
 
-<!-- 日程弹窗 -->
+<!-- 日程弹窗（横向4:3布局） -->
 <div class="booking-day-modal" id="booking-day-modal" style="display:none">
   <div class="booking-day-modal-overlay" id="bdm-overlay"></div>
   <div class="booking-day-modal-box">
-    <div class="booking-day-modal-header">
-      <span id="bdm-date-label"></span>
-      <button class="booking-day-modal-close" id="bdm-close">✕</button>
-    </div>
-    <div class="booking-day-modal-duration">
-      <span id="bdm-duration-label"></span>
-      <div class="bdm-duration-btns">
-        <button class="bdm-dur-btn" data-min="15">15 min</button>
-        <button class="bdm-dur-btn" data-min="30">30 min</button>
-        <button class="bdm-dur-btn" data-min="45">45 min</button>
-        <button class="bdm-dur-btn selected" data-min="60">60 min</button>
-        <button class="bdm-dur-btn" data-min="custom" id="bdm-custom-btn"></button>
+
+    <!-- 左侧：日期 + 时区 + 时长 + 提示 -->
+    <div class="bdm-left">
+      <div class="bdm-left-header">
+        <div class="bdm-date-display" id="bdm-date-label"></div>
+        <button class="booking-day-modal-close" id="bdm-close">✕</button>
       </div>
-      <div class="bdm-custom-wrap" id="bdm-custom-wrap" style="display:none">
-        <input type="number" class="bdm-custom-input" id="bdm-custom-input" min="1" step="1" />
-        <span class="bdm-custom-hint" id="bdm-custom-hint"></span>
+
+      <div class="bdm-section">
+        <div class="bdm-section-label" id="bdm-tz-label"></div>
+        <select class="bdm-tz-select" id="bdm-tz-select"></select>
       </div>
+
+      <div class="bdm-section">
+        <div class="bdm-section-label" id="bdm-duration-label"></div>
+        <div class="bdm-duration-btns">
+          <button class="bdm-dur-btn" data-min="15">15 min</button>
+          <button class="bdm-dur-btn" data-min="30">30 min</button>
+          <button class="bdm-dur-btn" data-min="45">45 min</button>
+          <button class="bdm-dur-btn selected" data-min="60">60 min</button>
+          <button class="bdm-dur-btn" data-min="custom" id="bdm-custom-btn"></button>
+        </div>
+        <div class="bdm-custom-wrap" id="bdm-custom-wrap" style="display:none">
+          <input type="number" class="bdm-custom-input" id="bdm-custom-input" min="1" step="1" />
+          <span class="bdm-custom-hint" id="bdm-custom-hint"></span>
+        </div>
+      </div>
+
+      <div class="bdm-pick-hint" id="bdm-pick-hint"></div>
     </div>
-    <div class="booking-day-modal-timeline" id="bdm-timeline"></div>
+
+    <!-- 右侧：时间轴 -->
+    <div class="bdm-right">
+      <div class="booking-day-modal-timeline" id="bdm-timeline"></div>
+    </div>
+
   </div>
 </div>
 
