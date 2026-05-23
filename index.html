@@ -523,13 +523,13 @@ const COPY = {
         school: "中山大学管理学院（创业学院）",
         degree: "工商管理本科·辅修信息管理",
         period: "2024.09 — 2028.07",
-        desc: "相关课程：管理学原理（排名前5%）、营销学原理、概率统计、数据可视化（Tableau）",
+        desc: "绩点年级排名前15%<br>相关课程：管理学原理（排名前5%）、营销学原理、概率统计、数据可视化（Tableau）",
       },
       {
         school: "鲁基·博科尼商业大学（Bocconi University）",
         degree: "本科交换 · QS商业与管理全球第10",
         period: "2026.02 — 2026.06",
-        desc: "修读课程：市场研究中的大语言模型（Claude Code）、社会网络分析（UCINET）、管理咨询导论",
+        desc: "相关课程：市场研究中的大语言模型（Claude Code）、社会网络分析（UCINET）、管理咨询导论",
       },
       {
         school: "广州市执信中学",
@@ -571,6 +571,16 @@ const COPY = {
           "参与全球超级游艇行业模拟私募股权顾问项目，覆盖9家核心企业，负责关键成功因素（KSF）分析模块",
           "识别研究范围与数据来源问题，完善企业界定与逻辑结构，提升结论一致性与可用性",
           "使用 Claude Code 构建 40+ 条行业数据指标体系，整合多源数据并标注可信度优先级，为后续分析提供统一数据基础",
+        ],
+      },
+      {
+        project: "多头注意力视角下的商业网络构建研究（迁移复刻Attention is all you need）",
+        role: "队员",
+        period: "2025.12 — 至今",
+        bullets: [
+          "针对传统 NLP 方法存在的"维度坍缩"问题，参与构建基于多头注意力机制的企业业务关系网络研究",
+          "负责数据处理模块：使用 Claude Code 重构年报文本 Pipeline（PDF 读取 → 业务章节截取 → 内容清洗 → 文本匿名化），完成 10,000+ 份 A 股上市公司年报的标准化处理；从巨潮资讯网抓取 30+ 家企业业务原句作为锚点句，结合 FIBO 金融本体关键词，为多头注意力机制提供跨维度（产品 / 技术 / 产业链 / 市场）的语义参考，解决模型区分业务子类的关键数据缺口",
+          "形成可复用文本处理流程，支撑后续 embedding 分析与企业业务相似性网络构建，目标通过股价联动与并购行为进行实证验证",
         ],
       },
       {
@@ -641,7 +651,7 @@ const COPY = {
         school: "Sun Yat-sen University, School of Management",
         degree: "B.B.A. in Business Administration · Minor in Information Management",
         period: "Sep 2024 — Jul 2028",
-        desc: "Courses: Principles of Management (top 5%), Marketing, Probability & Statistics, Data Visualization (Tableau)",
+        desc: "GPA Ranking: Top 15% in cohort<br>Courses: Principles of Management (top 5%), Marketing, Probability & Statistics, Data Visualization (Tableau)",
       },
       {
         school: "Università Bocconi, Milan",
@@ -688,6 +698,16 @@ const COPY = {
           "Participated in a simulated private equity advisory project covering the global superyacht industry; led the Key Success Factors (KSF) analysis module across 9 core companies",
           "Identified gaps in research scope and data sourcing; refined company definitions and logical structure to improve consistency and usability of conclusions",
           "Used Claude Code to build a 40+ indicator industry data system; integrated multi-source data with credibility prioritization to establish a unified analytical foundation",
+        ],
+      },
+      {
+        project: "Business Network Construction via Multi-Head Attention (Replication of Attention Is All You Need)",
+        role: "Team Member",
+        period: "Dec 2025 — Present",
+        bullets: [
+          "Joined research on building corporate business relationship networks using multi-head attention mechanisms, addressing the \"dimension collapse\" problem inherent in traditional NLP methods",
+          "Led the data processing module: rebuilt an annual report text pipeline with Claude Code (PDF extraction → business section segmentation → content cleaning → text anonymization), standardizing 10,000+ A-share listed company filings; scraped 30+ business description anchor sentences from CNINFO and combined them with FIBO financial ontology keywords to provide cross-dimensional semantic references (product / technology / supply chain / market) for the attention model, bridging the key data gap for business sub-type classification",
+          "Produced a reusable text processing pipeline supporting downstream embedding analysis and business similarity network construction, with empirical validation planned via stock price co-movement and M&A behavior",
         ],
       },
       {
