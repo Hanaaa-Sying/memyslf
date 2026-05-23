@@ -322,13 +322,27 @@
     .bdm-custom-input { font-family: var(--font-sans); font-size: 13px; width: 72px; padding: 5px 8px; border: 1.5px solid var(--accent-dark); border-radius: 6px; color: var(--text-dark); background: var(--bg-card); outline: none; -moz-appearance: textfield; }
     .bdm-custom-input::-webkit-outer-spin-button, .bdm-custom-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .bdm-custom-hint { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); }
-    .booking-day-modal-timeline { overflow-y: auto; flex: 1; }
-    .bdm-slot-row { display: flex; align-items: center; padding: 12px 22px; gap: 16px; border-bottom: 1px solid var(--border); min-height: 52px; }
-    .bdm-slot-time { font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); min-width: 88px; line-height: 1.4; }
-    .bdm-slot-time .bdm-utc8 { font-size: 11px; color: var(--text-light); display: block; }
-    .bdm-slot-btn { font-family: var(--font-sans); font-size: 13px; padding: 6px 16px; border: 1.5px solid var(--accent-dark); border-radius: 8px; background: transparent; color: var(--accent-dark); cursor: pointer; transition: all var(--transition); white-space: nowrap; }
-    .bdm-slot-btn:hover, .bdm-slot-btn.selected { background: var(--accent-dark); color: #fff; }
-    .bdm-slot-unavailable { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); font-style: italic; }
+    .booking-day-modal-timeline { overflow-y: auto; flex: 1; user-select: none; }
+    .bdm-grid { position: relative; }
+    .bdm-cell { height: 24px; display: flex; align-items: stretch; border-bottom: 1px solid rgba(232,213,190,0.35); position: relative; }
+    .bdm-cell.hour-start { border-bottom-color: var(--border); }
+    .bdm-cell-label { width: 52px; flex-shrink: 0; padding-top: 3px; padding-left: 10px; font-family: var(--font-sans); font-size: 10px; color: var(--text-light); pointer-events: none; line-height: 1.3; }
+    .bdm-cell-label .bdm-utc8 { font-size: 9px; display: block; }
+    .bdm-cell-bar { flex: 1; height: 100%; transition: background 0.08s; }
+    .bdm-cell.available { cursor: pointer; }
+    .bdm-cell.available:hover .bdm-cell-bar { background: rgba(196,137,90,0.13); }
+    .bdm-cell.preview .bdm-cell-bar { background: rgba(196,137,90,0.22); }
+    .bdm-cell.preview-first .bdm-cell-bar { border-radius: 4px 4px 0 0; }
+    .bdm-cell.preview-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
+    .bdm-cell.selected .bdm-cell-bar { background: var(--accent-dark); }
+    .bdm-cell.selected-first .bdm-cell-bar { border-radius: 4px 4px 0 0; }
+    .bdm-cell.selected-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
+    .bdm-cell.selected-first::after { content: attr(data-time); position: absolute; left: 56px; top: 50%; transform: translateY(-50%); font-family: var(--font-sans); font-size: 11px; color: #fff; font-weight: 600; pointer-events: none; z-index: 1; }
+    .bdm-cell.busy { cursor: default; }
+    .bdm-cell.busy .bdm-cell-bar { background: rgba(107,76,42,0.1); }
+    .bdm-cell.busy-first .bdm-cell-bar { border-radius: 4px 4px 0 0; background: rgba(107,76,42,0.14); }
+    .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 4px 4px; border-bottom: 1px solid rgba(107,76,42,0.12); }
+    .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 4px; background: rgba(107,76,42,0.14); }
     .booking-form-wrap { margin-top: 32px; max-width: 520px; }
     .booking-selected-summary { font-family: var(--font-sans); font-size: 13px; color: var(--accent-dark); margin-bottom: 20px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
     .booking-field { margin-bottom: 16px; }
@@ -1384,6 +1398,7 @@ let _visitorTz = "Asia/Shanghai";
 let _selectedDuration = 60;
 let _isCustomDuration = false;
 let _dayMaxDuration = 840;
+let _timelineAbortCtrl = null;
 const _busyCache = {};
 
 function renderBookingCopy(lang) {
@@ -1537,8 +1552,12 @@ function renderCalendar(year, month) {
   fetchFreeBusy(year, month).then(busyIntervals => {
     grid.querySelectorAll(".booking-day.loading").forEach(el => {
       const dateStr = el.dataset.date;
-      const hasAvail = Array.from({length: HANA_AVAIL.endH - HANA_AVAIL.startH + 1}, (_, i) => i + HANA_AVAIL.startH)
-        .some(h => !isSlotBusyForDuration(dateStr, h, _selectedDuration, busyIntervals));
+      let hasAvail = false;
+      outer: for (let h = HANA_AVAIL.startH; h < 22; h++) {
+        for (let q = 0; q < 4; q++) {
+          if (canStartAt(dateStr, h, q * 15, _selectedDuration, busyIntervals)) { hasAvail = true; break outer; }
+        }
+      }
       el.classList.remove("loading");
       if (hasAvail) {
         el.classList.add("available");
@@ -1578,20 +1597,22 @@ async function fetchFreeBusy(year, month) {
   }
 }
 
-function isSlotBusyForDuration(dateStr, hour, durationMin, busyIntervals) {
-  const slotStart = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:00:00+08:00`).getTime();
-  const slotEnd = slotStart + durationMin * 60 * 1000;
-  const dayEnd = new Date(`${dateStr}T22:00:00+08:00`).getTime();
-  if (slotEnd > dayEnd) return true;
-  return busyIntervals.some(b => {
-    const bs = new Date(b.start).getTime();
-    const be = new Date(b.end).getTime();
-    return slotStart < be && slotEnd > bs;
-  });
+function is15MinBusy(dateStr, hour, minute, busyIntervals) {
+  const s = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}:00+08:00`).getTime();
+  const e = s + 15 * 60000;
+  return busyIntervals.some(b => s < new Date(b.end).getTime() && e > new Date(b.start).getTime());
 }
 
-function hktToVisitorTimeStr(dateStr, hktHour) {
-  const d = new Date(`${dateStr}T${String(hktHour).padStart(2,"0")}:00:00+08:00`);
+function canStartAt(dateStr, hour, minute, durationMin, busyIntervals) {
+  const s = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}:00+08:00`).getTime();
+  const e = s + durationMin * 60000;
+  const dayEnd = new Date(`${dateStr}T22:00:00+08:00`).getTime();
+  if (e > dayEnd) return false;
+  return !busyIntervals.some(b => s < new Date(b.end).getTime() && e > new Date(b.start).getTime());
+}
+
+function hktToVisitorTimeStr(dateStr, hktHour, hktMinute = 0) {
+  const d = new Date(`${dateStr}T${String(hktHour).padStart(2,"0")}:${String(hktMinute).padStart(2,"0")}:00+08:00`);
   return d.toLocaleTimeString("en-US", {
     timeZone: _visitorTz,
     hour: "2-digit",
@@ -1602,21 +1623,24 @@ function hktToVisitorTimeStr(dateStr, hktHour) {
 
 function getMaxDurationForDay(dateStr, busyIntervals) {
   let maxMin = 0;
-  for (let startH = HANA_AVAIL.startH; startH <= HANA_AVAIL.endH; startH++) {
-    const slotStartMs = new Date(`${dateStr}T${String(startH).padStart(2,"0")}:00:00+08:00`).getTime();
-    const dayEndMs = new Date(`${dateStr}T22:00:00+08:00`).getTime();
-    let earliest = dayEndMs;
-    for (const b of busyIntervals) {
-      const bs = new Date(b.start).getTime();
-      const be = new Date(b.end).getTime();
-      if (be <= slotStartMs) continue;
-      if (bs <= slotStartMs) { earliest = slotStartMs; break; }
-      if (bs < earliest) earliest = bs;
+  for (let h = HANA_AVAIL.startH; h < 22; h++) {
+    for (let q = 0; q < 4; q++) {
+      const m = q * 15;
+      const slotStartMs = new Date(`${dateStr}T${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:00+08:00`).getTime();
+      const dayEndMs = new Date(`${dateStr}T22:00:00+08:00`).getTime();
+      let earliest = dayEndMs;
+      for (const b of busyIntervals) {
+        const bs = new Date(b.start).getTime();
+        const be = new Date(b.end).getTime();
+        if (be <= slotStartMs) continue;
+        if (bs <= slotStartMs) { earliest = slotStartMs; break; }
+        if (bs < earliest) earliest = bs;
+      }
+      const avail = Math.floor((earliest - slotStartMs) / 60000);
+      if (avail > maxMin) maxMin = avail;
     }
-    const avail = Math.floor((earliest - slotStartMs) / 60000);
-    if (avail > maxMin) maxMin = avail;
   }
-  return maxMin || (HANA_AVAIL.endH - HANA_AVAIL.startH + 1) * 60;
+  return maxMin || (22 - HANA_AVAIL.startH) * 60;
 }
 
 function openDayModal(dateStr) {
@@ -1657,43 +1681,132 @@ function renderDurationBtns() {
 }
 
 function renderDayTimeline(dateStr, busyIntervals) {
-  const c = COPY[_bookingLang];
+  if (_timelineAbortCtrl) _timelineAbortCtrl.abort();
+  _timelineAbortCtrl = new AbortController();
+  const signal = _timelineAbortCtrl.signal;
+
   const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
   const timeline = document.getElementById("bdm-timeline");
 
-  let rows = "";
-  for (let h = HANA_AVAIL.startH; h <= HANA_AVAIL.endH; h++) {
-    const hktStr = `${String(h).padStart(2,"0")}:00`;
-    const visStr = hktToVisitorTimeStr(dateStr, h);
-    const busy = isSlotBusyForDuration(dateStr, h, _selectedDuration, busyIntervals);
-    const timeDisplay = isSameZone
-      ? `<span>${hktStr}</span>`
-      : `<span>${visStr}</span><span class="bdm-utc8">${hktStr} UTC+8</span>`;
-
-    if (busy) {
-      rows += `<div class="bdm-slot-row">
-        <div class="bdm-slot-time">${timeDisplay}</div>
-        <span class="bdm-slot-unavailable">${c.bookingBusy}</span>
-      </div>`;
-    } else {
-      const isSelected = _selectedTime === h;
-      rows += `<div class="bdm-slot-row">
-        <div class="bdm-slot-time">${timeDisplay}</div>
-        <button class="bdm-slot-btn${isSelected ? " selected" : ""}" data-hour="${h}">${c.bookingSelect}</button>
-      </div>`;
+  // Build 15-min slot data (08:00 – 21:45)
+  const slots = [];
+  for (let h = HANA_AVAIL.startH; h < 22; h++) {
+    for (let q = 0; q < 4; q++) {
+      const m = q * 15;
+      slots.push({
+        h, m,
+        busy:      is15MinBusy(dateStr, h, m, busyIntervals),
+        clickable: canStartAt(dateStr, h, m, _selectedDuration, busyIntervals),
+      });
     }
   }
-  timeline.innerHTML = rows;
-
-  timeline.querySelectorAll(".bdm-slot-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      _selectedTime = parseInt(btn.dataset.hour);
-      closeDayModal();
-      updateSelectedSummary();
-      document.getElementById("booking-form-wrap").style.display = "";
-      document.getElementById("booking-error").style.display = "none";
-    });
+  // Mark busy block boundaries for rounded-corner merging
+  slots.forEach((s, i) => {
+    if (!s.busy) return;
+    s.busyFirst = i === 0 || !slots[i-1].busy;
+    s.busyLast  = i === slots.length - 1 || !slots[i+1].busy;
+    s.busySolo  = s.busyFirst && s.busyLast;
   });
+
+  // Pre-compute selected range boundaries (ms)
+  let selStartMs = -1, selEndMs = -1;
+  if (_selectedTime) {
+    const [sh, sm] = _selectedTime.split(":").map(Number);
+    selStartMs = new Date(`${dateStr}T${String(sh).padStart(2,"0")}:${String(sm).padStart(2,"0")}:00+08:00`).getTime();
+    selEndMs   = selStartMs + _selectedDuration * 60000;
+  }
+
+  // Render HTML
+  let html = '<div class="bdm-grid">';
+  for (const s of slots) {
+    const hStr = String(s.h).padStart(2,"0");
+    const mStr = String(s.m).padStart(2,"0");
+    const cellMs    = new Date(`${dateStr}T${hStr}:${mStr}:00+08:00`).getTime();
+    const cellEndMs = cellMs + 15 * 60000;
+
+    // Left time label (only at each hour)
+    let label;
+    if (s.m === 0) {
+      if (isSameZone) {
+        label = `<div class="bdm-cell-label">${hStr}:00</div>`;
+      } else {
+        const vis = hktToVisitorTimeStr(dateStr, s.h, 0);
+        label = `<div class="bdm-cell-label">${vis}<span class="bdm-utc8">${hStr}:00</span></div>`;
+      }
+    } else {
+      label = `<div class="bdm-cell-label"></div>`;
+    }
+
+    // Cell CSS classes
+    let cls = "bdm-cell";
+    if (s.m === 0) cls += " hour-start";
+    if (s.busy) {
+      cls += " busy";
+      if (s.busySolo)       cls += " busy-solo";
+      else if (s.busyFirst) cls += " busy-first";
+      else if (s.busyLast)  cls += " busy-last";
+    } else if (s.clickable) {
+      cls += " available";
+    }
+
+    // Selected state + data-time on the first selected cell
+    let dataTime = "";
+    if (selStartMs >= 0 && cellMs >= selStartMs && cellMs < selEndMs) {
+      cls += " selected";
+      if (cellMs === selStartMs) {
+        cls += " selected-first";
+        const t = isSameZone ? `${hStr}:${mStr}` : hktToVisitorTimeStr(dateStr, s.h, s.m);
+        dataTime = ` data-time="${t}"`;
+      }
+      if (cellEndMs >= selEndMs) cls += " selected-last";
+    }
+
+    html += `<div class="${cls}" data-h="${s.h}" data-m="${s.m}"${dataTime}>${label}<div class="bdm-cell-bar"></div></div>`;
+  }
+  html += "</div>";
+  timeline.innerHTML = html;
+
+  // ── Event delegation (AbortController cleans up on re-render) ──
+  let prevCells = [];
+  function clearPreview() {
+    prevCells.forEach(c => c.classList.remove("preview","preview-first","preview-last"));
+    prevCells = [];
+  }
+
+  timeline.addEventListener("mouseover", (e) => {
+    const cell = e.target.closest(".bdm-cell.available");
+    if (!cell) { clearPreview(); return; }
+    const h = parseInt(cell.dataset.h), m = parseInt(cell.dataset.m);
+    if (!canStartAt(dateStr, h, m, _selectedDuration, busyIntervals)) { clearPreview(); return; }
+    clearPreview();
+    const startMs = new Date(`${dateStr}T${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:00+08:00`).getTime();
+    const endMs   = startMs + _selectedDuration * 60000;
+    timeline.querySelectorAll(".bdm-cell").forEach(c => {
+      const ch = parseInt(c.dataset.h), cm = parseInt(c.dataset.m);
+      const cMs    = new Date(`${dateStr}T${String(ch).padStart(2,"0")}:${String(cm).padStart(2,"0")}:00+08:00`).getTime();
+      const cEndMs = cMs + 15 * 60000;
+      if (cMs >= startMs && cMs < endMs) {
+        c.classList.add("preview");
+        if (cMs === startMs)   c.classList.add("preview-first");
+        if (cEndMs >= endMs)   c.classList.add("preview-last");
+        prevCells.push(c);
+      }
+    });
+  }, { signal });
+
+  timeline.addEventListener("mouseleave", clearPreview, { signal });
+
+  timeline.addEventListener("click", (e) => {
+    const cell = e.target.closest(".bdm-cell.available");
+    if (!cell) return;
+    const h = parseInt(cell.dataset.h), m = parseInt(cell.dataset.m);
+    if (!canStartAt(dateStr, h, m, _selectedDuration, busyIntervals)) return;
+    _selectedTime = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+    closeDayModal();
+    updateSelectedSummary();
+    document.getElementById("booking-form-wrap").style.display = "";
+    document.getElementById("booking-error").style.display = "none";
+  }, { signal });
 }
 
 function closeDayModal() {
@@ -1706,9 +1819,10 @@ function updateSelectedSummary() {
   const dateLabel = _bookingLang === "zh"
     ? `${y}年${parseInt(m)}月${parseInt(d)}日`
     : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const hktStr = `${String(_selectedTime).padStart(2,"0")}:00 UTC+8`;
+  const [sh, sm] = _selectedTime.split(":").map(Number);
+  const hktStr = `${String(sh).padStart(2,"0")}:${String(sm).padStart(2,"0")} UTC+8`;
   const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
-  const visStr = hktToVisitorTimeStr(_selectedDate, _selectedTime);
+  const visStr = hktToVisitorTimeStr(_selectedDate, sh, sm);
   const timeLabel = isSameZone ? hktStr : `${visStr}（${hktStr}）`;
   const durationLabel = `${_selectedDuration} min`;
   document.getElementById("booking-selected-summary").textContent =
@@ -1743,9 +1857,10 @@ async function onBookingSubmit(e) {
   const dateLabel = _bookingLang === "zh"
     ? `${y}年${parseInt(m)}月${parseInt(d)}日`
     : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const hktStr = `${String(_selectedTime).padStart(2,"0")}:00 UTC+8`;
+  const [sh2, sm2] = _selectedTime.split(":").map(Number);
+  const hktStr = `${String(sh2).padStart(2,"0")}:${String(sm2).padStart(2,"0")} UTC+8`;
   const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
-  const visStr = hktToVisitorTimeStr(_selectedDate, _selectedTime);
+  const visStr = hktToVisitorTimeStr(_selectedDate, sh2, sm2);
   const timeLabel = isSameZone ? hktStr : `${visStr} (visitor TZ) / ${hktStr}`;
 
   try {
