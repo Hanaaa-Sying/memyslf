@@ -274,10 +274,13 @@
     .footer-links a { color: var(--text-light); text-decoration: none; transition: color var(--transition); }
     .footer-links a:hover { color: var(--accent-dark); }
 
+    .exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 48px; margin-top: 0; }
+
     /* ── 响应式 ── */
     @media (max-width: 900px) {
       .resume-col-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 36px; }
       .resume-grid { grid-template-columns: 1fr; column-gap: 0; }
+      .exp-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
       .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; gap: 0; padding: 8px 0; }
@@ -379,13 +382,10 @@
       <h2 class="section-title fade-up" id="resume-title">简历</h2>
       <div class="resume-grid">
 
-        <!-- 左列：教育 + 项目经历 -->
+        <!-- 左列：教育 -->
         <div class="resume-col-left">
           <div class="resume-block-title" id="resume-edu-label">教育经历</div>
           <div class="timeline" id="resume-edu"></div>
-          <div style="margin-top:40px"></div>
-          <div class="resume-block-title" id="resume-exp-label">项目经历</div>
-          <div class="timeline" id="resume-exp"></div>
         </div>
 
         <!-- 右列：技能 -->
@@ -394,6 +394,12 @@
           <div class="skills-grid" id="resume-skills"></div>
         </div>
 
+      </div>
+
+      <!-- 全宽：项目经历（2列网格） -->
+      <div style="margin-top:48px">
+        <div class="resume-block-title" id="resume-exp-label">项目经历</div>
+        <div class="exp-grid" id="resume-exp"></div>
       </div>
     </div>
   </section>
