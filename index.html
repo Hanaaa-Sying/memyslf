@@ -293,7 +293,7 @@
 
     /* ── Booking 预约模块 ── */
     .booking-intro { font-family: var(--font-sans); font-size: 13px; color: var(--text-light); margin-top: -20px; margin-bottom: 32px; }
-    .booking-cal-wrap { max-width: 480px; }
+    .booking-cal-wrap { max-width: 680px; }
     .booking-cal-nav { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; font-family: var(--font-sans); }
     .booking-cal-nav button { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; cursor: pointer; font-size: 16px; color: var(--text-mid); transition: border-color var(--transition); }
     .booking-cal-nav button:hover { border-color: var(--accent-dark); }
@@ -362,14 +362,17 @@
     .bdm-cell.busy-first .bdm-cell-bar { border-radius: 3px 3px 0 0; background: rgba(107,76,42,0.13); }
     .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 3px 3px; }
     .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 3px; background: rgba(107,76,42,0.13); }
-    .booking-form-wrap { margin-top: 32px; max-width: 520px; }
+    .booking-form-wrap { margin-top: 32px; }
+    .booking-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+    @media (max-width: 600px) { .booking-form-row { grid-template-columns: 1fr; } }
     .booking-selected-summary { font-family: var(--font-sans); font-size: 13px; color: var(--accent-dark); margin-bottom: 20px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
     .booking-field { margin-bottom: 16px; }
     .booking-field label { display: block; font-family: var(--font-sans); font-size: 13px; color: var(--text-mid); margin-bottom: 6px; }
     .booking-field input, .booking-field textarea { width: 100%; font-family: var(--font-sans); font-size: 14px; color: var(--text-dark); background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 14px; box-sizing: border-box; outline: none; transition: border-color var(--transition); resize: vertical; }
     .booking-field input:focus, .booking-field textarea:focus { border-color: var(--accent-dark); }
     .booking-contact-note { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); margin-bottom: 16px; }
-    .booking-submit { font-family: var(--font-sans); font-size: 14px; font-weight: 600; background: var(--accent-dark); color: #fff; border: none; border-radius: 8px; padding: 12px 32px; cursor: pointer; transition: opacity var(--transition); }
+    .booking-submit-wrap { display: flex; justify-content: center; margin-top: 8px; }
+    .booking-submit { font-family: var(--font-sans); font-size: 14px; font-weight: 600; background: var(--accent-dark); color: #fff; border: none; border-radius: 8px; padding: 12px 48px; cursor: pointer; transition: opacity var(--transition); }
     .booking-submit:hover { opacity: 0.85; }
     .booking-submit:disabled { opacity: 0.5; cursor: not-allowed; }
     .booking-error { font-family: var(--font-sans); font-size: 13px; color: #c0392b; margin-top: 12px; display: none; }
@@ -547,27 +550,36 @@
         <div class="booking-selected-summary" id="booking-selected-summary"></div>
         <p class="booking-contact-note" id="booking-contact-note"></p>
         <form id="booking-form" novalidate>
-          <div class="booking-field">
-            <label id="b-email-label"></label>
-            <input type="email" id="b-email" autocomplete="email">
+          <!-- 邮箱 + 微信 并排 -->
+          <div class="booking-form-row">
+            <div class="booking-field">
+              <label id="b-email-label"></label>
+              <input type="email" id="b-email" autocomplete="email">
+            </div>
+            <div class="booking-field">
+              <label id="b-wechat-label"></label>
+              <input type="text" id="b-wechat">
+            </div>
           </div>
-          <div class="booking-field">
-            <label id="b-wechat-label"></label>
-            <input type="text" id="b-wechat">
+          <!-- 称呼 + 基本信息 并排 -->
+          <div class="booking-form-row">
+            <div class="booking-field">
+              <label id="b-name-label"></label>
+              <input type="text" id="b-name" required>
+            </div>
+            <div class="booking-field">
+              <label id="b-extra-label"></label>
+              <input type="text" id="b-extra">
+            </div>
           </div>
-          <div class="booking-field">
-            <label id="b-name-label"></label>
-            <input type="text" id="b-name" required>
-          </div>
-          <div class="booking-field">
-            <label id="b-extra-label"></label>
-            <input type="text" id="b-extra">
-          </div>
+          <!-- 想聊什么 单独一行 -->
           <div class="booking-field">
             <label id="b-topic-label"></label>
             <textarea id="b-topic" rows="4" required></textarea>
           </div>
-          <button type="submit" class="booking-submit" id="b-submit"></button>
+          <div class="booking-submit-wrap">
+            <button type="submit" class="booking-submit" id="b-submit"></button>
+          </div>
           <p class="booking-error" id="booking-error"></p>
         </form>
       </div>
@@ -680,7 +692,7 @@ const COPY = {
   zh: {
     navResume: "我的简历", navPortfolio: "项目作品集", navThinking: "最近在思考",
     heroTagline: "中山大学管理学院 · 意大利博科尼交流生",
-    heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。<br>我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年通过自己申请，去到了意大利博科尼商学院交流学习，幸遇十分优秀的教授们，带我走进了AI Agent的世界、带我学习了组织网络分析的领域、带我了解到一个训练有素的咨询师应该是怎样的……等等。与此同时，我也利用在博科尼这学期的一些小长假四处游历欧洲，行万里路。",
+    heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。<br>我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年自己申请去到了意大利博科尼商学院交流学习，幸遇十分优秀的教授们，带我走进了AI Agent的世界、学习了组织网络分析的原理等。与此同时，我也利用在博科尼这学期的一些小长假，在欧洲四处游荡，行万里路。",
     heroBio2: "我还在探索我人生的多种面向和可能性，走走又停停。",
     heroCardResume: "我的简历", heroCardResumeDesc: "教育经历 · 项目 · 技能",
     heroCardPortfolio: "项目作品集", heroCardPortfolioDesc: "数据分析 · 可视化 · 咨询 · 创业项目",
@@ -829,7 +841,7 @@ const COPY = {
   en: {
     navResume: "Resume", navPortfolio: "Portfolio", navThinking: "Thinking",
     heroTagline: "Sun Yat-sen University · Bocconi Exchange Student",
-    heroBio1: "Hi! 👋 I'm Siying Li from the School of Management at Sun Yat-sen University.<br>In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to independently apply for an exchange at Bocconi University in Milan the following year. There I was lucky to learn from brilliant professors who introduced me to the world of AI Agents, organizational network analysis, and what it truly means to be a trained consultant… among other things. I also made the most of Bocconi's long weekends to travel across Europe.",
+    heroBio1: "Hi! 👋 I'm Siying Li from the School of Management at Sun Yat-sen University.<br>In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to apply for an exchange at Bocconi University in Milan the following year. There I was lucky to learn from brilliant professors who introduced me to AI Agents and organizational network analysis, among other things. I also made the most of Bocconi's long weekends to wander across Europe.",
     heroBio2: "I'm still exploring the many facets and possibilities of my life, wandering and pausing along the way.",
     heroCardResume: "Resume", heroCardResumeDesc: "Education · Experience · Skills",
     heroCardPortfolio: "Portfolio", heroCardPortfolioDesc: "Data Analysis · Visualization · Consulting · Startups",
