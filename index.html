@@ -1610,6 +1610,7 @@ async function fetchFreeBusy(year, month) {
     return [];
   }
   try {
+    console.log("[GCal] 正在请求 FreeBusy…", { timeMin, timeMax, calendarId: GOOGLE_CALENDAR_ID });
     const res = await fetch(
       `https://www.googleapis.com/calendar/v3/freeBusy?key=${GOOGLE_API_KEY}`,
       {
@@ -1619,10 +1620,17 @@ async function fetchFreeBusy(year, month) {
       }
     );
     const data = await res.json();
+    if (data.error) {
+      console.error("[GCal] API 返回错误：", data.error);
+      _busyCache[cacheKey] = [];
+      return [];
+    }
     const busy = data.calendars?.[GOOGLE_CALENDAR_ID]?.busy || [];
+    console.log(`[GCal] 成功，本月共 ${busy.length} 段 busy：`, busy);
     _busyCache[cacheKey] = busy;
     return busy;
-  } catch {
+  } catch(err) {
+    console.error("[GCal] 请求失败：", err);
     _busyCache[cacheKey] = [];
     return [];
   }
