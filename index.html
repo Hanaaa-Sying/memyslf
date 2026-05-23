@@ -287,6 +287,7 @@
       .booking-day-modal-box { flex-direction: column; height: auto; max-height: 92vh; width: 96%; }
       .bdm-left { width: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
       .bdm-pick-hint { display: none; }
+      .bdm-cell { height: 22px; }
     }
     .resume-full { display: flex; flex-direction: column; gap: 48px; }
 
@@ -310,7 +311,7 @@
     .booking-day-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; }
     .booking-day-modal-overlay { position: absolute; inset: 0; background: rgba(45,31,14,0.45); }
     /* ── 横向 4:3 弹窗 ── */
-    .booking-day-modal-box { position: relative; z-index: 201; background: var(--bg-card); border-radius: 16px; width: 94%; max-width: 860px; height: 580px; max-height: 90vh; display: flex; flex-direction: row; box-shadow: 0 20px 60px rgba(45,31,14,0.18); overflow: hidden; }
+    .booking-day-modal-box { position: relative; z-index: 201; background: var(--bg-card); border-radius: 16px; width: 95%; max-width: 1100px; height: 780px; max-height: 92vh; display: flex; flex-direction: row; box-shadow: 0 20px 60px rgba(45,31,14,0.18); overflow: hidden; }
     /* 左侧控制面板 */
     .bdm-left { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--bg); padding: 22px 20px 20px; overflow-y: auto; }
     .bdm-left-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; }
@@ -334,29 +335,33 @@
     .bdm-custom-hint { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); }
     .booking-day-modal-timeline { overflow-y: auto; flex: 1; user-select: none; }
     .bdm-grid { position: relative; }
-    .bdm-cell { height: 28px; display: flex; align-items: stretch; border-bottom: 1px solid rgba(232,213,190,0.35); position: relative; box-sizing: border-box; }
-    .bdm-cell.hour-start { border-bottom-color: var(--border); }
-    /* suppress internal border inside consecutive busy blocks */
+    /* Sleep zone collapsed bar */
+    .bdm-sleep-bar { display: flex; align-items: center; gap: 6px; padding: 0 10px; height: 32px; font-family: var(--font-sans); font-size: 10px; color: var(--text-light); flex-shrink: 0;
+      background: repeating-linear-gradient(135deg, rgba(107,76,42,0.06) 0px, rgba(107,76,42,0.06) 3px, transparent 3px, transparent 9px);
+      border-bottom: 1px solid rgba(232,213,190,0.5); }
+    .bdm-sleep-bar.sleep-bottom { border-top: 1px solid rgba(232,213,190,0.5); border-bottom: none; }
+    /* 15-min cells */
+    .bdm-cell { height: 16px; display: flex; align-items: stretch; border-bottom: 1px solid rgba(232,213,190,0.3); position: relative; box-sizing: border-box; }
+    .bdm-cell.hour-start { border-bottom-color: rgba(196,168,130,0.5); }
     .bdm-cell.busy:not(.busy-last):not(.busy-solo) { border-bottom: none; }
-    .bdm-cell-label { width: 56px; flex-shrink: 0; padding-left: 10px; display: flex; flex-direction: column; justify-content: center; font-family: var(--font-sans); font-size: 10px; color: var(--text-light); pointer-events: none; line-height: 1.2; }
-    .bdm-cell-label .bdm-utc8 { font-size: 9px; }
-    .bdm-cell-bar { flex: 1; transition: background 0.08s; border-radius: 0; }
+    .bdm-cell-label { width: 52px; flex-shrink: 0; padding-left: 8px; display: flex; align-items: center; font-family: var(--font-sans); font-size: 9px; color: var(--text-light); pointer-events: none; line-height: 1; }
+    .bdm-cell-bar { flex: 1; transition: background 0.07s; }
     .bdm-cell.available { cursor: pointer; }
-    .bdm-cell.available:hover .bdm-cell-bar { background: rgba(196,137,90,0.13); }
-    .bdm-cell.preview .bdm-cell-bar { background: rgba(196,137,90,0.22); }
-    .bdm-cell.preview-first .bdm-cell-bar { border-radius: 4px 4px 0 0; }
-    .bdm-cell.preview-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
-    .bdm-cell.preview.preview-first.preview-last .bdm-cell-bar { border-radius: 4px; }
+    .bdm-cell.available:hover .bdm-cell-bar { background: rgba(196,137,90,0.14); }
+    .bdm-cell.preview .bdm-cell-bar { background: rgba(196,137,90,0.24); }
+    .bdm-cell.preview-first .bdm-cell-bar { border-radius: 3px 3px 0 0; }
+    .bdm-cell.preview-last .bdm-cell-bar { border-radius: 0 0 3px 3px; }
+    .bdm-cell.preview.preview-first.preview-last .bdm-cell-bar { border-radius: 3px; }
     .bdm-cell.selected .bdm-cell-bar { background: var(--accent-dark); }
-    .bdm-cell.selected-first .bdm-cell-bar { border-radius: 4px 4px 0 0; }
-    .bdm-cell.selected-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
-    .bdm-cell.selected.selected-first.selected-last .bdm-cell-bar { border-radius: 4px; }
-    .bdm-cell.selected-first::after { content: attr(data-time); position: absolute; left: 62px; top: 5px; font-family: var(--font-sans); font-size: 11px; color: #fff; font-weight: 600; pointer-events: none; z-index: 1; line-height: 1; }
+    .bdm-cell.selected-first .bdm-cell-bar { border-radius: 3px 3px 0 0; }
+    .bdm-cell.selected-last .bdm-cell-bar { border-radius: 0 0 3px 3px; }
+    .bdm-cell.selected.selected-first.selected-last .bdm-cell-bar { border-radius: 3px; }
+    .bdm-cell.selected-first::after { content: attr(data-time); position: absolute; left: 56px; top: 50%; transform: translateY(-50%); font-family: var(--font-sans); font-size: 10px; color: #fff; font-weight: 700; pointer-events: none; z-index: 1; white-space: nowrap; }
     .bdm-cell.busy { cursor: default; }
     .bdm-cell.busy .bdm-cell-bar { background: rgba(107,76,42,0.09); }
-    .bdm-cell.busy-first .bdm-cell-bar { border-radius: 4px 4px 0 0; background: rgba(107,76,42,0.13); }
-    .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 4px 4px; }
-    .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 4px; background: rgba(107,76,42,0.13); }
+    .bdm-cell.busy-first .bdm-cell-bar { border-radius: 3px 3px 0 0; background: rgba(107,76,42,0.13); }
+    .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 3px 3px; }
+    .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 3px; background: rgba(107,76,42,0.13); }
     .booking-form-wrap { margin-top: 32px; max-width: 520px; }
     .booking-selected-summary { font-family: var(--font-sans); font-size: 13px; color: var(--accent-dark); margin-bottom: 20px; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }
     .booking-field { margin-bottom: 16px; }
@@ -649,8 +654,8 @@ const EMAILJS_PUBLIC_KEY  = "_DrYLZ8UugAJCTSqp";
 const EMAILJS_SERVICE_ID  = "service_dt7yu9e";
 const EMAILJS_TEMPLATE_ID = "template_6744rc9";
 
-// Hana 可用时间窗口（UTC+8），睡眠段为 22:00-07:30，可预约时段 08:00-21:00（整点起，60分钟内结束于22:00）
-const HANA_AVAIL = { startH: 8, endH: 21 };
+// Hana 可用时间窗口（Hana 本地时区 08:00–22:00）
+const HANA_AVAIL = { startH: 8, endH: 22 };
 const DAYS_AHEAD = 30;
 
 const COMMON_TIMEZONES = [
@@ -1565,11 +1570,12 @@ function renderCalendar(year, month) {
   fetchFreeBusy(year, month).then(busyIntervals => {
     grid.querySelectorAll(".booking-day.loading").forEach(el => {
       const dateStr = el.dataset.date;
+      const hanaTz = getHanaTz(dateStr);
+      const hanaStartMs = localToUtcMs(dateStr, HANA_AVAIL.startH, 0, hanaTz);
+      const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
       let hasAvail = false;
-      outer: for (let h = HANA_AVAIL.startH; h < 22; h++) {
-        for (let q = 0; q < 4; q++) {
-          if (canStartAt(dateStr, h, q * 15, _selectedDuration, busyIntervals)) { hasAvail = true; break outer; }
-        }
+      for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
+        if (canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs)) { hasAvail = true; break; }
       }
       el.classList.remove("loading");
       if (hasAvail) {
@@ -1610,50 +1616,54 @@ async function fetchFreeBusy(year, month) {
   }
 }
 
-function is15MinBusy(dateStr, hour, minute, busyIntervals) {
-  const s = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}:00+08:00`).getTime();
-  const e = s + 15 * 60000;
-  return busyIntervals.some(b => s < new Date(b.end).getTime() && e > new Date(b.start).getTime());
+// ── Hana 所在时区（按日期动态切换）──
+function getHanaTz(dateStr) {
+  return dateStr < "2026-06-03" ? "Europe/Rome" : "Asia/Shanghai";
 }
 
-function canStartAt(dateStr, hour, minute, durationMin, busyIntervals) {
-  const s = new Date(`${dateStr}T${String(hour).padStart(2,"0")}:${String(minute).padStart(2,"0")}:00+08:00`).getTime();
-  const e = s + durationMin * 60000;
-  const dayEnd = new Date(`${dateStr}T22:00:00+08:00`).getTime();
-  if (e > dayEnd) return false;
-  return !busyIntervals.some(b => s < new Date(b.end).getTime() && e > new Date(b.start).getTime());
+// ── 将指定时区的 H:M 转换为 UTC 毫秒 ──
+function localToUtcMs(dateStr, h, m, tz) {
+  // 通过 noon UTC 在目标时区的表示来推算 offset
+  const noonUtcDate = new Date(`${dateStr}T12:00:00Z`);
+  const noonLocal = noonUtcDate.toLocaleString("en-CA", {
+    timeZone: tz, hourCycle: "h23", hour: "2-digit", minute: "2-digit"
+  }); // e.g. "14:00" for UTC+2
+  const [lh, lm] = noonLocal.split(":").map(Number);
+  const offsetMs = (lh * 60 + lm - 12 * 60) * 60000;
+  const naiveMs = Date.parse(`${dateStr}T${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:00Z`);
+  return naiveMs - offsetMs;
 }
 
-function hktToVisitorTimeStr(dateStr, hktHour, hktMinute = 0) {
-  const d = new Date(`${dateStr}T${String(hktHour).padStart(2,"0")}:${String(hktMinute).padStart(2,"0")}:00+08:00`);
-  return d.toLocaleTimeString("en-US", {
-    timeZone: _visitorTz,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+// ── UTC 毫秒维度的 busy 判断 ──
+function is15MinBusyMs(utcMs, busyIntervals) {
+  const e = utcMs + 15 * 60000;
+  return busyIntervals.some(b => utcMs < new Date(b.end).getTime() && e > new Date(b.start).getTime());
+}
+
+function canStartAtMs(utcMs, durationMin, busyIntervals, hanaEndMs) {
+  const e = utcMs + durationMin * 60000;
+  if (e > hanaEndMs) return false;
+  return !busyIntervals.some(b => utcMs < new Date(b.end).getTime() && e > new Date(b.start).getTime());
 }
 
 function getMaxDurationForDay(dateStr, busyIntervals) {
+  const hanaTz = getHanaTz(dateStr);
+  const hanaStartMs = localToUtcMs(dateStr, HANA_AVAIL.startH, 0, hanaTz);
+  const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
   let maxMin = 0;
-  for (let h = HANA_AVAIL.startH; h < 22; h++) {
-    for (let q = 0; q < 4; q++) {
-      const m = q * 15;
-      const slotStartMs = new Date(`${dateStr}T${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:00+08:00`).getTime();
-      const dayEndMs = new Date(`${dateStr}T22:00:00+08:00`).getTime();
-      let earliest = dayEndMs;
-      for (const b of busyIntervals) {
-        const bs = new Date(b.start).getTime();
-        const be = new Date(b.end).getTime();
-        if (be <= slotStartMs) continue;
-        if (bs <= slotStartMs) { earliest = slotStartMs; break; }
-        if (bs < earliest) earliest = bs;
-      }
-      const avail = Math.floor((earliest - slotStartMs) / 60000);
-      if (avail > maxMin) maxMin = avail;
+  for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
+    let earliest = hanaEndMs;
+    for (const b of busyIntervals) {
+      const bs = new Date(b.start).getTime();
+      const be = new Date(b.end).getTime();
+      if (be <= t) continue;
+      if (bs <= t) { earliest = t; break; }
+      if (bs < earliest) earliest = bs;
     }
+    const avail = Math.floor((earliest - t) / 60000);
+    if (avail > maxMin) maxMin = avail;
   }
-  return maxMin || (22 - HANA_AVAIL.startH) * 60;
+  return maxMin || (HANA_AVAIL.endH - HANA_AVAIL.startH) * 60;
 }
 
 function openDayModal(dateStr) {
@@ -1698,62 +1708,57 @@ function renderDayTimeline(dateStr, busyIntervals) {
   _timelineAbortCtrl = new AbortController();
   const signal = _timelineAbortCtrl.signal;
 
-  const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
-  const timeline = document.getElementById("bdm-timeline");
+  const hanaTz    = getHanaTz(dateStr);
+  const hanaStartMs = localToUtcMs(dateStr, HANA_AVAIL.startH, 0, hanaTz);
+  const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
+  const timeline  = document.getElementById("bdm-timeline");
 
-  // Build 15-min slot data (08:00 – 21:45)
-  const slots = [];
-  for (let h = HANA_AVAIL.startH; h < 22; h++) {
-    for (let q = 0; q < 4; q++) {
-      const m = q * 15;
-      slots.push({
-        h, m,
-        busy:      is15MinBusy(dateStr, h, m, busyIntervals),
-        clickable: canStartAt(dateStr, h, m, _selectedDuration, busyIntervals),
-      });
-    }
+  // Helper: UTC ms → visitor-tz "HH:MM"
+  function toVis(utcMs) {
+    return new Date(utcMs).toLocaleTimeString("en-US", {
+      timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+    });
   }
-  // Mark busy block boundaries for rounded-corner merging
+
+  // Build 15-min slots for Hana's available window only
+  const slots = [];
+  for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
+    const isBusy    = is15MinBusyMs(t, busyIntervals);
+    const clickable = !isBusy && canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs);
+    const visStr    = toVis(t);
+    const vm        = parseInt(visStr.split(":")[1]);
+    slots.push({ utcMs: t, isBusy, clickable, visStr, isHourMark: vm === 0 });
+  }
+
+  // Busy block boundaries (rounded corners)
   slots.forEach((s, i) => {
-    if (!s.busy) return;
-    s.busyFirst = i === 0 || !slots[i-1].busy;
-    s.busyLast  = i === slots.length - 1 || !slots[i+1].busy;
+    if (!s.isBusy) return;
+    s.busyFirst = i === 0 || !slots[i-1].isBusy;
+    s.busyLast  = i === slots.length - 1 || !slots[i+1].isBusy;
     s.busySolo  = s.busyFirst && s.busyLast;
   });
 
-  // Pre-compute selected range boundaries (ms)
-  let selStartMs = -1, selEndMs = -1;
-  if (_selectedTime) {
-    const [sh, sm] = _selectedTime.split(":").map(Number);
-    selStartMs = new Date(`${dateStr}T${String(sh).padStart(2,"0")}:${String(sm).padStart(2,"0")}:00+08:00`).getTime();
-    selEndMs   = selStartMs + _selectedDuration * 60000;
-  }
+  // Pre-compute selected range
+  const selStartMs = typeof _selectedTime === "number" ? _selectedTime : -1;
+  const selEndMs   = selStartMs >= 0 ? selStartMs + _selectedDuration * 60000 : -1;
 
   // Render HTML
   let html = '<div class="bdm-grid">';
+
+  // ── Top sleep bar ──
+  html += `<div class="bdm-sleep-bar">🌙 ${toVis(hanaStartMs - 60*60000)} – ${toVis(hanaStartMs)}</div>`;
+
+  // ── Available window cells ──
   for (const s of slots) {
-    const hStr = String(s.h).padStart(2,"0");
-    const mStr = String(s.m).padStart(2,"0");
-    const cellMs    = new Date(`${dateStr}T${hStr}:${mStr}:00+08:00`).getTime();
-    const cellEndMs = cellMs + 15 * 60000;
+    const msStr     = String(s.utcMs);
+    const cellEndMs = s.utcMs + 15 * 60000;
+    const label     = s.isHourMark
+      ? `<div class="bdm-cell-label">${s.visStr}</div>`
+      : `<div class="bdm-cell-label"></div>`;
 
-    // Left time label (only at each hour)
-    let label;
-    if (s.m === 0) {
-      if (isSameZone) {
-        label = `<div class="bdm-cell-label">${hStr}:00</div>`;
-      } else {
-        const vis = hktToVisitorTimeStr(dateStr, s.h, 0);
-        label = `<div class="bdm-cell-label">${vis}<span class="bdm-utc8">${hStr}:00</span></div>`;
-      }
-    } else {
-      label = `<div class="bdm-cell-label"></div>`;
-    }
-
-    // Cell CSS classes
     let cls = "bdm-cell";
-    if (s.m === 0) cls += " hour-start";
-    if (s.busy) {
+    if (s.isHourMark) cls += " hour-start";
+    if (s.isBusy) {
       cls += " busy";
       if (s.busySolo)       cls += " busy-solo";
       else if (s.busyFirst) cls += " busy-first";
@@ -1762,24 +1767,34 @@ function renderDayTimeline(dateStr, busyIntervals) {
       cls += " available";
     }
 
-    // Selected state + data-time on the first selected cell
     let dataTime = "";
-    if (selStartMs >= 0 && cellMs >= selStartMs && cellMs < selEndMs) {
+    if (selStartMs >= 0 && s.utcMs >= selStartMs && s.utcMs < selEndMs) {
       cls += " selected";
-      if (cellMs === selStartMs) {
+      if (s.utcMs === selStartMs) {
         cls += " selected-first";
-        const t = isSameZone ? `${hStr}:${mStr}` : hktToVisitorTimeStr(dateStr, s.h, s.m);
-        dataTime = ` data-time="${t}"`;
+        dataTime = ` data-time="${s.visStr}"`;
       }
       if (cellEndMs >= selEndMs) cls += " selected-last";
     }
 
-    html += `<div class="${cls}" data-h="${s.h}" data-m="${s.m}"${dataTime}>${label}<div class="bdm-cell-bar"></div></div>`;
+    html += `<div class="${cls}" data-utcms="${msStr}"${dataTime}>${label}<div class="bdm-cell-bar"></div></div>`;
   }
+
+  // ── Bottom sleep bar ──
+  html += `<div class="bdm-sleep-bar sleep-bottom">🌙 ${toVis(hanaEndMs)} – ${toVis(hanaEndMs + 60*60000)}</div>`;
+
   html += "</div>";
   timeline.innerHTML = html;
 
-  // ── Event delegation (AbortController cleans up on re-render) ──
+  // Auto-scroll: land on the first available / first cell of available window
+  requestAnimationFrame(() => {
+    const firstVisible = timeline.querySelector(".bdm-cell.available, .bdm-cell");
+    if (firstVisible) {
+      timeline.scrollTop = Math.max(0, firstVisible.offsetTop - 32);
+    }
+  });
+
+  // ── Event delegation ──
   let prevCells = [];
   function clearPreview() {
     prevCells.forEach(c => c.classList.remove("preview","preview-first","preview-last"));
@@ -1789,19 +1804,17 @@ function renderDayTimeline(dateStr, busyIntervals) {
   timeline.addEventListener("mouseover", (e) => {
     const cell = e.target.closest(".bdm-cell.available");
     if (!cell) { clearPreview(); return; }
-    const h = parseInt(cell.dataset.h), m = parseInt(cell.dataset.m);
-    if (!canStartAt(dateStr, h, m, _selectedDuration, busyIntervals)) { clearPreview(); return; }
+    const cellMs = parseInt(cell.dataset.utcms);
+    if (!canStartAtMs(cellMs, _selectedDuration, busyIntervals, hanaEndMs)) { clearPreview(); return; }
     clearPreview();
-    const startMs = new Date(`${dateStr}T${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:00+08:00`).getTime();
-    const endMs   = startMs + _selectedDuration * 60000;
-    timeline.querySelectorAll(".bdm-cell").forEach(c => {
-      const ch = parseInt(c.dataset.h), cm = parseInt(c.dataset.m);
-      const cMs    = new Date(`${dateStr}T${String(ch).padStart(2,"0")}:${String(cm).padStart(2,"0")}:00+08:00`).getTime();
-      const cEndMs = cMs + 15 * 60000;
-      if (cMs >= startMs && cMs < endMs) {
+    const endMs = cellMs + _selectedDuration * 60000;
+    timeline.querySelectorAll(".bdm-cell[data-utcms]").forEach(c => {
+      const cMs  = parseInt(c.dataset.utcms);
+      const cEnd = cMs + 15 * 60000;
+      if (cMs >= cellMs && cMs < endMs) {
         c.classList.add("preview");
-        if (cMs === startMs)   c.classList.add("preview-first");
-        if (cEndMs >= endMs)   c.classList.add("preview-last");
+        if (cMs === cellMs) c.classList.add("preview-first");
+        if (cEnd >= endMs)  c.classList.add("preview-last");
         prevCells.push(c);
       }
     });
@@ -1812,9 +1825,9 @@ function renderDayTimeline(dateStr, busyIntervals) {
   timeline.addEventListener("click", (e) => {
     const cell = e.target.closest(".bdm-cell.available");
     if (!cell) return;
-    const h = parseInt(cell.dataset.h), m = parseInt(cell.dataset.m);
-    if (!canStartAt(dateStr, h, m, _selectedDuration, busyIntervals)) return;
-    _selectedTime = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+    const cellMs = parseInt(cell.dataset.utcms);
+    if (!canStartAtMs(cellMs, _selectedDuration, busyIntervals, hanaEndMs)) return;
+    _selectedTime = cellMs;
     closeDayModal();
     updateSelectedSummary();
     document.getElementById("booking-form-wrap").style.display = "";
@@ -1828,15 +1841,19 @@ function closeDayModal() {
 
 function updateSelectedSummary() {
   if (!_selectedDate || _selectedTime === null) return;
-  const [y, m, d] = _selectedDate.split("-");
+  const [y, mo, d] = _selectedDate.split("-");
   const dateLabel = _bookingLang === "zh"
-    ? `${y}年${parseInt(m)}月${parseInt(d)}日`
+    ? `${y}年${parseInt(mo)}月${parseInt(d)}日`
     : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const [sh, sm] = _selectedTime.split(":").map(Number);
-  const hktStr = `${String(sh).padStart(2,"0")}:${String(sm).padStart(2,"0")} UTC+8`;
-  const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
-  const visStr = hktToVisitorTimeStr(_selectedDate, sh, sm);
-  const timeLabel = isSameZone ? hktStr : `${visStr}（${hktStr}）`;
+  const selDate = new Date(_selectedTime);
+  const visStr  = selDate.toLocaleTimeString("en-US", {
+    timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+  });
+  const hanaTz  = getHanaTz(_selectedDate);
+  const hanaStr = selDate.toLocaleTimeString("en-US", {
+    timeZone: hanaTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+  });
+  const timeLabel = visStr === hanaStr ? visStr : `${visStr}（Hana: ${hanaStr}）`;
   const durationLabel = `${_selectedDuration} min`;
   document.getElementById("booking-selected-summary").textContent =
     _bookingLang === "zh"
@@ -1870,11 +1887,17 @@ async function onBookingSubmit(e) {
   const dateLabel = _bookingLang === "zh"
     ? `${y}年${parseInt(m)}月${parseInt(d)}日`
     : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const [sh2, sm2] = _selectedTime.split(":").map(Number);
-  const hktStr = `${String(sh2).padStart(2,"0")}:${String(sm2).padStart(2,"0")} UTC+8`;
-  const isSameZone = ["Asia/Shanghai","Asia/Hong_Kong","Asia/Singapore"].includes(_visitorTz);
-  const visStr = hktToVisitorTimeStr(_selectedDate, sh2, sm2);
-  const timeLabel = isSameZone ? hktStr : `${visStr} (visitor TZ) / ${hktStr}`;
+  const selDate = new Date(_selectedTime);
+  const hanaTz = getHanaTz(_selectedDate);
+  const hanaTimeStr = selDate.toLocaleTimeString("en-US", {
+    timeZone: hanaTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+  });
+  const visStr = selDate.toLocaleTimeString("en-US", {
+    timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+  });
+  const timeLabel = visStr === hanaTimeStr
+    ? visStr
+    : `${visStr} (${_visitorTz}) / ${hanaTimeStr} (Hana's local)`;
 
   try {
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
