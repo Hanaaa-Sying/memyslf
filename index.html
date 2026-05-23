@@ -660,7 +660,7 @@ const NOTION_CONFIG = {
 };
 
 // ── Booking 配置（用户填写） ──
-const GOOGLE_CALENDAR_ID  = "521905f31a910f8f446d4df7870f4f393a35beec8d067d2e8f54cef268735a07@group.calendar.google.com";
+const GOOGLE_CALENDAR_ID  = "lucy20051110@gmail.com";
 const GOOGLE_API_KEY      = "AIzaSyD-O93_xVPwD34YsqblzZ0PonfObH__oGE";
 const EMAILJS_PUBLIC_KEY  = "_DrYLZ8UugAJCTSqp";
 const EMAILJS_SERVICE_ID  = "service_dt7yu9e";
@@ -1610,7 +1610,6 @@ async function fetchFreeBusy(year, month) {
     return [];
   }
   try {
-    console.log("[GCal] 正在请求 FreeBusy…", { timeMin, timeMax, calendarId: GOOGLE_CALENDAR_ID });
     const res = await fetch(
       `https://www.googleapis.com/calendar/v3/freeBusy?key=${GOOGLE_API_KEY}`,
       {
@@ -1626,7 +1625,7 @@ async function fetchFreeBusy(year, month) {
       return [];
     }
     const busy = data.calendars?.[GOOGLE_CALENDAR_ID]?.busy || [];
-    console.log(`[GCal] 成功，本月共 ${busy.length} 段 busy：`, busy);
+    console.log("[GCal] busy intervals:", busy, "raw data:", JSON.stringify(data));
     _busyCache[cacheKey] = busy;
     return busy;
   } catch(err) {
