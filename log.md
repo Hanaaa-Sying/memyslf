@@ -198,3 +198,17 @@
 
 **实施路径：**
 - 修改 `const GOOGLE_CALENDAR_ID` 常量值（第 663 行附近）。
+
+---
+
+## 2026-05-23 — 日历视图按访客时区过滤已过时段
+
+**改动内容：**
+- `renderCalendar` 的 `hasAvail` 循环新增 `t >= nowMs` 条件：当天所有可用时段均已过（如意大利 23:30），该日在日历上不再显示为可选。
+- `renderDayTimeline` 的 slot 构建新增 `isPast = t < nowMs`，已过时段不添加 `.available` 类，改为 `.past` 类。
+- 新增 `.bdm-cell.past` CSS：细斜线填充，cursor: default，视觉区分已过时段与可用时段。
+
+**实施路径：**
+- `renderCalendar` 第 1589 行附近：`for` 循环体内加 `const nowMs = Date.now()` 和 `t >= nowMs &&`。
+- `renderDayTimeline` slot 构建：新增 `isPast` 字段，`clickable` 条件加 `&& !isPast`，渲染 class 分支加 `else if (s.isPast) cls += " past"`。
+- CSS `.bdm-cell.busy` 后紧接新增 `.bdm-cell.past` 样式。

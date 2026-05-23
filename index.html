@@ -359,6 +359,8 @@
     .bdm-cell.selected-first::after { content: attr(data-time); position: absolute; left: 56px; top: 50%; transform: translateY(-50%); font-family: var(--font-sans); font-size: 10px; color: #fff; font-weight: 700; pointer-events: none; z-index: 1; white-space: nowrap; }
     .bdm-cell.busy { cursor: default; }
     .bdm-cell.busy .bdm-cell-bar { background: rgba(107,76,42,0.09); }
+    .bdm-cell.past { cursor: default; }
+    .bdm-cell.past .bdm-cell-bar { background: repeating-linear-gradient(135deg, rgba(180,170,160,0.07) 0px, rgba(180,170,160,0.07) 2px, transparent 2px, transparent 6px); }
     .bdm-cell.busy-first .bdm-cell-bar { border-radius: 3px 3px 0 0; background: rgba(107,76,42,0.13); }
     .bdm-cell.busy-last .bdm-cell-bar { border-radius: 0 0 3px 3px; }
     .bdm-cell.busy-solo .bdm-cell-bar { border-radius: 3px; background: rgba(107,76,42,0.13); }
@@ -1585,9 +1587,10 @@ function renderCalendar(year, month) {
       const hanaTz = getHanaTz(dateStr);
       const hanaStartMs = localToUtcMs(dateStr, HANA_AVAIL.startH, 0, hanaTz);
       const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
+      const nowMs = Date.now();
       let hasAvail = false;
       for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
-        if (canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs)) { hasAvail = true; break; }
+        if (t >= nowMs && canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs)) { hasAvail = true; break; }
       }
       el.classList.remove("loading");
       if (hasAvail) {
@@ -1740,13 +1743,15 @@ function renderDayTimeline(dateStr, busyIntervals) {
   }
 
   // Build 15-min slots for Hana's available window only
+  const nowMs = Date.now();
   const slots = [];
   for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
     const isBusy    = is15MinBusyMs(t, busyIntervals);
-    const clickable = !isBusy && canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs);
+    const isPast    = t < nowMs;
+    const clickable = !isBusy && !isPast && canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs);
     const visStr    = toVis(t);
     const vm        = parseInt(visStr.split(":")[1]);
-    slots.push({ utcMs: t, isBusy, clickable, visStr, isHourMark: vm === 0 });
+    slots.push({ utcMs: t, isBusy, isPast, clickable, visStr, isHourMark: vm === 0 });
   }
 
   // Busy block boundaries (rounded corners)
@@ -1782,6 +1787,8 @@ function renderDayTimeline(dateStr, busyIntervals) {
       if (s.busySolo)       cls += " busy-solo";
       else if (s.busyFirst) cls += " busy-first";
       else if (s.busyLast)  cls += " busy-last";
+    } else if (s.isPast) {
+      cls += " past";
     } else if (s.clickable) {
       cls += " available";
     }
