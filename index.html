@@ -378,6 +378,9 @@
     .booking-submit:hover { opacity: 0.85; }
     .booking-submit:disabled { opacity: 0.5; cursor: not-allowed; }
     .booking-error { font-family: var(--font-sans); font-size: 13px; color: #c0392b; margin-top: 12px; display: none; }
+    .bfield-header { display: flex; align-items: baseline; margin-bottom: 6px; }
+    .bfield-star { color: var(--accent-dark); font-size: 13px; margin-left: 1px; }
+    .bfield-err { color: #c0392b; font-size: 12px; margin-left: 8px; display: none; }
     .booking-success { font-family: var(--font-serif); font-size: 18px; color: var(--accent-dark); text-align: center; padding: 48px 24px; line-height: 1.8; }
     .booking-success span { display: block; font-family: var(--font-sans); font-size: 13px; color: var(--text-light); margin-top: 12px; }
     @media (max-width: 768px) {
@@ -555,30 +558,29 @@
           <!-- 邮箱 + 微信 并排 -->
           <div class="booking-form-row">
             <div class="booking-field">
-              <label id="b-email-label"></label>
+              <div class="bfield-header"><label id="b-email-label"></label><span class="bfield-star"> *</span><span class="bfield-err" id="err-contact"></span></div>
               <input type="email" id="b-email" autocomplete="email">
             </div>
             <div class="booking-field">
-              <label id="b-wechat-label"></label>
+              <div class="bfield-header"><label id="b-wechat-label"></label><span class="bfield-star"> *</span></div>
               <input type="text" id="b-wechat">
             </div>
           </div>
-          <p class="booking-error" id="booking-error"></p>
           <!-- 称呼 + 基本信息 并排 -->
           <div class="booking-form-row">
             <div class="booking-field">
-              <label id="b-name-label"></label>
-              <input type="text" id="b-name" required>
+              <div class="bfield-header"><label id="b-name-label"></label><span class="bfield-star"> *</span><span class="bfield-err" id="err-name"></span></div>
+              <input type="text" id="b-name">
             </div>
             <div class="booking-field">
-              <label id="b-extra-label"></label>
+              <div class="bfield-header"><label id="b-extra-label"></label></div>
               <input type="text" id="b-extra">
             </div>
           </div>
           <!-- 想聊什么 单独一行 -->
           <div class="booking-field">
-            <label id="b-topic-label"></label>
-            <textarea id="b-topic" rows="4" required></textarea>
+            <div class="bfield-header"><label id="b-topic-label"></label><span class="bfield-star"> *</span><span class="bfield-err" id="err-topic"></span></div>
+            <textarea id="b-topic" rows="4"></textarea>
           </div>
           <div class="booking-submit-wrap">
             <button type="submit" class="booking-submit" id="b-submit"></button>
@@ -719,7 +721,9 @@ const COPY = {
     bookingSubmit: "发送邀请",
     bookingSubmitting: "发送中……",
     bookingError: "发送失败，请稍后重试或直接发邮件联系我。",
-    bookingValidationError: "请至少填写邮箱或微信号 ✦",
+    bookingValidationError: "请至少填写邮箱或微信号",
+    bookingValidationName: "请填写如何称呼你",
+    bookingValidationTopic: "请填写你想聊的内容",
     bookingSuccessMain: "我已经收到了你的邀约，会尽快回复并与你确认！",
     bookingSuccessSub: "请留意你填写的邮箱 / 微信，期待和你聊聊 ✦",
     galleryCaptions: ["尼泊尔 · 瑜伽认证", "米兰 · 博科尼", "欧洲旅途"],
@@ -868,7 +872,9 @@ const COPY = {
     bookingSubmit: "Send Invite",
     bookingSubmitting: "Sending…",
     bookingError: "Failed to send. Please try again or email me directly.",
-    bookingValidationError: "Please fill in at least your email or WeChat ✦",
+    bookingValidationError: "Please fill in at least your email or WeChat",
+    bookingValidationName: "Please enter your name",
+    bookingValidationTopic: "Please describe what you'd like to discuss",
     bookingSuccessMain: "Your request has been received! I'll reply to confirm as soon as I can.",
     bookingSuccessSub: "Keep an eye on your email / WeChat. Looking forward to chatting! ✦",
     galleryCaptions: ["Nepal · Yoga Cert", "Milan · Bocconi", "Traveling Europe"],
@@ -1857,7 +1863,7 @@ function renderDayTimeline(dateStr, busyIntervals) {
     closeDayModal();
     updateSelectedSummary();
     document.getElementById("booking-form-wrap").style.display = "";
-    document.getElementById("booking-error").style.display = "none";
+    clearFieldErrors();
   }, { signal });
 }
 
@@ -1887,6 +1893,20 @@ function updateSelectedSummary() {
       : `Selected: ${dateLabel} ${timeLabel}, ${durationLabel}`;
 }
 
+function clearFieldErrors() {
+  ["err-contact", "err-name", "err-topic"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+}
+
+function showFieldError(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = " " + msg;
+  el.style.display = "inline";
+}
+
 async function onBookingSubmit(e) {
   e.preventDefault();
   const c = COPY[_bookingLang];
@@ -1895,19 +1915,17 @@ async function onBookingSubmit(e) {
   const name = document.getElementById("b-name").value.trim();
   const extra = document.getElementById("b-extra").value.trim();
   const topic = document.getElementById("b-topic").value.trim();
-  const errEl = document.getElementById("booking-error");
 
-  if (!email && !wechat) {
-    errEl.textContent = c.bookingValidationError;
-    errEl.style.display = "block";
-    return;
-  }
-  if (!name || !topic) return;
+  clearFieldErrors();
+  let hasError = false;
+  if (!email && !wechat) { showFieldError("err-contact", c.bookingValidationError); hasError = true; }
+  if (!name)  { showFieldError("err-name",    c.bookingValidationName);  hasError = true; }
+  if (!topic) { showFieldError("err-topic",   c.bookingValidationTopic); hasError = true; }
+  if (hasError) return;
 
   const btn = document.getElementById("b-submit");
   btn.disabled = true;
   btn.textContent = c.bookingSubmitting;
-  errEl.style.display = "none";
 
   const [y, m, d] = _selectedDate.split("-");
   const dateLabel = _bookingLang === "zh"
