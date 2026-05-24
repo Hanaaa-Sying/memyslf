@@ -284,8 +284,12 @@
     }
     /* 手机端：弹窗退回竖向布局 */
     @media (max-width: 600px) {
-      .booking-day-modal-box { flex-direction: column; height: auto; max-height: 92vh; width: 96%; }
-      .bdm-left { width: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
+      .booking-day-modal-box { flex-direction: column; height: 88vh; max-height: 88vh; width: 96%; }
+      .bdm-left { width: auto; flex-shrink: 0; border-right: none; border-bottom: 1px solid var(--border); padding: 10px 14px; overflow-y: visible; }
+      .bdm-left-header { margin-bottom: 8px; }
+      .bdm-section { margin-bottom: 8px; }
+      .bdm-section-label { margin-bottom: 4px; }
+      .bdm-right { flex: 1; min-height: 0; overflow: hidden; }
       .bdm-pick-hint { display: none; }
       .bdm-cell { height: 22px; }
     }
