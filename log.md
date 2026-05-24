@@ -19,6 +19,21 @@
 
 ---
 
+## 2026-05-24 — 预约网格手机端适配修复
+
+**改动内容：**
+1. **左侧面板全宽**：`bw-left` 在移动端改为 `width: 100%; box-sizing: border-box`，确保填满容器
+2. **垂直滚动**：移除 `bw-right { height: 400px }` 和 `overflow: hidden`，改为 `height: auto; overflow: visible`；`bw-grid-outer` 在移动端改为 `overflow: auto; height: 360px`，使 56 格（560px）在 360px 窗口内可上下滚动
+3. **水平滚动触控支持**：`bw-grid-outer` 移动端加 `touch-action: pan-x pan-y`（允许原生双向触控滚动）和 `-webkit-overflow-scrolling: touch`（iOS Safari）；`.bw-selected` 全局加 `touch-action: none`，使拖拽换位在移动端仍可通过 pointer event 触发
+4. **顶部角落 sticky**：`.bw-corner` 加 `position: sticky; left: 0; z-index: 11`，与时间轴保持一致，水平滚动时列标题与列内容不错位
+
+**实施路径：**
+- 仅 CSS 改动，无 JS 变更
+- 移动端 media query（640px）重写：去掉旧的 `min-width: 44px` 覆盖（JS inline style 优先级更高），更新 bw-left/bw-right/bw-grid-outer 属性
+- 全局：bw-corner 加 sticky，bw-selected 加 touch-action
+
+---
+
 ## 2026-05-24 — 预约网格：当前时间线修复 + 7天初始视图
 
 **改动内容：**
