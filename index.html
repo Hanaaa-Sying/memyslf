@@ -329,7 +329,10 @@
     .bdm-pick-hint { font-family: var(--font-sans); font-size: 12px; color: var(--text-light); line-height: 1.6; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
     /* 右侧时间轴 */
     .bdm-right { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .bdm-notice { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); padding: 7px 14px; background: rgba(232,213,190,0.18); border-bottom: 1px solid var(--border); flex-shrink: 0; display: none; }
+    .bdm-notice { display: none; }
+    .bdm-now-line { position: absolute; left: 52px; right: 0; height: 2px; background: rgba(196,137,90,0.85); pointer-events: none; z-index: 5; }
+    .bdm-now-line::before { content: ""; position: absolute; left: -6px; top: -4px; width: 10px; height: 10px; background: rgba(196,137,90,0.85); border-radius: 50%; }
+    .bdm-cutoff-label { position: absolute; left: 54px; right: 8px; font-family: var(--font-sans); font-size: 10px; color: var(--accent-dark); opacity: 0.9; pointer-events: none; z-index: 4; transform: translateY(-100%); padding-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bdm-duration-btns { display: flex; gap: 6px; flex-wrap: wrap; }
     .bdm-dur-btn { font-family: var(--font-sans); font-size: 13px; padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: all var(--transition); }
     .bdm-dur-btn:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
@@ -1442,6 +1445,7 @@ let _selectedDuration = 60;
 let _isCustomDuration = false;
 let _dayMaxDuration = 840;
 let _timelineAbortCtrl = null;
+let _nowLineInterval   = null;
 const _busyCache = {};
 
 function renderBookingCopy(lang) {
@@ -1729,6 +1733,12 @@ function openDayModal(dateStr) {
 
   document.getElementById("booking-day-modal").style.display = "flex";
   document.getElementById("booking-form-wrap").style.display = "none";
+
+  if (_nowLineInterval) clearInterval(_nowLineInterval);
+  requestAnimationFrame(() => {
+    renderNowIndicators();
+    _nowLineInterval = setInterval(renderNowIndicators, 30000);
+  });
 }
 
 function renderDurationBtns() {
@@ -1768,10 +1778,6 @@ function renderDayTimeline(dateStr, busyIntervals) {
     const vm        = parseInt(visStr.split(":")[1]);
     slots.push({ utcMs: t, isBusy, isPast, clickable, visStr, isHourMark: vm === 0 });
   }
-
-  // 有近期不可选时段时显示提前预约说明
-  const noticeEl = document.getElementById("bdm-notice");
-  if (noticeEl) noticeEl.style.display = slots.some(s => s.isPast) ? "" : "none";
 
   // Busy block boundaries (rounded corners)
   slots.forEach((s, i) => {
@@ -1880,7 +1886,58 @@ function renderDayTimeline(dateStr, busyIntervals) {
   }, { signal });
 }
 
+function renderNowIndicators() {
+  const grid = document.querySelector("#bdm-timeline .bdm-grid");
+  if (!grid || !_selectedDate) return;
+
+  const hanaTz     = getHanaTz(_selectedDate);
+  const hanaStartMs = localToUtcMs(_selectedDate, HANA_AVAIL.startH, 0, hanaTz);
+  const hanaEndMs   = localToUtcMs(_selectedDate, HANA_AVAIL.endH,   0, hanaTz);
+  const nowMs      = Date.now();
+  const cutoffMs   = nowMs + 3 * 3600000;
+
+  const firstCell  = grid.querySelector(".bdm-cell");
+  const cellH      = firstCell ? firstCell.offsetHeight : 16;
+  const sleepH     = grid.querySelector(".bdm-sleep-bar") ? grid.querySelector(".bdm-sleep-bar").offsetHeight : 32;
+
+  function msToY(ms) {
+    return sleepH + ((ms - hanaStartMs) / (15 * 60000)) * cellH;
+  }
+
+  // ── 当前时间线 ──
+  let nowLine = document.getElementById("bdm-now-line");
+  if (!nowLine) {
+    nowLine = document.createElement("div");
+    nowLine.id = "bdm-now-line";
+    nowLine.className = "bdm-now-line";
+    grid.appendChild(nowLine);
+  }
+  if (nowMs >= hanaStartMs && nowMs < hanaEndMs) {
+    nowLine.style.top = msToY(nowMs) + "px";
+    nowLine.style.display = "";
+  } else {
+    nowLine.style.display = "none";
+  }
+
+  // ── 3h 截止线上方说明文字 ──
+  let cutoffEl = document.getElementById("bdm-cutoff-label");
+  if (!cutoffEl) {
+    cutoffEl = document.createElement("div");
+    cutoffEl.id = "bdm-cutoff-label";
+    cutoffEl.className = "bdm-cutoff-label";
+    grid.appendChild(cutoffEl);
+  }
+  if (cutoffMs > hanaStartMs && cutoffMs <= hanaEndMs) {
+    cutoffEl.style.top = msToY(cutoffMs) + "px";
+    cutoffEl.style.display = "";
+    cutoffEl.textContent = COPY[_bookingLang].bookingLeadTimeNote;
+  } else {
+    cutoffEl.style.display = "none";
+  }
+}
+
 function closeDayModal() {
+  if (_nowLineInterval) { clearInterval(_nowLineInterval); _nowLineInterval = null; }
   document.getElementById("booking-day-modal").style.display = "none";
 }
 

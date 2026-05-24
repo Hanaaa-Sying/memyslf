@@ -238,6 +238,19 @@
 
 ---
 
+## 2026-05-24 — 时间轴新增当前时间线 + 3h截止说明内嵌标注
+
+**改动内容：**
+- 新增 `renderNowIndicators()` 函数：在 `.bdm-grid` 内绝对定位两个元素：
+  - `.bdm-now-line`：accent 色小圆点 + 横线，标示当前时刻在时间轴中的位置（仿 Google Calendar）
+  - `.bdm-cutoff-label`：3h截止点上方的说明文字"（请提前至少3h预约…）"
+- `openDayModal` 弹窗显示后通过 `requestAnimationFrame` 调用 `renderNowIndicators`，并启动每30秒更新的 `setInterval`（存入 `_nowLineInterval`）。
+- `closeDayModal` 清除 interval，防止内存泄漏。
+- 移除 `.bdm-notice` 顶部横幅的显隐逻辑，改为时间轴内嵌方式。
+- `.bdm-now-line` / `.bdm-cutoff-label` CSS 新增至样式区。
+
+---
+
 ## 2026-05-23 — 日历视图按访客时区过滤已过时段
 
 **改动内容：**
