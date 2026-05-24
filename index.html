@@ -375,9 +375,11 @@
     .bw-selected { position: absolute; left: 1px; right: 1px; background: var(--accent-dark); border-radius: 4px; pointer-events: auto; z-index: 3; cursor: grab; user-select: none; }
     .bw-selected-label { position: absolute; top: 3px; left: 4px; right: 4px; font-family: var(--font-sans); font-size: 9px; color: #fff; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
 
-    /* 当前时间线（横穿全部日期列） */
-    .bw-now-line { position: absolute; left: 44px; right: 0; height: 2px; background: rgba(196,137,90,0.85); pointer-events: none; z-index: 5; }
+    /* 当前时间线（横穿全部日期列，宽度由 JS 根据 scrollWidth 设置） */
+    .bw-now-line { position: absolute; left: 44px; height: 2px; background: rgba(196,137,90,0.85); pointer-events: none; z-index: 5; }
     .bw-now-line::before { content: ""; position: absolute; left: 0; top: -4px; width: 10px; height: 10px; background: rgba(196,137,90,0.85); border-radius: 50%; }
+    /* 当前时间标签（粘在时间轴右侧，始终可见） */
+    .bw-now-label { position: absolute; right: 3px; font-family: var(--font-sans); font-size: 9px; color: rgba(196,137,90,0.95); font-weight: 700; transform: translateY(-50%); pointer-events: none; white-space: nowrap; z-index: 11; background: var(--bg-card); padding: 0 1px; line-height: 1; }
 
     /* ── 表单区域 ── */
     .booking-form-wrap { margin-top: 32px; }
@@ -1706,6 +1708,11 @@ function buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal) {
   const CELL_H   = 10;
   const NUM_CELLS = (HANA_AVAIL.endH - HANA_AVAIL.startH) * 4;
 
+  // 7 days fill the initial viewport; remaining 7 accessible via horizontal scroll
+  const outer = document.querySelector(".bw-grid-outer");
+  const outerW = outer ? outer.clientWidth : 700;
+  const colWidth = Math.max(60, Math.floor((outerW - 44) / 7));
+
   // ── Time axis (label every 2 hours to avoid crowding at 10px cell height) ──
   let taHtml = "";
   for (let h = HANA_AVAIL.startH; h < HANA_AVAIL.endH; h++) {
@@ -1728,7 +1735,7 @@ function buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal) {
     const isToday   = ds === todayStr;
     const isBlocked = !!BLOCKED_DAYS[ds] && !past;
     let cls = "bw-day-hdr" + (past ? " past" : isToday ? " today" : "") + (isBlocked ? " blocked" : "");
-    hdrHtml += `<div class="${cls}" data-date="${ds}"><div class="bw-day-name">${wd}</div><div class="bw-day-num">${num}</div></div>`;
+    hdrHtml += `<div class="${cls}" style="flex:none;min-width:${colWidth}px;width:${colWidth}px" data-date="${ds}"><div class="bw-day-name">${wd}</div><div class="bw-day-num">${num}</div></div>`;
   });
   header.innerHTML = hdrHtml;
 
@@ -1741,6 +1748,7 @@ function buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal) {
 
     const col  = document.createElement("div");
     col.className = "bw-day-col"; col.dataset.date = ds;
+    col.style.flex = "none"; col.style.minWidth = colWidth + "px"; col.style.width = colWidth + "px";
     const wrap = document.createElement("div");
     wrap.className = "bw-cells-wrap";
 
@@ -1876,9 +1884,10 @@ function setupColEvents(wrap, dateStr, hanaStartMs, hanaEndMs, busyIntervals, pr
   }, { signal });
 }
 
-// ── Now-line: spans all date columns in bw-grid-body ──
+// ── Now-line: spans all date columns; time label in sticky time-axis ──
 function renderNowLine(dates, todayStr) {
   document.querySelectorAll(".bw-now-line").forEach(el => el.remove());
+  document.querySelectorAll(".bw-now-label").forEach(el => el.remove());
   if (!dates.includes(todayStr)) return;
   const hanaTz      = getHanaTz(todayStr);
   const hanaStartMs = localToUtcMs(todayStr, HANA_AVAIL.startH, 0, hanaTz);
@@ -1888,11 +1897,27 @@ function renderNowLine(dates, todayStr) {
   const CELL_H    = 10;
   const NUM_CELLS = (HANA_AVAIL.endH - HANA_AVAIL.startH) * 4;
   const y = ((nowMs - hanaStartMs) / (hanaEndMs - hanaStartMs)) * (NUM_CELLS * CELL_H);
+
+  // Line: use scrollWidth so it spans all columns regardless of flex overflow
   const body = document.getElementById("bw-grid-body");
   if (!body) return;
   const line = document.createElement("div");
-  line.className = "bw-now-line"; line.style.top = y + "px";
+  line.className = "bw-now-line";
+  line.style.top   = y + "px";
+  line.style.width = Math.max(0, body.scrollWidth - 44) + "px";
   body.appendChild(line);
+
+  // Time label: pinned in sticky time-axis so always visible when scrolling
+  const taEl = document.getElementById("bw-time-axis");
+  if (taEl) {
+    const label = document.createElement("div");
+    label.className = "bw-now-label";
+    label.style.top = y + "px";
+    label.textContent = new Date(nowMs).toLocaleTimeString("en-US", {
+      timeZone: hanaTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+    });
+    taEl.appendChild(label);
+  }
 }
 
 // ── Main async render: fetch + build ──

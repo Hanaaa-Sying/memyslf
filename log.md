@@ -19,6 +19,20 @@
 
 ---
 
+## 2026-05-24 — 预约网格：当前时间线修复 + 7天初始视图
+
+**改动内容：**
+1. **时间线修复①（时间标签恢复）**：now-line 从列内移出后时间标签丢失；改为在 `#bw-time-axis`（sticky 时间轴）内追加 `.bw-now-label` div，`position: absolute; right: 3px`，确保横向滚动时标签始终可见
+2. **时间线修复②（横向滚动后消失）**：now-line 曾用 `right: 0`，在 flex overflow 容器中该值等于布局宽度而非内容宽度；改为 JS 读取 `body.scrollWidth - 44` 赋给 `line.style.width`，确保线条横穿全部列
+3. **7天初始视图**：`buildWeekGrid` 启动时测量 `bw-grid-outer.clientWidth`，计算 `colWidth = Math.max(60, Math.floor((outerW - 44) / 7))`；为每个 header cell 和 day column 设置 `flex:none; width/min-width: colWidth`，使 14 天总宽度 = 2× 可视宽度，初始显示 7 天，后 7 天通过水平滚动访问
+
+**实施路径：**
+- CSS：新增 `.bw-now-label`（position absolute，right 3px，z-index 11，sticky 时间轴内锚定）；删除 `.bw-now-line` 的 `right: 0`
+- JS `renderNowLine`：改用 `body.scrollWidth - 44` 作为 line width；在 `#bw-time-axis` 追加 label
+- JS `buildWeekGrid`：开头读取 `outer.clientWidth` 并计算 `colWidth`，header cells 内联 style，day col DOM 节点设 `flex/width/min-width`
+
+---
+
 ## 2026-05-24 — 预约网格六项交互体验优化
 
 **改动内容：**
