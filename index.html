@@ -327,8 +327,8 @@
 
     /* 粘性表头 */
     .bw-grid-header { display: flex; position: sticky; top: 0; z-index: 10; background: var(--bg-card); border-bottom: 1px solid var(--border); }
-    .bw-corner { width: 44px; min-width: 44px; flex-shrink: 0; position: sticky; left: 0; z-index: 11; background: var(--bg-card); }
-    .bw-day-hdr { flex: 1; min-width: 60px; text-align: center; padding: 10px 4px 8px; border-left: 1px solid rgba(232,213,190,0.5); }
+    .bw-corner { width: 44px; min-width: 44px; flex-shrink: 0; position: sticky; left: 0; z-index: 11; background: var(--bg-card); box-sizing: border-box; }
+    .bw-day-hdr { flex: 1; min-width: 60px; text-align: center; padding: 10px 4px 8px; border-left: 1px solid rgba(232,213,190,0.5); box-sizing: border-box; }
     .bw-day-hdr.past { opacity: 0.3; }
     .bw-day-hdr.today .bw-day-num { color: var(--accent-dark); background: rgba(196,137,90,0.12); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
     .bw-day-hdr.blocked .bw-day-num { opacity: 0.45; text-decoration: line-through; }
@@ -339,13 +339,13 @@
     .bw-grid-body { display: flex; position: relative; }
 
     /* 时间轴（粘性左列） */
-    .bw-time-axis { width: 44px; min-width: 44px; flex-shrink: 0; position: sticky; left: 0; z-index: 9; background: var(--bg-card); border-right: 1px solid rgba(232,213,190,0.5); }
+    .bw-time-axis { width: 44px; min-width: 44px; flex-shrink: 0; position: sticky; left: 0; z-index: 9; background: var(--bg-card); border-right: 1px solid rgba(232,213,190,0.5); box-sizing: border-box; }
     .bw-ta-row { height: 10px; box-sizing: border-box; display: flex; align-items: flex-start; padding-top: 1px; }
     .bw-ta-row.hour-mark { border-top: 1px solid rgba(196,168,130,0.45); }
     .bw-ta-row span { font-family: var(--font-sans); font-size: 9px; color: var(--text-light); padding: 0 4px; line-height: 1; white-space: nowrap; }
 
     /* 日列 */
-    .bw-day-col { flex: 1; min-width: 60px; border-left: 1px solid rgba(232,213,190,0.4); }
+    .bw-day-col { flex: 1; min-width: 60px; border-left: 1px solid rgba(232,213,190,0.4); box-sizing: border-box; }
     .bw-cells-wrap { position: relative; }
 
     /* 15-min 格 */
