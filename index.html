@@ -585,6 +585,7 @@
           <div class="booking-submit-wrap">
             <button type="submit" class="booking-submit" id="b-submit"></button>
           </div>
+          <p class="booking-error" id="err-submit"></p>
         </form>
       </div>
 
@@ -1943,6 +1944,24 @@ async function onBookingSubmit(e) {
     ? visStr
     : `${visStr} (${_visitorTz}) / ${hanaTimeStr} (Hana's local)`;
 
+  // ── 生成 Google Calendar 链接 ──
+  const isZh = _bookingLang === "zh";
+  function fmtGCal(ms) {
+    return new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  }
+  const gcalDetails = (isZh
+    ? `话题：${topic}${extra ? "\n其他：" + extra : ""}\n联系：${email ? email : "微信 " + wechat}`
+    : `Topic: ${topic}${extra ? "\nNotes: " + extra : ""}\nContact: ${email ? email : "WeChat: " + wechat}`
+  );
+  const gcal_link = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+    `&text=${encodeURIComponent(isZh ? `与 ${name} 的聊天` : `Chat with ${name}`)}` +
+    `&dates=${fmtGCal(_selectedTime)}/${fmtGCal(_selectedTime + _selectedDuration * 60000)}` +
+    `&details=${encodeURIComponent(gcalDetails)}` +
+    `&location=Online`;
+
+  const submitErrEl = document.getElementById("err-submit");
+  submitErrEl.style.display = "none";
+
   try {
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       visitor_name: name,
@@ -1951,15 +1970,15 @@ async function onBookingSubmit(e) {
       booking_time: `${timeLabel}，${_selectedDuration} 分钟`,
       topic: topic,
       extra: extra || "（未填写）",
+      gcal_link,
     });
     document.getElementById("booking-form-wrap").style.display = "none";
-    const successEl = document.getElementById("booking-success");
     document.getElementById("booking-success-main").textContent = c.bookingSuccessMain;
     document.getElementById("booking-success-sub").textContent = c.bookingSuccessSub;
-    successEl.style.display = "";
+    document.getElementById("booking-success").style.display = "";
   } catch {
-    errEl.textContent = c.bookingError;
-    errEl.style.display = "";
+    submitErrEl.textContent = c.bookingError;
+    submitErrEl.style.display = "block";
     btn.disabled = false;
     btn.textContent = c.bookingSubmit;
   }

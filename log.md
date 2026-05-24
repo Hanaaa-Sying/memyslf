@@ -201,6 +201,23 @@
 
 ---
 
+## 2026-05-24 — 预约邮件新增 Google Calendar 一键添加链接
+
+**改动内容：**
+- `onBookingSubmit` 新增 `gcal_link` 计算：基于 `_selectedTime`（UTC ms）和 `_selectedDuration` 生成 Google Calendar 事件创建 URL，包含访客称呼、话题、联系方式、时长。
+- 将 `gcal_link` 作为变量传给 EmailJS 模板（`{{gcal_link}}`）。
+- 修复旧的 `errEl` 引用 bug（`#booking-error` 元素已删除，catch 块改用 `#err-submit`）。
+- 在提交按钮下方加回 `<p id="err-submit">` 用于展示发送失败错误。
+- 评估并放弃了"接受/拒绝"按钮方案（用户倾向于手动处理回复邮件）。
+- EmailJS 模板同步更新：加入 `{{gcal_link}}` 按钮，删除底部默认装饰块。
+
+**实施路径：**
+- `onBookingSubmit` 中新增 `fmtGCal()` 辅助函数，拼接 Google Calendar URL。
+- emailjs.send 参数新增 `gcal_link`。
+- catch 块改引用 `submitErrEl = document.getElementById("err-submit")`。
+
+---
+
 ## 2026-05-23 — 日历视图按访客时区过滤已过时段
 
 **改动内容：**
