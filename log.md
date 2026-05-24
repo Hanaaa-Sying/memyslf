@@ -251,6 +251,19 @@
 
 ---
 
+## 2026-05-24 — 交互优化：3h内可hover不可选+shake提示；now-line修复；blocked days；界面细节
+
+**改动内容：**
+- 3h内非忙碌格子改为可hover预览，点击时触发左侧提示文字抖动（`shakeLeadNotice()`）而非选中。
+- 左侧 `#bdm-lead-notice` 固定显示提前预约说明，点击3h内时段时以 shake 动画强调。
+- 修复 duration/时区切换后 now-line 消失问题：`renderDayTimeline` 末尾加 `requestAnimationFrame(renderNowIndicators)`。
+- `#bdm-now-label` 新增：左侧标签列以同色显示访客时区当前时间。
+- 预约窗口缩短为14天，超出日期与过去日期同样显示为灰色 `.past`。
+- 新增 `BLOCKED_DAYS`：6月7-8日全天不可预约，弹窗显示黑客松提示文字。
+- 称呼和想聊什么字段移除星号显示（验证逻辑不变）。
+
+---
+
 ## 2026-05-23 — 日历视图按访客时区过滤已过时段
 
 **改动内容：**

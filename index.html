@@ -310,7 +310,9 @@
     .booking-day.loading { background: var(--bg-card); animation: pulse 1.4s ease-in-out infinite; }
     .booking-day.available { background: var(--bg-card); border: 1.5px solid var(--accent-dark); color: var(--accent-dark); cursor: pointer; font-weight: 600; transition: background var(--transition), transform var(--transition); }
     .booking-day.available:hover { background: var(--accent-dark); color: #fff; transform: scale(1.08); }
+    .booking-day.blocked-day { border-style: dashed; opacity: 0.7; }
     .booking-day.selected { background: var(--accent-dark); color: #fff; font-weight: 600; }
+    .bdm-blocked-msg { display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px; font-family: var(--font-serif); font-size: 15px; color: var(--text-mid); text-align: center; padding: 40px 24px; }
     @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
     .booking-day-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; }
     .booking-day-modal-overlay { position: absolute; inset: 0; background: rgba(45,31,14,0.45); }
@@ -330,9 +332,13 @@
     /* 右侧时间轴 */
     .bdm-right { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
     .bdm-notice { display: none; }
+    .bdm-lead-notice { font-family: var(--font-sans); font-size: 11px; color: var(--text-light); line-height: 1.5; margin-top: 10px; }
+    .bdm-lead-notice.shake { animation: bdm-shake 0.45s ease; color: var(--accent-dark); }
+    @keyframes bdm-shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
     .bdm-now-line { position: absolute; left: 52px; right: 0; height: 2px; background: rgba(196,137,90,0.85); pointer-events: none; z-index: 5; }
     .bdm-now-line::before { content: ""; position: absolute; left: -6px; top: -4px; width: 10px; height: 10px; background: rgba(196,137,90,0.85); border-radius: 50%; }
-    .bdm-cutoff-label { position: absolute; left: 54px; right: 8px; font-family: var(--font-sans); font-size: 10px; color: var(--accent-dark); opacity: 0.9; pointer-events: none; z-index: 4; transform: translateY(-100%); padding-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bdm-now-label { position: absolute; left: 0; width: 50px; font-family: var(--font-sans); font-size: 10px; font-weight: 700; color: rgba(196,137,90,0.95); text-align: right; padding-right: 6px; transform: translateY(-50%); pointer-events: none; z-index: 6; background: var(--bg-card); line-height: 1; }
+    .bdm-cutoff-label { position: absolute; left: 54px; right: 8px; font-family: var(--font-sans); font-size: 10px; color: var(--accent-dark); opacity: 0.9; pointer-events: none; z-index: 4; transform: translateY(-50%); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: rgba(255,252,248,0.85); padding: 2px 6px; border-radius: 4px; }
     .bdm-duration-btns { display: flex; gap: 6px; flex-wrap: wrap; }
     .bdm-dur-btn { font-family: var(--font-sans); font-size: 13px; padding: 5px 14px; border: 1.5px solid var(--border); border-radius: 20px; background: var(--bg-card); color: var(--text-mid); cursor: pointer; transition: all var(--transition); }
     .bdm-dur-btn:hover { border-color: var(--accent-dark); color: var(--accent-dark); }
@@ -577,7 +583,7 @@
           <!-- 称呼 + 基本信息 并排 -->
           <div class="booking-form-row">
             <div class="booking-field">
-              <div class="bfield-header"><label id="b-name-label"></label><span class="bfield-star"> *</span><span class="bfield-err" id="err-name"></span></div>
+              <div class="bfield-header"><label id="b-name-label"></label><span class="bfield-err" id="err-name"></span></div>
               <input type="text" id="b-name">
             </div>
             <div class="booking-field">
@@ -587,7 +593,7 @@
           </div>
           <!-- 想聊什么 单独一行 -->
           <div class="booking-field">
-            <div class="bfield-header"><label id="b-topic-label"></label><span class="bfield-star"> *</span><span class="bfield-err" id="err-topic"></span></div>
+            <div class="bfield-header"><label id="b-topic-label"></label><span class="bfield-err" id="err-topic"></span></div>
             <textarea id="b-topic" rows="4"></textarea>
           </div>
           <div class="booking-submit-wrap">
@@ -681,7 +687,11 @@ const EMAILJS_TEMPLATE_ID = "template_6744rc9";
 
 // Hana 可用时间窗口（Hana 本地时区 08:00–22:00）
 const HANA_AVAIL = { startH: 8, endH: 22 };
-const DAYS_AHEAD = 30;
+const DAYS_AHEAD = 14;
+const BLOCKED_DAYS = {
+  "2026-06-07": { zh: "我去打黑客松啦，今天不得闲哦！", en: "I'm at a hackathon today — no bookings!" },
+  "2026-06-08": { zh: "我去打黑客松啦，今天不得闲哦！", en: "I'm at a hackathon today — no bookings!" },
+};
 
 const COMMON_TIMEZONES = [
   { zh: "北京/上海 (UTC+8)", en: "Beijing/Shanghai (UTC+8)", value: "Asia/Shanghai" },
@@ -1456,6 +1466,7 @@ function renderBookingCopy(lang) {
   el("booking-intro").textContent = c.bookingIntro;
   el("bdm-tz-label").textContent = c.bookingTzLabel;
   el("bdm-duration-label").textContent = c.bookingDurationLabel;
+  el("bdm-lead-notice").textContent = c.bookingLeadTimeNote;
   el("bdm-pick-hint").textContent = c.bookingPickHint;
   el("bdm-notice").textContent = c.bookingLeadTimeNote;
   el("bdm-custom-btn").textContent = c.bookingDurationCustom;
@@ -1587,7 +1598,7 @@ function renderCalendar(year, month) {
     const isPast = date < today;
     const isTooFar = date > maxDate;
     if (isPast || isTooFar) {
-      cells += `<div class="booking-day${isPast ? " past" : ""}">${d}</div>`;
+      cells += `<div class="booking-day past">${d}</div>`;
     } else {
       const isSelected = dateStr === _selectedDate;
       cells += `<div class="booking-day loading${isSelected ? " selected" : ""}" data-date="${dateStr}" id="bday-${dateStr}">${d}</div>`;
@@ -1603,6 +1614,12 @@ function renderCalendar(year, month) {
   fetchFreeBusy(year, month).then(busyIntervals => {
     grid.querySelectorAll(".booking-day.loading").forEach(el => {
       const dateStr = el.dataset.date;
+      if (BLOCKED_DAYS[dateStr]) {
+        el.classList.remove("loading");
+        el.classList.add("available", "blocked-day");
+        el.addEventListener("click", () => openDayModal(dateStr));
+        return;
+      }
       const hanaTz = getHanaTz(dateStr);
       const hanaStartMs = localToUtcMs(dateStr, HANA_AVAIL.startH, 0, hanaTz);
       const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
@@ -1755,10 +1772,17 @@ function renderDayTimeline(dateStr, busyIntervals) {
   _timelineAbortCtrl = new AbortController();
   const signal = _timelineAbortCtrl.signal;
 
+  const timeline = document.getElementById("bdm-timeline");
+
+  if (BLOCKED_DAYS[dateStr]) {
+    const msg = BLOCKED_DAYS[dateStr][_bookingLang] || BLOCKED_DAYS[dateStr].zh;
+    timeline.innerHTML = `<div class="bdm-blocked-msg">${msg}</div>`;
+    return;
+  }
+
   const hanaTz    = getHanaTz(dateStr);
   const hanaStartMs = localToUtcMs(dateStr, HANA_AVAIL.startH, 0, hanaTz);
   const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
-  const timeline  = document.getElementById("bdm-timeline");
 
   // Helper: UTC ms → visitor-tz "HH:MM"
   function toVis(utcMs) {
@@ -1768,15 +1792,14 @@ function renderDayTimeline(dateStr, busyIntervals) {
   }
 
   // Build 15-min slots for Hana's available window only
-  const nowMs = Date.now() + 3 * 3600000;
+  const cutoffMs = Date.now() + 3 * 3600000;
   const slots = [];
   for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
     const isBusy    = is15MinBusyMs(t, busyIntervals);
-    const isPast    = t < nowMs;
-    const clickable = !isBusy && !isPast && canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs);
+    const clickable = !isBusy && canStartAtMs(t, _selectedDuration, busyIntervals, hanaEndMs);
     const visStr    = toVis(t);
     const vm        = parseInt(visStr.split(":")[1]);
-    slots.push({ utcMs: t, isBusy, isPast, clickable, visStr, isHourMark: vm === 0 });
+    slots.push({ utcMs: t, isBusy, clickable, visStr, isHourMark: vm === 0 });
   }
 
   // Busy block boundaries (rounded corners)
@@ -1812,8 +1835,6 @@ function renderDayTimeline(dateStr, busyIntervals) {
       if (s.busySolo)       cls += " busy-solo";
       else if (s.busyFirst) cls += " busy-first";
       else if (s.busyLast)  cls += " busy-last";
-    } else if (s.isPast) {
-      cls += " past";
     } else if (s.clickable) {
       cls += " available";
     }
@@ -1878,12 +1899,18 @@ function renderDayTimeline(dateStr, busyIntervals) {
     if (!cell) return;
     const cellMs = parseInt(cell.dataset.utcms);
     if (!canStartAtMs(cellMs, _selectedDuration, busyIntervals, hanaEndMs)) return;
+    if (cellMs < Date.now() + 3 * 3600000) {
+      shakeLeadNotice();
+      return;
+    }
     _selectedTime = cellMs;
     closeDayModal();
     updateSelectedSummary();
     document.getElementById("booking-form-wrap").style.display = "";
     clearFieldErrors();
   }, { signal });
+
+  requestAnimationFrame(renderNowIndicators);
 }
 
 function renderNowIndicators() {
@@ -1893,8 +1920,8 @@ function renderNowIndicators() {
   const hanaTz     = getHanaTz(_selectedDate);
   const hanaStartMs = localToUtcMs(_selectedDate, HANA_AVAIL.startH, 0, hanaTz);
   const hanaEndMs   = localToUtcMs(_selectedDate, HANA_AVAIL.endH,   0, hanaTz);
-  const nowMs      = Date.now();
-  const cutoffMs   = nowMs + 3 * 3600000;
+  const nowMs    = Date.now();
+  const cutoffMs = nowMs + 3 * 3600000;
 
   const firstCell  = grid.querySelector(".bdm-cell");
   const cellH      = firstCell ? firstCell.offsetHeight : 16;
@@ -1912,28 +1939,35 @@ function renderNowIndicators() {
     nowLine.className = "bdm-now-line";
     grid.appendChild(nowLine);
   }
+  let nowLabel = document.getElementById("bdm-now-label");
+  if (!nowLabel) {
+    nowLabel = document.createElement("div");
+    nowLabel.id = "bdm-now-label";
+    nowLabel.className = "bdm-now-label";
+    grid.appendChild(nowLabel);
+  }
   if (nowMs >= hanaStartMs && nowMs < hanaEndMs) {
-    nowLine.style.top = msToY(nowMs) + "px";
+    const nowY = msToY(nowMs);
+    nowLine.style.top = nowY + "px";
     nowLine.style.display = "";
+    nowLabel.style.top = nowY + "px";
+    nowLabel.style.display = "";
+    nowLabel.textContent = new Date(nowMs).toLocaleTimeString("en-US", {
+      timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+    });
   } else {
     nowLine.style.display = "none";
+    nowLabel.style.display = "none";
   }
 
-  // ── 3h 截止线上方说明文字 ──
-  let cutoffEl = document.getElementById("bdm-cutoff-label");
-  if (!cutoffEl) {
-    cutoffEl = document.createElement("div");
-    cutoffEl.id = "bdm-cutoff-label";
-    cutoffEl.className = "bdm-cutoff-label";
-    grid.appendChild(cutoffEl);
-  }
-  if (cutoffMs > hanaStartMs && cutoffMs <= hanaEndMs) {
-    cutoffEl.style.top = msToY(cutoffMs) + "px";
-    cutoffEl.style.display = "";
-    cutoffEl.textContent = COPY[_bookingLang].bookingLeadTimeNote;
-  } else {
-    cutoffEl.style.display = "none";
-  }
+}
+
+function shakeLeadNotice() {
+  const el = document.getElementById("bdm-lead-notice");
+  if (!el) return;
+  el.classList.remove("shake");
+  void el.offsetWidth;
+  el.classList.add("shake");
 }
 
 function closeDayModal() {
@@ -2090,6 +2124,7 @@ function toDateStr(date) {
         </div>
       </div>
 
+      <div class="bdm-lead-notice" id="bdm-lead-notice"></div>
       <div class="bdm-pick-hint" id="bdm-pick-hint"></div>
     </div>
 
