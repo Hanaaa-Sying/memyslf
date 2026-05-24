@@ -1841,7 +1841,7 @@ function setupColEvents(wrap, dateStr, hanaStartMs, hanaEndMs, busyIntervals, pr
     const topIdx = Math.max(0, Math.min(Math.floor(y / CELL_H), NUM_CELLS - 1));
     preview.style.top     = (topIdx * CELL_H) + "px";
     preview.style.height  = (_selectedDuration/15 * CELL_H) + "px";
-    preview.style.display = "";
+    preview.style.display = "block";
   }, { signal });
 
   wrap.addEventListener("mouseleave", () => { preview.style.display="none"; }, { signal });
@@ -2006,7 +2006,7 @@ function setupDragOnSelDiv(selDiv, ownerWrap) {
       const topIdx = Math.round((cellMs - tStartMs) / (15*60000));
       pr.style.top = (topIdx * CELL_H) + "px";
       pr.style.height = (_selectedDuration / 15 * CELL_H) + "px";
-      pr.style.display = "";
+      pr.style.display = "block";
     }
 
     function onUp(ev) {
