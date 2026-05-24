@@ -285,15 +285,6 @@
       .resume-grid { grid-template-columns: 1fr; column-gap: 0; }
       .exp-grid { grid-template-columns: 1fr; }
     }
-    /* 手机端：booking widget 竖向布局 */
-    @media (max-width: 640px) {
-      .booking-widget { flex-direction: column; height: auto; }
-      .bw-left { width: 100%; box-sizing: border-box; border-right: none; border-bottom: 1px solid var(--border); padding: 14px 16px; overflow: visible; flex-shrink: 0; }
-      .bw-right { height: auto; overflow: visible; flex: none; }
-      .bw-grid-outer { overflow: auto; -webkit-overflow-scrolling: touch; height: 360px; touch-action: pan-x pan-y; flex: none; }
-      .bdm-duration-btns { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
-      .bw-day-hdr .bw-day-num { font-size: 14px; }
-    }
     .resume-full { display: flex; flex-direction: column; gap: 48px; }
 
     /* ── Booking 预约模块 ── */
@@ -404,6 +395,15 @@
     .bfield-err { color: #c0392b; font-size: 12px; margin-left: 8px; display: none; }
     .booking-success { font-family: var(--font-serif); font-size: 18px; color: var(--accent-dark); text-align: center; padding: 48px 24px; line-height: 1.8; }
     .booking-success span { display: block; font-family: var(--font-sans); font-size: 13px; color: var(--text-light); margin-top: 12px; }
+    /* 手机端：booking widget 竖向布局（须在桌面端样式之后，确保优先级正确） */
+    @media (max-width: 640px) {
+      .booking-widget { flex-direction: column; height: auto; }
+      .bw-left { width: 100%; box-sizing: border-box; border-right: none; border-bottom: 1px solid var(--border); padding: 14px 16px; overflow: visible; flex-shrink: 0; }
+      .bw-right { height: auto; overflow: visible; flex: none; }
+      .bw-grid-outer { overflow: auto; -webkit-overflow-scrolling: touch; height: 360px; touch-action: pan-x pan-y; flex: none; }
+      .bdm-duration-btns { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+      .bw-day-hdr .bw-day-num { font-size: 14px; }
+    }
     @media (max-width: 768px) {
       .nav-links { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; gap: 0; padding: 8px 0; }
       .nav-links.open { display: flex; }
