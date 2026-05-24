@@ -11,6 +11,57 @@
 
 ---
 
+## 2026-05-24 — 预约网格 hover preview 逻辑修正（两轮迭代）
+
+**改动内容：** `setupColEvents` 的 `mousemove` 逻辑最终改为：只要鼠标在可交互列内（非 past、非 blocked），无论悬停在什么格（available / 3h 以内 / 时长溢出 / busy 灰色格），均始终显示完整时长尺寸的 preview 阴影；阴影会叠加在 busy 灰色块上，视觉上展示冲突区域。click 逻辑：busy 格点击静默返回，3h 内格抖动提示，时长不足格显示「那会儿没法和你聊这么久哦！」，有效格正常选中。
+
+**实施路径：** `mousemove` handler 仅保留「getCellAt 返回 null 时隐藏」判断，移除所有 class 检查；`click` handler 保留 `.busy` 格静默返回。
+
+---
+
+## 2026-05-24 — 预约网格六项交互体验优化
+
+**改动内容：**
+1. **整体放大**：widget 高度 `540px` → `min(700px, 88vh)`，max-width `980px` → `1100px`，左侧面板宽度 `210px` → `240px`
+2. **当前时间线横穿所有日期**：now-line 从今日列的 `.bw-cells-wrap` 移至 `#bw-grid-body`，CSS 改为 `left: 44px; right: 0`，视觉上横穿全部 14 列
+3. **无需上下滚动可见全部时段**：单元格高度 `20px` → `10px`，时间轴行高同步，`overflow-y: hidden` 禁止垂直滚动；每隔 2 小时显示一个时间标签避免拥挤
+4. **14天横向滑轨**：去掉「上一周 / 下一周」按钮，`renderWeekGrid` 一次性渲染 `DAYS_AHEAD`（14）天；日期标题栏仅保留日期范围文字；用户通过 `bw-grid-outer` 的 `overflow-x: auto` 横向滚动查看未来日期
+5. **拖拽换位**：`.bw-selected` 改为 `pointer-events: auto; cursor: grab`；新增 `setupDragOnSelDiv(selDiv, wrap)` 函数，`pointerdown` 捕获拖动，`pointermove` 时临时隐藏 selDiv 后用 `elementFromPoint` 找目标列并显示预览，`pointerup` 时若目标合法则更新 `_selectedDate/_selectedTime`，在新列创建 selDiv 并递归设置拖拽；操作中通过 `selDiv.isConnected` 检测 DOM 脱离
+6. **颜色简化 + 时长警告**：移除可预约格的琥珀色背景（仅保留 hover 效果）；新增 `showDurationWarning()` 函数，点击因时长不足无法预约的格时，左侧提示栏临时显示「那会儿没法和你聊这么久哦！」并抖动，3 秒后恢复；`COPY.zh/en` 各新增 `bookingDurationWarning` 字段
+
+**实施路径：**
+- CSS：修改 `.booking-widget`、`.bw-left`、`.bw-cell`、`.bw-ta-row`、`.bw-grid-outer`、`.bw-now-line`（及 `::before`）、`.bw-selected` 共 8 处
+- HTML：删除 `#bw-prev-week` / `#bw-next-week` 按钮，仅保留 `#bw-week-label`
+- COPY：zh + en 各增 `bookingDurationWarning`
+- JS：`renderWeekGrid` 改为渲染 14 天 + 存入 `_currentBusyIntervals`；`updateWeekNav` 改为用 `dates[dates.length-1]` 且移除按钮禁用逻辑；`buildWeekGrid` CELL_H 20→10，时标每 2 小时显示一次，在已选 block 上调用 `setupDragOnSelDiv`；`setupColEvents` CELL_H 20→10，点击无效格调用 `showDurationWarning()`，创建 selDiv 后调用 `setupDragOnSelDiv()`；`renderNowLine` 改为往 `#bw-grid-body` 追加 now-line；新增 `showDurationWarning()` 和 `setupDragOnSelDiv()` 函数；`initBooking` 移除前/后周按钮监听器；新增模块级 `_currentBusyIntervals = []`
+
+---
+
+## 2026-05-24 — 预约区域从「先选日期再选时间」改为「双周可视化网格视图」
+
+**改动内容：**
+- 移除月历点击 + 弹窗模式，改为内嵌双栏 widget（左侧设置面板 + 右侧周视图网格）
+- 右侧网格：顶部粘性日期表头（周几 + 日期）、左侧粘性时间轴（08:00–22:00，每整点一行标注）、7 列 × 56 格（每格 20px = 15min）
+- 可预约格：浅暖色背景，鼠标悬停显示预览 block（高度随时长自动）；点击选中后出现深棕色 selected block 并显示起止时间标签
+- 已占用格：浅灰暖色；已过期/超出预约窗口格：更浅灰；封锁日（黑客松）：斜线纹理覆盖层
+- 今日列显示当前时间线（实心点 + 横线）；每 30 秒自动更新
+- 前 / 下一周导航按钮，DAYS_AHEAD=14 共显示两周
+- 时长选择器变更时清除已选，并重新渲染网格
+- 时区切换即时重新渲染网格（保留已选日期时间）
+- 语言切换时重新渲染网格（周日名等随语言变化）
+- 移除了弹窗 HTML（`#booking-day-modal`）及其所有相关 JS（renderCalendar / openDayModal / closeDayModal / renderDayTimeline / renderNowIndicators）
+- 保留并复用：fetchFreeBusy / getHanaTz / localToUtcMs / is15MinBusyMs / canStartAtMs / getMaxDurationForDay / shakeLeadNotice / updateSelectedSummary / onBookingSubmit
+
+**实施路径：**
+- CSS：删除全部 `.booking-day-modal*`、`.bdm-cell*`、`.bdm-sleep-bar*`、`.bdm-now-*` 等，新增 `.booking-widget`、`.bw-left`、`.bw-right`、`.bw-grid-*`、`.bw-day-*`、`.bw-cell*`、`.bw-now-line`、`.bw-preview`、`.bw-selected` 等
+- HTML：用 `.booking-widget` 替换 `.booking-cal-wrap`；彻底删除弹窗 div
+- JS state：`_calYear/_calMonth/_dayMaxDuration/_timelineAbortCtrl` → `_weekOffset/_gridAbortCtrl`
+- 新增函数：`addDaysToStr` / `fetchBusyForWeek` / `updateWeekNav` / `buildWeekGrid` / `setupColEvents` / `renderNowLine` / `renderWeekGrid`
+- `renderBookingCopy` 删去已不存在的 ID 引用，末尾加 `if(bw-grid-body) renderWeekGrid()`
+- `initBooking` 重写：绑定周导航 / 时区 / 时长 / 表单提交事件，调用 `renderWeekGrid()`
+
+---
+
 ## 2026-05-23 — 雅思成绩更新为 8.0
 
 **改动内容：** 简历中英文版雅思成绩从 7.0 改为 8.0。
