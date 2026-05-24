@@ -196,7 +196,7 @@
     .skills-grid { display: flex; flex-direction: column; gap: 20px; }
     .skill-group-label { font-family: var(--font-sans); font-size: 14px; font-weight: 600; color: var(--text-mid); margin-bottom: 8px; }
     .tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag { font-family: var(--font-sans); font-size: 12px; font-weight: 500; background: rgba(196, 137, 90, 0.1); color: var(--accent-dark); border: 1px solid rgba(196, 137, 90, 0.25); border-radius: 20px; padding: 3px 12px; }
+    .tag { font-family: var(--font-sans); font-size: 12px; font-weight: 500; background: rgba(196, 137, 90, 0.1); color: var(--accent-dark); border: 1px solid rgba(196, 137, 90, 0.25); border-radius: 20px; padding: 3px 12px; white-space: nowrap; }
 
     /* ── 作品集 ── */
     #portfolio { background: rgba(196, 137, 90, 0.04); }
@@ -806,7 +806,7 @@ const COPY = {
         ],
       },
       {
-        school: "鲁基·博科尼商业大学（Bocconi University）",
+        school: "鲁基·博科尼商业大学<br>（Bocconi University）",
         degree: "本科交换 · QS商业与管理全球第10",
         period: "2026.02 — 2026.06",
         bullets: [
@@ -1111,7 +1111,7 @@ const PROJECTS = {
       category: "content",
       title: "【内容运营】Claude课程recap：关于此Agent的一些知识点",
       desc: `博科尼「市场研究中的大语言模型」课后心得。用通俗易懂的语言，把 Agent 与 Chatbot 的本质区别、Claude Code 的 Agent Loop，以及 CLAUDE.md / Context Window / Plan Mode 三个增强agent表现稳定性的核心，写成一篇面向普通人的 Claude Code 入门科普。`,
-      tags: ["内容运营", "公众号", "Claude Code", "AI科普"],
+      tags: ["内容运营", "公众号", "Claude Code", "|", "AI科普"],
       detail: `<p style="margin-bottom:16px">博科尼「市场研究中的大语言模型」课后整理的学习笔记。从 Agent 与 Chatbot 的本质区别切入，解释 Claude Code 的 Agent Loop 运作机制，再用"渣男记忆"、"脑容量"等类比，把 CLAUDE.md、Context Window、Plan Mode 三个防 Claude Code"发疯"的核心概念讲清楚——写给那些听过 AI Agent 但还说不清楚它能做什么的人。</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://mp.weixin.qq.com/s/EQ4JT2q0t9YJ-8klIT6IEQ" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">在公众号阅读 →</a></div>`,
     },
     {
@@ -1177,7 +1177,7 @@ const PROJECTS = {
       category: "content",
       title: "【Content】Claude Course Recap: Key Things to Know About AI Agents",
       desc: "A post-course recap from Bocconi's \"LLMs in Market Research\" class. Breaks down the real difference between AI agents and chatbots, how Claude Code's agent loop works, and three key concepts — CLAUDE.md, Context Window, and Plan Mode — using everyday analogies to make it accessible to a general audience.",
-      tags: ["Content", "WeChat", "Claude Code", "AI Explainer"],
+      tags: ["Content", "WeChat", "Claude Code", "|", "AI Explainer"],
       detail: `<p style="margin-bottom:16px">A learning recap written after Bocconi's "LLMs in Market Research" course. Starts with the fundamental difference between AI agents and chatbots, explains how Claude Code's agent loop works step by step, then breaks down CLAUDE.md, Context Window, and Plan Mode — the three concepts that keep Claude Code from "going crazy" — using relatable analogies throughout for a general audience.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://mp.weixin.qq.com/s/EQ4JT2q0t9YJ-8klIT6IEQ" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Read on WeChat →</a></div>`,
     },
     {
@@ -1207,7 +1207,10 @@ function formatDate(str) {
 }
 
 function renderTags(tags) {
-  return tags.map(t => `<span class="tag">${t}</span>`).join("");
+  return tags.map(t => t === "|"
+    ? `<span style="flex-basis:100%;height:0;display:block"></span>`
+    : `<span class="tag">${t}</span>`
+  ).join("");
 }
 
 function renderNav(lang) {
