@@ -360,7 +360,8 @@
     .bw-cell.past-col { background: rgba(107,76,42,0.02); cursor: default; }
 
     /* 封锁日覆盖层 */
-    .bw-blocked-col { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(107,76,42,0.05) 0px, rgba(107,76,42,0.05) 3px, transparent 3px, transparent 8px); pointer-events: none; }
+    .bw-blocked-col { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(107,76,42,0.05) 0px, rgba(107,76,42,0.05) 2px, transparent 2px, transparent 16px); pointer-events: none; display: flex; align-items: center; justify-content: center; z-index: 2; }
+    .bw-blocked-col span { writing-mode: vertical-rl; font-family: var(--font-sans); font-size: 11px; color: var(--text-mid); text-align: center; line-height: 1.6; padding: 8px 5px; background: rgba(255,252,248,0.88); border-radius: 4px; max-height: 88%; overflow: hidden; }
 
     /* 悬停预览块（绝对定位在 .bw-cells-wrap 内） */
     .bw-preview { position: absolute; left: 1px; right: 1px; background: rgba(196,137,90,0.22); border-radius: 4px; pointer-events: none; z-index: 2; display: none; }
@@ -726,24 +727,22 @@ const EMAILJS_TEMPLATE_ID = "template_6744rc9";
 const HANA_AVAIL = { startH: 8, endH: 22 };
 const DAYS_AHEAD = 14;
 const BLOCKED_DAYS = {
-  "2026-06-07": { zh: "我去打黑客松啦，今天不得闲哦！", en: "I'm at a hackathon today — no bookings!" },
-  "2026-06-08": { zh: "我去打黑客松啦，今天不得闲哦！", en: "I'm at a hackathon today — no bookings!" },
+  "2026-06-06": { zh: "我在参加黑客松，这两天没办法预约聊天哦！", en: "I'm at a hackathon — no bookings these two days!" },
+  "2026-06-07": { zh: "我在参加黑客松，这两天没办法预约聊天哦！", en: "I'm at a hackathon — no bookings these two days!" },
 };
 
 const COMMON_TIMEZONES = [
-  { zh: "北京/上海 (UTC+8)", en: "Beijing/Shanghai (UTC+8)", value: "Asia/Shanghai" },
-  { zh: "香港/台北 (UTC+8)", en: "Hong Kong/Taipei (UTC+8)", value: "Asia/Hong_Kong" },
-  { zh: "新加坡 (UTC+8)", en: "Singapore (UTC+8)", value: "Asia/Singapore" },
-  { zh: "东京/首尔 (UTC+9)", en: "Tokyo/Seoul (UTC+9)", value: "Asia/Tokyo" },
-  { zh: "曼谷/胡志明 (UTC+7)", en: "Bangkok/Ho Chi Minh (UTC+7)", value: "Asia/Bangkok" },
+  { zh: "洛杉矶 (UTC-8/-7)", en: "Los Angeles (UTC-8/-7)", value: "America/Los_Angeles" },
+  { zh: "芝加哥 (UTC-6/-5)", en: "Chicago (UTC-6/-5)", value: "America/Chicago" },
+  { zh: "纽约 (UTC-5/-4)", en: "New York (UTC-5/-4)", value: "America/New_York" },
+  { zh: "伦敦 (UTC+0/1)", en: "London (UTC+0/1)", value: "Europe/London" },
+  { zh: "柏林/巴黎 (UTC+1/2)", en: "Berlin/Paris (UTC+1/2)", value: "Europe/Berlin" },
+  { zh: "莫斯科 (UTC+3)", en: "Moscow (UTC+3)", value: "Europe/Moscow" },
   { zh: "迪拜 (UTC+4)", en: "Dubai (UTC+4)", value: "Asia/Dubai" },
   { zh: "孟买 (UTC+5:30)", en: "Mumbai (UTC+5:30)", value: "Asia/Kolkata" },
-  { zh: "莫斯科 (UTC+3)", en: "Moscow (UTC+3)", value: "Europe/Moscow" },
-  { zh: "柏林/巴黎 (UTC+1/2)", en: "Berlin/Paris (UTC+1/2)", value: "Europe/Berlin" },
-  { zh: "伦敦 (UTC+0/1)", en: "London (UTC+0/1)", value: "Europe/London" },
-  { zh: "纽约 (UTC-5/-4)", en: "New York (UTC-5/-4)", value: "America/New_York" },
-  { zh: "芝加哥 (UTC-6/-5)", en: "Chicago (UTC-6/-5)", value: "America/Chicago" },
-  { zh: "洛杉矶 (UTC-8/-7)", en: "Los Angeles (UTC-8/-7)", value: "America/Los_Angeles" },
+  { zh: "曼谷 (UTC+7)", en: "Bangkok (UTC+7)", value: "Asia/Bangkok" },
+  { zh: "北京 (UTC+8)", en: "Beijing (UTC+8)", value: "Asia/Shanghai" },
+  { zh: "东京 (UTC+9)", en: "Tokyo (UTC+9)", value: "Asia/Tokyo" },
   { zh: "悉尼 (UTC+10/11)", en: "Sydney (UTC+10/11)", value: "Australia/Sydney" },
 ];
 
@@ -1777,7 +1776,11 @@ function buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal) {
       }
       const blocker = document.createElement("div");
       blocker.className = "bw-blocked-col";
-      blocker.title = BLOCKED_DAYS[ds][_bookingLang] || BLOCKED_DAYS[ds].zh;
+      const blockerText = BLOCKED_DAYS[ds][_bookingLang] || BLOCKED_DAYS[ds].zh;
+      blocker.title = blockerText;
+      const blockerLabel = document.createElement("span");
+      blockerLabel.textContent = blockerText;
+      blocker.appendChild(blockerLabel);
       wrap.appendChild(blocker);
     } else {
       const hanaTz      = getHanaTz(ds);
