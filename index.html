@@ -828,6 +828,17 @@ const COPY = {
     // 项目经历：project = 项目名（显示大），role = 身份（显示小）
     experience: [
       {
+        project: "一拍迹合 — AI 个人向旅行规划<br>（抖音 AI 创变者黑客松·广州站 2026）",
+        role: "产品 + UI 设计",
+        period: "2026.06",
+        portfolioId: "tripsync",
+        bullets: [
+          `主导产品定义：拆解"出行前刷视频做攻略"的用户痛点，设计四维度旅行人格模型（记录↔沉浸、精致↔本地、计划↔灵感、覆盖↔深度）与 6 种人格画像，规划"人格测试 → 视频解析 → 人格化选点 → 搭子同步"的端到端体验流程。`,
+          "负责整体 UI/交互设计：用 Claude Code vibecoding 前端界面，落地人格测试、地图选点高亮、行程编排与搭子同步等核心页面的视觉与交互。",
+          "Prompt 工程与测试演示：设计人格化选点 prompt 及跨平台增强 prompt（让用户把一段 prompt 复制到常用 LLM 回填过敏源/忌口等隐性偏好），完成产品测试打磨与路演讲解。",
+        ],
+      },
+      {
         project: "米兰短租/长租溢价分析（博科尼课程项目）",
         role: "数据分析与可视化负责人",
         period: "2026.02 — 2026.05",
@@ -980,6 +991,17 @@ const COPY = {
 
     experience: [
       {
+        project: "TripSync — AI Personal Travel Planner<br>(Douyin AI Creators Hackathon · Guangzhou 2026)",
+        role: "Product & UI Design",
+        period: "Jun 2026",
+        portfolioId: "tripsync",
+        bullets: [
+          "Led product definition: framed the pain of researching trips by scrubbing through travel videos, designed a 4-dimension travel-personality model (record↔immerse, refined↔local, plan↔spontaneity, breadth↔depth) with 6 personas, and mapped the end-to-end flow (personality test → video parsing → persona-based spot selection → companion sync).",
+          "Owned the full UI/UX: vibecoded the front-end with Claude Code, delivering the visuals and interactions for the personality test, map-based spot highlighting, itinerary builder, and companion-sync pages.",
+          "Prompt engineering & demo: authored persona-based selection prompts and a cross-platform enhancement prompt (users paste it into their go-to LLM to backfill hidden preferences like allergies/dietary limits), and drove product polishing and the pitch demo.",
+        ],
+      },
+      {
         project: "Milan Rental Premium Analysis (Bocconi Course Project)",
         role: "Data Analysis & Visualization Lead",
         period: "Feb 2026 — May 2026",
@@ -1060,6 +1082,14 @@ const COPY = {
 const PROJECTS = {
   zh: [
     {
+      id: "tripsync",
+      category: "web",
+      title: "【VibeCoding】一拍迹合 · AI 个人向旅行规划",
+      desc: "抖音 AI 创变者黑客松·广州站 2026 参赛作品。把抖音旅行攻略视频一键变成贴合你性格的可执行路线——AI 解析视频里的景点，结合 8 题旅行人格测试做个性化选点，还能和旅行搭子同步行程。",
+      tags: ["产品设计", "UI 设计", "Claude Code", "Prompt 工程"],
+      detail: `<p style="margin-bottom:16px">旅行攻略视频要逐条看、记地名、查坐标，极其麻烦；通用攻略又千人一面，未必合你的口味和节奏。<strong>一拍迹合</strong>把零散的视频变成一条结构化、贴合你性格、还能和搭子同步的<strong>可执行路线</strong>，省去"收集—筛选—记录—整合"的繁琐工作流。</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px"><a href="https://github.com/Hanaaa-Sying/tripsync" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">查看代码 →</a></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">核心创新</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>视频 → 可执行行程：</strong>靠 ASR + LLM 把短视频内容结构化，用户不用再逐条看视频记地名</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>人格 × 内容双驱动：</strong>四维度人格模型 → 6 种旅行人格，引导 AI 实质性地选点与编排行程，而非套模板</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>社交协同：</strong>把"旅行搭子"做进规划环节，输入伙伴 UID 即可同步双方人格与计划，解决多人出行对不齐</li></ul></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">端到端流程</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>旅行人格测试（8 题 / 四维度）→ 映射到 6 种旅行人格</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>粘贴抖音链接 → 解析视频中的景点（名称 / 类型 / 坐标），多视频并行处理</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>豆包联网补全高频打卡地做兜底 → 结合人格画像筛选并给推荐理由，地图高亮</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>搭子同步 → 导出行程</li></ul></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">我的贡献</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>产品定义：</strong>拆解用户痛点，设计四维度旅行人格模型与 6 种人格画像，规划端到端体验流程</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>UI / 交互设计：</strong>用 Claude Code vibecoding 前端界面，落地人格测试、地图选点、行程编排与搭子同步页面</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Prompt 工程：</strong>设计人格化选点 prompt，以及跨平台增强 prompt（用户把一段 prompt 复制到常用 LLM 回填过敏源 / 忌口等隐性偏好）</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>测试打磨与路演讲解</strong></li></ul></div><div><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">技术栈（团队）</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Flask · SQLite · 原生 HTML/CSS/JS</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>LLM：豆包 / 火山方舟 Responses API（web_search 联网）</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>视频解析：Agent Reach + douyin-mcp 无水印下载 · ffmpeg · 小米 MiMo ASR</li></ul></div>`,
+    },
+    {
       id: "bocconi-finals",
       category: "web",
       title: "【VibeCoding】管理博科尼期末月待办事项的个人calendar",
@@ -1125,6 +1155,14 @@ const PROJECTS = {
     },
   ],
   en: [
+    {
+      id: "tripsync",
+      category: "web",
+      title: "【VibeCoding】TripSync · AI Personal Travel Planner",
+      desc: "Built at the Douyin AI Creators Hackathon · Guangzhou 2026. Turns Douyin travel videos into a personalized, executable itinerary — AI extracts spots from the videos, matches them to your travel personality (an 8-question test), and syncs the plan with your travel companion.",
+      tags: ["Product Design", "UI Design", "Claude Code", "Prompt Engineering"],
+      detail: `<p style="margin-bottom:16px">Researching a trip by scrubbing through travel videos — noting place names, looking up coordinates — is tedious, and generic guides feel one-size-fits-all. <strong>TripSync</strong> turns scattered videos into a structured, personality-matched, companion-syncable <strong>executable route</strong>, replacing the manual "collect → filter → record → consolidate" workflow.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px"><a href="https://github.com/Hanaaa-Sying/tripsync" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">View Code →</a></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Key Innovations</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Video → executable itinerary:</strong> ASR + LLM structure the short-video content, so users no longer scrub through clips to note place names</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Personality × content personalization:</strong> a 4-dimension model → 6 travel personas that substantively guide AI spot selection and itinerary ordering, not template-filling</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Social co-planning:</strong> brings the "travel companion" into the planning step — enter a partner's UID to sync both personas and plans, solving group-trip misalignment</li></ul></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">End-to-End Flow</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Travel personality test (8 questions / 4 dimensions) → mapped to 6 personas</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Paste a Douyin link → extract spots (name / type / coordinates), with parallel multi-video processing</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Doubao web-search backfills popular spots → persona-based filtering with reasons, highlighted on the map</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Companion sync → export itinerary</li></ul></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">My Role</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Product definition:</strong> framed user pain points, designed the 4-dimension personality model and 6 personas, mapped the end-to-end flow</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>UI / UX design:</strong> vibecoded the front-end with Claude Code — personality test, map spot selection, itinerary builder, companion-sync pages</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Prompt engineering:</strong> persona-based selection prompts plus a cross-platform enhancement prompt (users paste it into their go-to LLM to backfill hidden preferences like allergies / dietary limits)</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Testing, polishing & pitch demo</strong></li></ul></div><div><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Tech Stack (Team)</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Flask · SQLite · vanilla HTML/CSS/JS</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>LLM: Doubao / Volcengine Ark Responses API (web_search)</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Video parsing: Agent Reach + douyin-mcp watermark-free download · ffmpeg · Xiaomi MiMo ASR</li></ul></div>`,
+    },
     {
       id: "bocconi-finals",
       category: "web",
@@ -1720,12 +1758,21 @@ function buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal) {
   const outerW = outer ? outer.clientWidth : 700;
   const colWidth = Math.max(60, Math.floor((outerW - 44) / 7));
 
-  // ── Time axis (label every 2 hours to avoid crowding at 10px cell height) ──
+  // ── Time axis: labels in visitor's timezone ──
   let taHtml = "";
+  const refDate = dates.find(d => d >= todayStr) || dates[0];
+  const hanaTzRef = getHanaTz(refDate);
   for (let h = HANA_AVAIL.startH; h < HANA_AVAIL.endH; h++) {
     for (let m = 0; m < 60; m += 15) {
-      taHtml += `<div class="bw-ta-row${m===0?" hour-mark":""}">` +
-        (m===0 && h % 2 === 0 ? `<span>${String(h).padStart(2,"0")}:00</span>` : "") + `</div>`;
+      let labelHtml = "";
+      if (m === 0 && h % 2 === 0) {
+        const utcMs = localToUtcMs(refDate, h, m, hanaTzRef);
+        const visTime = new Date(utcMs).toLocaleTimeString("en-US", {
+          timeZone: _visitorTz, hourCycle: "h23", hour: "2-digit", minute: "2-digit"
+        });
+        labelHtml = `<span>${visTime}</span>`;
+      }
+      taHtml += `<div class="bw-ta-row${m===0?" hour-mark":""}">${labelHtml}</div>`;
     }
   }
   taEl.innerHTML = taHtml;
