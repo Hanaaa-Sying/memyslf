@@ -437,6 +437,7 @@
         <li><a href="#resume" id="nav-resume">我的简历</a></li>
         <li><a href="#portfolio" id="nav-portfolio">项目作品集</a></li>
         <li><a href="#thinking" id="nav-thinking">最近在思考</a></li>
+        <li><a href="#booking" id="nav-booking">预约时间</a></li>
         <li><button id="lang-toggle" aria-label="切换语言">EN</button></li>
       </ul>
       <button class="hamburger" id="hamburger" aria-label="打开菜单">
@@ -751,7 +752,7 @@ const COMMON_TIMEZONES = [
 // ── 双语文案 ──
 const COPY = {
   zh: {
-    navResume: "我的简历", navPortfolio: "项目作品集", navThinking: "最近在思考",
+    navResume: "我的简历", navPortfolio: "项目作品集", navThinking: "最近在思考", navBooking: "预约时间",
     heroTagline: "中山大学管理学院 · 意大利博科尼交流生",
     heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。<br>我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年自己申请去到了意大利博科尼商学院交流学习，幸遇十分优秀的教授们，带我走进了AI Agent的世界、学习了组织网络分析的原理等。与此同时，我也利用在博科尼这学期的一些小长假，在欧洲四处游荡，行万里路。",
     heroBio2: "我还在探索我人生的多种面向和可能性，走走又停停。",
@@ -926,7 +927,7 @@ const COPY = {
   },
 
   en: {
-    navResume: "Resume", navPortfolio: "Portfolio", navThinking: "Thinking",
+    navResume: "Resume", navPortfolio: "Portfolio", navThinking: "Thinking", navBooking: "Book a Time",
     heroTagline: "Sun Yat-sen University · Bocconi Exchange Student",
     heroBio1: "Hi! 👋 I'm Siying Li from the School of Management at Sun Yat-sen University.<br>In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to apply for an exchange at Bocconi University in Milan the following year. There I was lucky to learn from brilliant professors who introduced me to AI Agents and organizational network analysis, among other things. I also made the most of Bocconi's long weekends to wander across Europe.",
     heroBio2: "I'm still exploring the many facets and possibilities of my life, wandering and pausing along the way.",
@@ -1279,6 +1280,7 @@ function renderNav(lang) {
   document.getElementById("nav-resume").textContent = c.navResume;
   document.getElementById("nav-portfolio").textContent = c.navPortfolio;
   document.getElementById("nav-thinking").textContent = c.navThinking;
+  document.getElementById("nav-booking").textContent = c.navBooking;
 }
 
 function renderHero(lang) {
