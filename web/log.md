@@ -355,3 +355,10 @@
 - `renderCalendar` 第 1589 行附近：`for` 循环体内加 `const nowMs = Date.now()` 和 `t >= nowMs &&`。
 - `renderDayTimeline` slot 构建：新增 `isPast` 字段，`clickable` 条件加 `&& !isPast`，渲染 class 分支加 `else if (s.isPast) cls += " past"`。
 - CSS `.bdm-cell.busy` 后紧接新增 `.bdm-cell.past` 样式。
+
+
+## 2026-09-29 — HandCue 作品页更新
+
+- 用户已确认中英文反思文案和当前手势表，发布本次两处作品详情更新。
+- 语音 Coding 已从本地 HandCue 移除；倒竖拇指重做、双手 T 停止保留。
+- 仅发布 HandCue 文案，其他本地修改保留；发布内容脚本语法检查通过。
