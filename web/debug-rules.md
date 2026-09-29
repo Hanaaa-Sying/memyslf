@@ -147,6 +147,16 @@ document.querySelectorAll(".project-card.fade-up").forEach(el => obs.observe(el)
 
 ---
 
+### 2026年05月24日 — `element.style.display = ""` 不等于「显示元素」
+
+**现象：** preview 阴影块从不出现，用户只能看到单格 CSS `:hover` 效果（10px），而非完整时长的预览块。
+
+**原因：** CSS class 中已写 `display: none`。`element.style.display = ""` 的作用是删除 inline style，使 CSS class 重新生效，结果 `display: none` 依然起作用，元素仍然隐藏。
+
+**规则/解决：** 若需用 JS 强制显示一个 CSS class 默认 `display: none` 的元素，必须明确赋值 `element.style.display = "block"`（或其他非 none 值），而不能用空字符串。
+
+---
+
 ### 2026年05月20日 — JS 字符串中的中文双引号导致整页空白
 
 **现象：** 网站打开后页面完全空白，浏览器 Console 报 `Uncaught SyntaxError: Unexpected identifier '市场研究中的大语言模型'`。
@@ -164,3 +174,17 @@ document.querySelectorAll(".project-card.fade-up").forEach(el => obs.observe(el)
 **原因：** 在向主 `<script>` 块末尾追加大段 JS 代码时，替换操作把原来的 `</script>` 关闭标签一并覆盖掉了，导致主脚本块未关闭。浏览器将其后的 `<script src="...">` 标签当作 JS 代码解析，立即报语法错误，整个脚本执行失败，`body` 的 `opacity` 停在 `0`，页面空白。
 
 **规则/解决：** 在主 `<script>` 块末尾追加大段代码时，必须确认 `</script>` 关闭标签仍然存在。追加完成后检查：全文搜索 `</script>` 标签数量是否与 `<script` 开启标签数量一致。
+
+
+---
+
+### 2026?09?12? ? ?????????????
+
+**???** ?????????????????????????????????
+**???** ?????? busy ???????????? calendars[id].errors?
+**??/???** ?????????????????????????????????????????????????? bw-time-axis???????????????
+
+### 2026年09月29日 — 预约提交必须重新校验，时区转换必须包含日期
+
+**现象：** 长时间停留后可提交过期时段；成功后按钮不恢复；跨时区摘要只转换时刻；拖动可绕过禁约日。
+**规则/解决：** 提交前强制读取最新 busy 数据并复用统一时段校验，失败时不发送邮件；finally 恢复控件；所有预约通知包含双方日期与时区；新提示需同时定义 COPY.zh / COPY.en。使用 web/tests/booking.test.cjs 模拟外部服务回归，避免真实发信。

@@ -11,6 +11,77 @@
 
 ---
 
+## 2026-06-17 — 导航栏新增「预约时间 / Book a Time」按钮
+
+**改动内容：** 导航栏缺少指向底部 `#booking`「如果你想和我聊些什么」预约板块的入口，补上。在 `最近在思考` 之后、`EN` 语言切换按钮之前新增一个导航项，中文「预约时间」/ 英文「Book a Time」，锚点链到 `#booking`。
+
+**实施路径：** 4 处改动——(1) HTML `#nav-links` 内 line 440 新增 `<li><a href="#booking" id="nav-booking">预约时间</a></li>`；(2) `COPY.zh` 新增 `navBooking: "预约时间"`；(3) `COPY.en` 新增 `navBooking: "Book a Time"`；(4) 渲染函数新增 `document.getElementById("nav-booking").textContent = c.navBooking;`（紧跟 nav-thinking setter，line 1283）。自查：`nav-booking` 引用 2 处（anchor + JS）、`navBooking` 3 处（zh/en COPY + JS）、`#booking` 锚点存在、`<script>` 3/3 配对，通过。
+
+---
+
+## 2026-06-17 — 删博科尼 calendar 卡片 + 新增 Handcue（手势 Vibe Coding）项目 + 改板块标题
+
+**改动内容：**
+- **删除** 作品集中 `id: "bocconi-finals"` 卡片（中英都删）。已确认无任何 `experience` 条目以 `portfolioId: "bocconi-finals"` 引用它，删除不破坏跳转。
+- **板块标题**：`COPY.zh.resumeExpTitle` `项目经历` → `项目经历（非实习经历）`；`COPY.en` `Experience` → `Project Experience (Non-Internship)`；同步改 HTML 中 `id="resume-exp-label"` 的初始文案（JS 会用 COPY 覆盖，仍一并改保持一致）。
+- **新增简历经历**（`COPY.zh`/`.en` `experience` 数组首位，置顶最新）：Handcue — 手势驱动的 Vibe Coding 工具（Agent Builder Hackathon · 深圳 2026，2026.06.14 深大粤海，二等奖），角色「创意构思 · UI 设计 · 美术资产」，`portfolioId: "handcue"`，3 条 bullet。按用户要求未强调赛道。
+- **新增作品卡片**（占位）：复用被删 `bocconi-finals` 的 web 槽位，新建 `id: "handcue"` 卡片（中英），detail 含手势词汇表 / 工作流 / 设计理念 / 我的贡献，并放「🏆 二等奖」徽章 + 「可交互 Demo 完善中」占位，待产品打磨后替换为 Demo 链接。
+
+**实施路径：** 标题改 3 处（line 520 HTML + zh/en COPY）；`experience` 数组在 tripsync 前各插一条 handcue；作品卡片把 `bocconi-finals` 对象的 header 字段与 detail 字符串分两步 Edit 替换为 handcue（同时完成删除+新增）。bullet/desc 中含中文直角引号处：英文 desc/bullet 的 ASCII `"` 已用 `\"` 转义，中文用「」书名号或置于反引号 detail 内（debug-rules 规则 line 160）。自查：`id:"handcue"`×2、`portfolioId:"handcue"`×2、`bocconi-finals`×0、`<script>` 3/3 配对，全部通过。
+
+---
+
+## 2026-06-09 — 一拍迹合卡片新增「打开产品」按钮 + 休眠提示
+
+**改动内容：** 为 `tripsync` 卡片弹窗加上线上 demo 链接。原「查看代码 →」单按钮改为双按钮：主按钮「打开产品 → / Live Demo →」链到 Render 部署地址 `https://tripsync-pk66.onrender.com`（实心 accent 色），次按钮「查看代码 / View Code」改为描边样式链到 GitHub。按钮下方加一行大白话休眠提示（中英双语）：首次打开约等 30–60 秒，服务器休眠中被唤醒属正常现象。提示放在卡片（点击前）而非产品内，因为 Render 冷启动期间浏览器空白、产品页尚未起来。
+
+**实施路径：** 改 `PROJECTS.zh` / `PROJECTS.en` 中 `id: "tripsync"` 卡片 detail 里的按钮 `<div>`：margin-bottom 24→10，新增主按钮 + 描边次按钮，其后插入 `font-size:12px;color:var(--text-light)` 的提示 div（margin-bottom:24px）。
+
+---
+
+## 2026-06-09 — 作品集 + 简历新增「一拍迹合 / TripSync」抖音黑客松项目
+
+**改动内容：**
+- 作品集 `PROJECTS.zh` / `PROJECTS.en` 各新增一张 VibeCoding 卡片（id: `tripsync`，category: `web`，置于数组首位）：一拍迹合 · AI 个人向旅行规划（抖音 AI 创变者黑客松·广州站 2026）。弹窗含核心创新 / 端到端流程 / 我的贡献 / 技术栈四段。
+- 简历 `COPY.zh.experience` / `COPY.en.experience` 各新增一条经历（置于首位，period 2026.06）：角色「产品 + UI 设计」，`portfolioId: "tripsync"` 跳转上述卡片，3 条 bullet。
+- **git 链接已补**：卡片内"查看代码 → / View Code →"按钮链接 `https://github.com/Hanaaa-Sying/tripsync`（去 `.git` 后缀），zh / en 两处占位 span 已替换为正式 `<a>` 按钮。
+
+**实施路径：** 在 `PROJECTS.zh`/`.en` 数组的 `id: "bocconi-finals"` 卡片前各插入一个 `tripsync` 对象；在 `COPY.zh`/`.en` 的 `experience` 数组首项（米兰项目前）各插入一条经历。含直角引号的 bullet 用反引号包裹（debug-rules 规则10）；`portfolioId` 与 `PROJECTS.id` 一致。尚未 push（待补链接 + 用户确认）。
+
+---
+
+## 2026-05-26 — 工具箱新增 /mkskill 条目
+
+**改动内容：** 在「我的工具箱」卡片 detail 中追加 `/mkskill` 工具条目（中英双语）。mkskill 功能：把重复性工作流自动封装成 Claude Code Skill，生成规范的 SKILL.md 文件，支持项目级 / 全局两种存放位置。GitHub：https://github.com/Hanaaa-Sying/mk-skill
+
+**实施路径：** 在 PROJECTS.zh 和 PROJECTS.en 的 my-toolbox detail 字符串末尾，于闭合 `</div></div>` 前插入新工具卡片 div。
+
+---
+
+## 2026-05-26 — 简历时间字段更新：米兰项目与SNA项目结束时间改为2026.05
+
+**改动内容：**
+- zh `period: "2026.02 — 至今"` → `"2026.02 — 2026.05"`（米兰短租溢价分析）
+- zh `period: "2026.03 — 至今"` → `"2026.03 — 2026.05"`（社会网络分析）
+- en `period: "Feb 2026 — Present"` → `"Feb 2026 — May 2026"`
+- en `period: "Mar 2026 — Present"` → `"Mar 2026 — May 2026"`
+
+**实施路径：** 直接替换 COPY.zh 和 COPY.en 中 experience 对应条目的 period 字段。
+
+---
+
+## 2026-05-26 — 作品集新建「我的工具箱」卡片，归并 tableau-merger
+
+**改动内容：**
+- 将原 `【VibeCoding】Tableau 多工作簿合并 /tableaumerger Skill` 卡片替换为 `【VibeCoding】我的工具箱`（id: `my-toolbox`）
+- 工具箱卡片展开后以工具条目卡片形式展示每个 skill：命令名（/tableaumerger）+ 简称 + 功能说明 + GitHub 链接按钮
+- 中英文同步：zh title「我的工具箱」/ en title「My Toolbox」
+- 设计思路：可扩展结构，后续新增 skill 只需在 detail 内追加同样的工具条目 div
+
+**实施路径：** 直接替换 PROJECTS.zh 和 PROJECTS.en 中对应的对象，id 由 `tableau-merger` 改为 `my-toolbox`；detail 改为以 flex-column 排列的工具卡片列表。
+
+---
+
 ## 2026-05-24 — 预约网格 hover preview 逻辑修正（两轮迭代）
 
 **改动内容：** `setupColEvents` 的 `mousemove` 逻辑最终改为：只要鼠标在可交互列内（非 past、非 blocked），无论悬停在什么格（available / 3h 以内 / 时长溢出 / busy 灰色格），均始终显示完整时长尺寸的 preview 阴影；阴影会叠加在 busy 灰色块上，视觉上展示冲突区域。click 逻辑：busy 格点击静默返回，3h 内格抖动提示，时长不足格显示「那会儿没法和你聊这么久哦！」，有效格正常选中。
@@ -108,6 +179,21 @@
 - HTML 中将三个区块各自包在独立 `<div>` 里，去掉 `resume-col-left` / `resume-col-right` 分列。
 - 项目经历由 `exp-grid`（2列）改回 `timeline`（单列），保留时间轴竖线语义。
 - 响应式 `@media (max-width: 900px)` 中移除对 `exp-grid` 的覆盖。
+
+---
+
+## 2026-05-25 — 时区下拉框整理 + 黑客松封锁日日期纠正及可视化文字
+
+**改动内容：**
+1. **时区选项整理**：将原 14 个选项中重复的 UTC+8（北京/上海、香港/台北、新加坡三项）合并为一个「北京 (UTC+8)」，底层值 `Asia/Shanghai`；删除「胡志明」附注，曼谷简写；总选项从 14 缩减至 12 个，按 UTC 偏移升序排列（洛杉矶 UTC-8/-7 → 悉尼 UTC+10/11）
+2. **封锁日日期纠正**：`BLOCKED_DAYS` 原为 `2026-06-07` + `2026-06-08`，纠正为 `2026-06-06` + `2026-06-07`（实际黑客松日期）
+3. **封锁日文字显示**：封锁日文案从 tooltip 改为列内竖排可见文字；`.bw-blocked-col` 加 `display:flex; align-items/justify-content: center`，内嵌 `<span writing-mode:vertical-rl>` 显示文字，半透明白底衬底（`rgba(255,252,248,0.88)`）覆于条纹之上；条纹密度从 `3px/8px` 调稀为 `2px/16px`
+
+**实施路径：**
+- `COMMON_TIMEZONES` 数组：重排顺序 + 去重 UTC+8 多余项
+- `BLOCKED_DAYS`：日期键名 `-07/-08` → `-06/-07`，zh 文案更新
+- CSS `.bw-blocked-col`：background gradient 参数调整 + flex 居中布局 + z-index: 2；新增 `.bw-blocked-col span` 竖排文字样式
+- JS blocked 列渲染：`blocker.title` 改为同时创建 `<span>` 子节点注入文字
 
 ---
 
@@ -356,15 +442,68 @@
 - `renderDayTimeline` slot 构建：新增 `isPast` 字段，`clickable` 条件加 `&& !isPast`，渲染 class 分支加 `else if (s.isPast) cls += " past"`。
 - CSS `.bdm-cell.busy` 后紧接新增 `.bdm-cell.past` 样式。
 
+---
 
-## 2026-09-29 — HandCue 作品页更新
+## 2026-05-24 — 随笔 max-height 扩大、tag 换行修复、Bocconi 换行
 
-- 用户已确认中英文反思文案和当前手势表，发布本次两处作品详情更新。
-- 语音 Coding 已从本地 HandCue 移除；倒竖拇指重做、双手 T 停止保留。
-- 仅发布 HandCue 文案，其他本地修改保留；发布内容脚本语法检查通过。
+**改动内容：**
+1. **随笔 max-height**：`.thinking-body.open { max-height }` 从 600px 改为 3000px，解决手机端长篇随笔内容被截断的问题。
+2. **tag 防断词**：`.tag` CSS 新增 `white-space: nowrap`，防止"AI科普"等标签在中间换行。
+3. **内容运营卡片 tags 分行**：`renderTags` 函数支持 `"|"` 作为强制换行符（渲染为 `flex-basis:100%;height:0` 的 span）；zh PROJECTS 中「内容运营」卡片 tags 改为 `["内容运营", "公众号", "Claude Code", "|", "AI科普"]`；en 同步改为 `["Content", "WeChat", "Claude Code", "|", "AI Explainer"]`，使"AI科普"/"AI Explainer"独占第二行。
+4. **Bocconi 校名换行**：zh education 中博科尼条目 school 字段改为 `"鲁基·博科尼商业大学<br>（Bocconi University）"`，使英文名显示在中文名下一行（`innerHTML` 渲染，`<br>` 安全有效）。
+
+**实施路径：**
+- CSS：`.thinking-body.open` max-height 直接修改；`.tag` 新增 `white-space: nowrap`。
+- JS：`renderTags` 函数增加三元判断（`t === "|"` → 换行 span，否则 → `.tag` span）。
+- 数据：`PROJECTS.zh` 内容运营 tags 数组、`PROJECTS.en` 对应 tags 数组、`COPY.zh.education[1].school` 字段各修改一处。
+
+---
+
+## 2026-05-24 — 简历项目名称括号说明换行显示
+
+**改动内容：** 三个项目经历条目的括号补充说明改为换行显示（在主标题后加 `<br>`）：社会网络分析（博科尼课程项目）、全球超级游艇行业研究咨询（博科尼课程项目）、多头注意力视角下的商业网络构建研究（迁移复刻Attention is all you need）。中英文各3处，共6处修改。
+
+**实施路径：** 直接在 `COPY.zh.experience` 和 `COPY.en.experience` 对应条目的 `project` 字段中，在主标题与括号之间插入 `<br>`（`innerHTML` 渲染，安全有效，与 Bocconi 校名换行方案一致）。
 
 
-## 2026-09-29 — 简历标题连续排版
+---
 
-- 根据用户要求，三个研究项目的中英文标题均取消括号前强制换行，措辞保持不变。
-- JavaScript 语法检查和本地浏览器显示检查通过。
+## 2026-09-12 ? ????????????????
+
+- ???? PDF ??????? 14 ??Slides 19 ?????? Git ?????? 404 ?????????
+- moment-1.jpg?19,829,826 ? 221,546 ???moment-2.jpg?2,652,237 ? 190,018 ?????? 1600px?JPEG quality 85???????
+- ???????? index.html ??? D:/1Mylife/maintenance-backups/2026-09-12-memyself?????????
+- ?????? HTTP???????????????/?? busy ????????????15 ????
+- ?????????????????????????????????????????????????
+- ????? JS ???8 ????????????????? DOM ???/????/????????????????????????????????????
+- ???????????????????????????????????
+
+
+## 2026-09-29 — HandCue 反思文案与手势表
+
+- 中英文替换 Demo 占位说明，改为需求确认和应用场景仍待思考的反思。
+- 手势表同步当前版本：倒竖拇指重做，双手 T 停止；明确方案选择、确认、道具拿放、锤子修改、鞭子仅查进度。
+- 保留其他已有未提交修改；脚本语法与标签配对检查通过。待用户确认双语措辞后再推送。
+
+
+## 2026-09-29 — 简历三个项目标题取消强制换行
+
+- 按用户明确要求，社会网络分析、超级游艇行业研究、多头注意力商业网络研究的标题与括号说明连续呈现。
+- 中英文六处仅将 br 改为空格，措辞不变；沿用米兰项目的自然排版，小屏幕允许自然折行。
+- 内联 JavaScript 语法检查通过。
+
+## 2026-09-29 — 预约校验、时区和提交状态修复
+
+- 邮箱格式校验；自定义时长必须为正整数，清空或无效输入不再沿用旧时长。
+- 提交前强制刷新日历，校验提前三小时、可预约日期、不可预约日和冲突；缓存有效期一分钟，月份查询覆盖跨时区边界。
+- 发送中锁定控件并防重复提交；成功或失败均恢复按钮，新选择清除旧提示。邮件和日历链接同时保留邮箱、微信。
+- 预约摘要和邮件显示双方完整日期和时区；网格列头显示访客日期范围并明确 Hana 星期，当前时间线使用访客时区。
+- 拖动采用同一预约校验，支持 pointercancel 清理；满日忙碌返回最长零分钟。
+- 补齐日历失败、重试、联系、邮箱格式、时段过期的中英文提示。
+- node web/tests/booking.test.cjs 通过：模拟日历与邮件验证成功、失败、重试、重复提交、缓存、跨日等。未发送真实邮件，未验证线上账户配置。
+- StudyMap 等待 Fieldnotes 介绍后替换，本次未改作品集；保留原有未提交修改，未提交或推送。
+
+## 2026-09-29 — 用户授权发布预约修复与素材
+
+- 用户明确同意发布上线。发布范围：index.html、两份米兰 PDF、两张压缩照片、预约回归测试及维护记录。
+- 发布前 node web/tests/booking.test.cjs 通过；其他本地资料不纳入此次提交。

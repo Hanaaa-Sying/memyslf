@@ -782,6 +782,11 @@ const COPY = {
     bookingSubmitting: "发送中……",
     bookingError: "发送失败，请稍后重试或直接发邮件联系我。",
     bookingValidationError: "请至少填写邮箱或微信号",
+    bookingValidationEmail: "请填写有效的邮箱地址",
+    bookingCalendarError: "暂时无法读取日历，请重试或发邮件联系我。",
+    bookingRetry: "重试",
+    bookingEmailMe: "发邮件联系我",
+    bookingSlotExpired: "所选时间已不可预约，请重新选择。",
     bookingValidationName: "请填写如何称呼你",
     bookingValidationTopic: "请填写你想聊的内容",
     bookingSuccessMain: "我已经收到了你的邀约，会尽快回复并与你确认！",
@@ -957,6 +962,11 @@ const COPY = {
     bookingSubmitting: "Sending…",
     bookingError: "Failed to send. Please try again or email me directly.",
     bookingValidationError: "Please fill in at least your email or WeChat",
+    bookingValidationEmail: "Please enter a valid email address",
+    bookingCalendarError: "Calendar unavailable. Please retry or email me.",
+    bookingRetry: "Retry",
+    bookingEmailMe: "Email me",
+    bookingSlotExpired: "This time is no longer available. Please choose another slot.",
     bookingValidationName: "Please enter your name",
     bookingValidationTopic: "Please describe what you'd like to discuss",
     bookingSuccessMain: "Your request has been received! I'll reply to confirm as soon as I can.",
@@ -1561,6 +1571,31 @@ let _isCustomDuration = false;
 let _gridAbortCtrl  = null;
 let _nowLineInterval = null;
 const _busyCache = {};
+const _busyCacheTimes = {};
+let _bookingSubmitting = false;
+function dateInZone(ms, tz) {
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(new Date(ms));
+  const get = type => parts.find(p => p.type === type).value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+function hanaToday() { return dateInZone(Date.now(), getHanaTz(toDateStr(new Date()))); }
+function validBookingSlot(ds, ms, duration, busy) {
+  const today = hanaToday();
+  return Number.isInteger(duration) && duration > 0 &&
+    ds >= today && ds < addDaysToStr(today, DAYS_AHEAD) && !BLOCKED_DAYS[ds] &&
+    ms >= Date.now() + 3 * 3600000 &&
+    ms >= localToUtcMs(ds, HANA_AVAIL.startH, 0, getHanaTz(ds)) &&
+    canStartAtMs(ms, duration, busy, localToUtcMs(ds, HANA_AVAIL.endH, 0, getHanaTz(ds)));
+}
+function bookingTimeLabel(ms, tz) {
+  return new Date(ms).toLocaleString(_bookingLang === "zh" ? "zh-CN" : "en-GB", {
+    timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", hourCycle:"h23"
+  }) + ` (${tz})`;
+}
+function resetBookingFeedback() {
+  document.getElementById("booking-success").style.display = "none";
+  document.getElementById("err-submit").style.display = "none";
+}
 let _currentBusyIntervals = [];
 
 function renderBookingCopy(lang) {
@@ -1618,17 +1653,24 @@ function initBooking() {
     _isCustomDuration = true;
     renderDurationBtns();
     const input = document.getElementById("bdm-custom-input");
-    if (!input.value || parseInt(input.value) < 1) input.value = _selectedDuration;
+    if (!input.value || Number(input.value) < 1) input.value = Number.isInteger(_selectedDuration) ? _selectedDuration : 60;
+    input.dispatchEvent(new Event("input"));
     input.focus(); input.select();
   });
 
   document.getElementById("bdm-custom-input").addEventListener("input", () => {
-    const val = parseInt(document.getElementById("bdm-custom-input").value);
-    if (val && val >= 1) {
+    const val = Number(document.getElementById("bdm-custom-input").value);
+    if (Number.isInteger(val) && val >= 1 && val <= (HANA_AVAIL.endH - HANA_AVAIL.startH) * 60) {
       _selectedDuration = val;
       _selectedTime = null; _selectedDate = null;
       document.getElementById("booking-form-wrap").style.display = "none";
       renderWeekGrid();
+    } else {
+      _selectedDuration = NaN;
+      _selectedTime = null; _selectedDate = null;
+      document.getElementById("booking-form-wrap").style.display = "none";
+      document.querySelectorAll(".bw-selected").forEach(el => el.remove());
+      showDurationWarning();
     }
   });
 
@@ -1653,52 +1695,54 @@ function addDaysToStr(dateStr, n) {
 }
 
 // ── Fetch busy intervals covering all months in the given date list ──
-async function fetchBusyForWeek(dates) {
+async function fetchBusyForWeek(dates, force = false) {
   const monthKeys = new Set();
   dates.forEach(ds => {
     monthKeys.add(`${parseInt(ds.slice(0,4))}:${parseInt(ds.slice(5,7))-1}`);
   });
   const results = await Promise.all([...monthKeys].map(key => {
     const [y, m] = key.split(":").map(Number);
-    return fetchFreeBusy(y, m);
+    return fetchFreeBusy(y, m, force);
   }));
   return results.flat();
 }
 
-async function fetchFreeBusy(year, month) {
+async function fetchFreeBusy(year, month, force = false) {
   const cacheKey = `${year}-${String(month+1).padStart(2,"0")}`;
-  if (_busyCache[cacheKey]) return _busyCache[cacheKey];
+  if (!force && _busyCache[cacheKey] && Date.now() - _busyCacheTimes[cacheKey] < 60000) return _busyCache[cacheKey];
 
-  const timeMin = new Date(year, month, 1).toISOString();
-  const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+  const timeMin = new Date(Date.UTC(year, month, 1) - 86400000).toISOString();
+  const timeMax = new Date(Date.UTC(year, month + 1, 1) + 86400000).toISOString();
 
-  if (GOOGLE_CALENDAR_ID === "YOUR_CALENDAR_ID" || GOOGLE_API_KEY === "YOUR_GOOGLE_API_KEY") {
-    _busyCache[cacheKey] = [];
-    return [];
+  if (!GOOGLE_CALENDAR_ID || !GOOGLE_API_KEY || GOOGLE_CALENDAR_ID === "YOUR_CALENDAR_ID" || GOOGLE_API_KEY === "YOUR_GOOGLE_API_KEY") {
+    throw new Error("Calendar is not configured");
   }
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
   try {
     const res = await fetch(
       `https://www.googleapis.com/calendar/v3/freeBusy?key=${GOOGLE_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({ timeMin, timeMax, items: [{ id: GOOGLE_CALENDAR_ID }] }),
       }
     );
+    if (!res.ok) throw new Error("Calendar request failed");
     const data = await res.json();
-    if (data.error) {
-      console.error("[GCal] API 返回错误：", data.error);
-      _busyCache[cacheKey] = [];
-      return [];
+    const calendar = data.calendars?.[GOOGLE_CALENDAR_ID];
+    if (data.error || !calendar || calendar.errors?.length || !Array.isArray(calendar.busy)) {
+      throw new Error("Calendar availability is unavailable");
     }
-    const busy = data.calendars?.[GOOGLE_CALENDAR_ID]?.busy || [];
-    console.log("[GCal] busy intervals:", busy, "raw data:", JSON.stringify(data));
-    _busyCache[cacheKey] = busy;
-    return busy;
-  } catch(err) {
-    console.error("[GCal] 请求失败：", err);
-    _busyCache[cacheKey] = [];
-    return [];
+    if (calendar.busy.some(item => !Number.isFinite(Date.parse(item.start)) || !Number.isFinite(Date.parse(item.end)) || Date.parse(item.end) <= Date.parse(item.start))) {
+      throw new Error("Invalid calendar intervals");
+    }
+    _busyCacheTimes[cacheKey] = Date.now();
+    _busyCache[cacheKey] = calendar.busy;
+    return calendar.busy;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -1728,7 +1772,7 @@ function is15MinBusyMs(utcMs, busyIntervals) {
 
 function canStartAtMs(utcMs, durationMin, busyIntervals, hanaEndMs) {
   const e = utcMs + durationMin * 60000;
-  if (e > hanaEndMs) return false;
+  if (!Number.isInteger(durationMin) || durationMin < 1 || !Number.isFinite(utcMs) || e > hanaEndMs) return false;
   return !busyIntervals.some(b => utcMs < new Date(b.end).getTime() && e > new Date(b.start).getTime());
 }
 
@@ -1738,6 +1782,7 @@ function getMaxDurationForDay(dateStr, busyIntervals) {
   const hanaEndMs   = localToUtcMs(dateStr, HANA_AVAIL.endH,   0, hanaTz);
   let maxMin = 0;
   for (let t = hanaStartMs; t < hanaEndMs; t += 15 * 60000) {
+    if (t < Date.now() + 3 * 3600000) continue;
     let earliest = hanaEndMs;
     for (const b of busyIntervals) {
       const bs = new Date(b.start).getTime();
@@ -1749,7 +1794,7 @@ function getMaxDurationForDay(dateStr, busyIntervals) {
     const avail = Math.floor((earliest - t) / 60000);
     if (avail > maxMin) maxMin = avail;
   }
-  return maxMin || (HANA_AVAIL.endH - HANA_AVAIL.startH) * 60;
+  return maxMin;
 }
 
 // ── Update date range label ──
@@ -1766,7 +1811,7 @@ function updateWeekNav(dates) {
     label = `${fmt(s)} – ${fmt(e)}, ${e.getFullYear()}`;
   }
   const lbl = document.getElementById("bw-week-label");
-  if (lbl) lbl.textContent = label;
+  if (lbl) lbl.textContent = label + " · Hana (" + getHanaTz(dates[0]) + ")";
 }
 
 // ── Build week grid DOM from pre-fetched busy intervals ──
@@ -1807,8 +1852,12 @@ function buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal) {
   let hdrHtml = `<div class="bw-corner"></div>`;
   dates.forEach(ds => {
     const d  = new Date(ds + "T12:00:00");
-    const wd = _bookingLang === "zh" ? `周${wdZh[d.getDay()]}` : wdEn[d.getDay()];
-    const num = d.getDate();
+    const wd = _bookingLang === "zh" ? `Hana 周${wdZh[d.getDay()]}` : `Hana ${wdEn[d.getDay()]}`;
+    const start = localToUtcMs(ds, HANA_AVAIL.startH, 0, getHanaTz(ds));
+    const end = localToUtcMs(ds, HANA_AVAIL.endH, 0, getHanaTz(ds));
+    const first = dateInZone(start, _visitorTz).slice(5);
+    const last = dateInZone(end, _visitorTz).slice(5);
+    const num = first === last ? first : `${first} / ${last}`;
     const past = ds < todayStr || ds > maxDateStr;
     const isToday   = ds === todayStr;
     const isBlocked = !!BLOCKED_DAYS[ds] && !past;
@@ -1939,12 +1988,14 @@ function setupColEvents(wrap, dateStr, hanaStartMs, hanaEndMs, busyIntervals, pr
 
   wrap.addEventListener("click", (e) => {
     const rect = wrap.getBoundingClientRect();
+    if (_bookingSubmitting) return;
     const cell = getCellAt(e.clientY - rect.top);
     if (!cell || cell.classList.contains("busy")) return;
     const cellMs = parseInt(cell.dataset.utcms);
     if (cellMs < Date.now() + 3*3600000) { shakeLeadNotice(); return; }
-    if (!canStartAtMs(cellMs, _selectedDuration, busyIntervals, hanaEndMs)) { showDurationWarning(); return; }
+    if (!validBookingSlot(dateStr, cellMs, _selectedDuration, busyIntervals)) { showDurationWarning(); return; }
 
+    resetBookingFeedback();
     _selectedDate = dateStr; _selectedTime = cellMs;
     document.querySelectorAll(".bw-selected").forEach(el => el.remove());
 
@@ -1997,7 +2048,7 @@ function renderNowLine(dates, todayStr) {
     label.className = "bw-now-label";
     label.style.top = y + "px";
     label.textContent = new Date(nowMs).toLocaleTimeString("en-US", {
-      timeZone: hanaTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
+      timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hourCycle: "h23"
     });
     taEl.appendChild(label);
   }
@@ -2009,16 +2060,53 @@ async function renderWeekGrid() {
   _gridAbortCtrl = new AbortController();
   const { signal } = _gridAbortCtrl;
 
-  const todayStr   = toDateStr(new Date());
+  const todayStr   = hanaToday();
   const maxDateStr = addDaysToStr(todayStr, DAYS_AHEAD - 1);
   const dates = Array.from({ length: DAYS_AHEAD }, (_, i) => addDaysToStr(todayStr, i));
 
   updateWeekNav(dates);
 
-  const busyIntervals = await fetchBusyForWeek(dates);
+  if (_nowLineInterval) clearInterval(_nowLineInterval);
+  const gridBody = document.getElementById("bw-grid-body");
+  resetBookingFeedback();
+  gridBody.replaceChildren();
+  const loading = document.createElement("p");
+  loading.setAttribute("role", "status");
+  loading.textContent = COPY[_bookingLang].bookingLoading;
+  gridBody.appendChild(loading);
+  document.getElementById("booking-form-wrap").style.display = "none";
+  _selectedDate = null;
+  _selectedTime = null;
+  _currentBusyIntervals = [];
+
+  let busyIntervals;
+  try {
+    busyIntervals = await fetchBusyForWeek(dates);
+  } catch {
+    if (signal.aborted) return;
+    gridBody.replaceChildren();
+    const notice = document.createElement("div");
+    notice.style.padding = "20px";
+    const message = document.createElement("p");
+    message.setAttribute("role", "alert");
+    message.textContent = COPY[_bookingLang].bookingCalendarError;
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "booking-submit";
+    retry.textContent = COPY[_bookingLang].bookingRetry;
+    retry.addEventListener("click", () => renderWeekGrid());
+    const contact = document.createElement("a");
+    contact.href = `mailto:${COPY[_bookingLang].footerEmail}`;
+    contact.textContent = COPY[_bookingLang].bookingEmailMe;
+    contact.style.marginLeft = "16px";
+    notice.append(message, retry, contact);
+    gridBody.appendChild(notice);
+    return;
+  }
   if (signal.aborted) return;
   _currentBusyIntervals = busyIntervals;
 
+  gridBody.innerHTML = '<div class="bw-time-axis" id="bw-time-axis"></div>';
   buildWeekGrid(dates, todayStr, maxDateStr, busyIntervals, signal);
 
   // Update custom duration hint with max across this week
@@ -2028,7 +2116,7 @@ async function renderWeekGrid() {
     const cacheKey = `${ds.slice(0,4)}-${ds.slice(5,7)}`;
     const busy = _busyCache[cacheKey] || [];
     return Math.max(max, getMaxDurationForDay(ds, busy));
-  }, 0) || (HANA_AVAIL.endH - HANA_AVAIL.startH) * 60;
+  }, 0);
   const hint = document.getElementById("bdm-custom-hint");
   if (hint) hint.textContent = `${COPY[_bookingLang].bookingDurationMaxHint} ${weekMax} min`;
   const inp = document.getElementById("bdm-custom-input");
@@ -2073,7 +2161,7 @@ function setupDragOnSelDiv(selDiv, ownerWrap) {
   const NUM_CELLS = (HANA_AVAIL.endH - HANA_AVAIL.startH) * 4;
 
   selDiv.addEventListener("pointerdown", (e) => {
-    if (e.button !== 0 || !selDiv.isConnected) return;
+    if (_bookingSubmitting || e.button !== 0 || !selDiv.isConnected) return;
     e.preventDefault();
     selDiv.style.cursor = "grabbing";
     selDiv.style.opacity = "0.45";
@@ -2108,7 +2196,7 @@ function setupDragOnSelDiv(selDiv, ownerWrap) {
       if (targetWrap !== lastPreviewWrap) { clearPreview(); lastPreviewWrap = targetWrap; }
       const pr = targetWrap.querySelector(".bw-preview");
       if (!pr) return;
-      if (!canStartAtMs(cellMs, _selectedDuration, _currentBusyIntervals, tEndMs) || cellMs < Date.now() + 3*3600000) {
+      if (!validBookingSlot(ds, cellMs, _selectedDuration, _currentBusyIntervals)) {
         pr.style.display = "none"; return;
       }
       const topIdx = Math.round((cellMs - tStartMs) / (15*60000));
@@ -2135,7 +2223,7 @@ function setupDragOnSelDiv(selDiv, ownerWrap) {
       const rawIdx = Math.floor((ev.clientY - rect.top) / CELL_H);
       const idx = Math.max(0, Math.min(rawIdx, NUM_CELLS - 1));
       const dropMs = tStartMs + idx * 15 * 60000;
-      if (!canStartAtMs(dropMs, _selectedDuration, _currentBusyIntervals, tEndMs) || dropMs < Date.now() + 3*3600000) {
+      if (_bookingSubmitting || !validBookingSlot(ds, dropMs, _selectedDuration, _currentBusyIntervals)) {
         selDiv.style.cursor = "grab"; selDiv.style.opacity = "1"; return;
       }
       // Valid drop — update selection
@@ -2154,11 +2242,16 @@ function setupDragOnSelDiv(selDiv, ownerWrap) {
       updateSelectedSummary();
     }
 
+    function cancelDrag() {
+      clearPreview(); selDiv.style.cursor = "grab"; selDiv.style.opacity = "1"; cleanup();
+    }
     function cleanup() {
+      document.removeEventListener("pointercancel", cancelDrag);
       document.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerup", onUp);
     }
 
+    document.addEventListener("pointercancel", cancelDrag);
     document.addEventListener("pointermove", onMove);
     document.addEventListener("pointerup", onUp);
   });
@@ -2166,24 +2259,10 @@ function setupDragOnSelDiv(selDiv, ownerWrap) {
 
 function updateSelectedSummary() {
   if (!_selectedDate || _selectedTime === null) return;
-  const [y, mo, d] = _selectedDate.split("-");
-  const dateLabel = _bookingLang === "zh"
-    ? `${y}年${parseInt(mo)}月${parseInt(d)}日`
-    : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const selDate = new Date(_selectedTime);
-  const visStr  = selDate.toLocaleTimeString("en-US", {
-    timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
-  });
-  const hanaTz  = getHanaTz(_selectedDate);
-  const hanaStr = selDate.toLocaleTimeString("en-US", {
-    timeZone: hanaTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
-  });
-  const timeLabel = visStr === hanaStr ? visStr : `${visStr}（Hana: ${hanaStr}）`;
-  const durationLabel = `${_selectedDuration} min`;
+  const visitor = bookingTimeLabel(_selectedTime, _visitorTz);
+  const hana = bookingTimeLabel(_selectedTime, getHanaTz(_selectedDate));
   document.getElementById("booking-selected-summary").textContent =
-    _bookingLang === "zh"
-      ? `已选：${dateLabel} ${timeLabel}，时长 ${durationLabel}`
-      : `Selected: ${dateLabel} ${timeLabel}, ${durationLabel}`;
+    `${_bookingLang === "zh" ? "已选" : "Selected"}: ${visitor} — ${bookingTimeLabel(_selectedTime + _selectedDuration * 60000, _visitorTz)} · Hana: ${hana} · ${_selectedDuration} min`;
 }
 
 function clearFieldErrors() {
@@ -2203,6 +2282,7 @@ function showFieldError(id, msg) {
 async function onBookingSubmit(e) {
   e.preventDefault();
   const c = COPY[_bookingLang];
+  if (_bookingSubmitting || !_selectedDate || _selectedTime === null) return;
   const email = document.getElementById("b-email").value.trim();
   const wechat = document.getElementById("b-wechat").value.trim();
   const name = document.getElementById("b-name").value.trim();
@@ -2212,29 +2292,21 @@ async function onBookingSubmit(e) {
   clearFieldErrors();
   let hasError = false;
   if (!email && !wechat) { showFieldError("err-contact", c.bookingValidationError); hasError = true; }
+  if (email && !document.getElementById("b-email").validity.valid) { showFieldError("err-contact", c.bookingValidationEmail); hasError = true; }
   if (!name)  { showFieldError("err-name",    c.bookingValidationName);  hasError = true; }
   if (!topic) { showFieldError("err-topic",   c.bookingValidationTopic); hasError = true; }
   if (hasError) return;
 
+  _bookingSubmitting = true;
+  const controls = [...document.querySelectorAll("#booking input, #booking textarea, #booking button, #booking select, #lang-toggle")];
+  const disabledStates = controls.map(el => el.disabled);
+  controls.forEach(el => el.disabled = true);
   const btn = document.getElementById("b-submit");
   btn.disabled = true;
   btn.textContent = c.bookingSubmitting;
 
-  const [y, m, d] = _selectedDate.split("-");
-  const dateLabel = _bookingLang === "zh"
-    ? `${y}年${parseInt(m)}月${parseInt(d)}日`
-    : new Date(_selectedDate + "T12:00:00").toLocaleDateString("en-US", {year:"numeric",month:"long",day:"numeric"});
-  const selDate = new Date(_selectedTime);
-  const hanaTz = getHanaTz(_selectedDate);
-  const hanaTimeStr = selDate.toLocaleTimeString("en-US", {
-    timeZone: hanaTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
-  });
-  const visStr = selDate.toLocaleTimeString("en-US", {
-    timeZone: _visitorTz, hour: "2-digit", minute: "2-digit", hour12: false, hourCycle: "h23"
-  });
-  const timeLabel = visStr === hanaTimeStr
-    ? visStr
-    : `${visStr} (${_visitorTz}) / ${hanaTimeStr} (Hana's local)`;
+  const dateLabel = dateInZone(_selectedTime, _visitorTz);
+  const timeLabel = `${bookingTimeLabel(_selectedTime, _visitorTz)} — ${bookingTimeLabel(_selectedTime + _selectedDuration * 60000, _visitorTz)} / Hana: ${bookingTimeLabel(_selectedTime, getHanaTz(_selectedDate))}`;
 
   // ── 生成 Google Calendar 链接 ──
   const isZh = _bookingLang === "zh";
@@ -2242,8 +2314,8 @@ async function onBookingSubmit(e) {
     return new Date(ms).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   }
   const gcalDetails = (isZh
-    ? `话题：${topic}${extra ? "\n其他：" + extra : ""}\n联系：${email ? email : "微信 " + wechat}`
-    : `Topic: ${topic}${extra ? "\nNotes: " + extra : ""}\nContact: ${email ? email : "WeChat: " + wechat}`
+    ? `话题：${topic}${extra ? "\n其他：" + extra : ""}\n联系：${[email, wechat && "微信 " + wechat].filter(Boolean).join(" / ")}`
+    : `Topic: ${topic}${extra ? "\nNotes: " + extra : ""}\nContact: ${[email, wechat && "WeChat: " + wechat].filter(Boolean).join(" / ")}`
   );
   const gcal_link = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
     `&text=${encodeURIComponent(isZh ? `与 ${name} 的聊天` : `Chat with ${name}`)}` +
@@ -2255,9 +2327,15 @@ async function onBookingSubmit(e) {
   submitErrEl.style.display = "none";
 
   try {
+    let busy;
+    try { busy = await fetchBusyForWeek([_selectedDate], true); }
+    catch { throw new Error(c.bookingCalendarError); }
+    if (!validBookingSlot(_selectedDate, _selectedTime, _selectedDuration, busy)) {
+      throw new Error(c.bookingSlotExpired);
+    }
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       visitor_name: name,
-      contact: email ? `邮箱: ${email}` : `微信: ${wechat}`,
+      contact: [email && `Email: ${email}`, wechat && `WeChat: ${wechat}`].filter(Boolean).join(" / "),
       booking_date: dateLabel,
       booking_time: `${timeLabel}，${_selectedDuration} 分钟`,
       topic: topic,
@@ -2268,11 +2346,14 @@ async function onBookingSubmit(e) {
     document.getElementById("booking-success-main").textContent = c.bookingSuccessMain;
     document.getElementById("booking-success-sub").textContent = c.bookingSuccessSub;
     document.getElementById("booking-success").style.display = "";
-  } catch {
-    submitErrEl.textContent = c.bookingError;
+  } catch (error) {
+    submitErrEl.textContent = [c.bookingCalendarError, c.bookingSlotExpired].includes(error.message) ? error.message : c.bookingError;
     submitErrEl.style.display = "block";
+  } finally {
+    _bookingSubmitting = false;
+    controls.forEach((el, i) => el.disabled = disabledStates[i]);
     btn.disabled = false;
-    btn.textContent = c.bookingSubmit;
+    btn.textContent = COPY[_bookingLang].bookingSubmit;
   }
 }
 
