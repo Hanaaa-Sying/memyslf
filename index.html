@@ -99,47 +99,23 @@
       object-fit: cover; z-index: 1;
     }
 
-    /* ── 方案 C：三格画廊（flex 布局 + 标准比例）── */
-    /*
-     * gallery-large (moment-1)：3:4 竖版
-     * 右列两张 (moment-2/3)：4:3 横版
-     * 数学推导：large 宽占 53%，右列占 47%，两侧高度近似相等
-     */
     .hero-gallery {
-      display: flex;
-      gap: 10px;
-      margin-top: 28px;
-      align-items: flex-start;
-      max-width: 480px;       /* 限制整体宽度，不铺满全页 */
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;
+      width: 100%; max-width: 480px; margin-top: 28px; scroll-margin-top: 76px;
     }
     .gallery-photo {
-      margin: 0; border-radius: var(--radius); overflow: hidden;
-      position: relative; background: var(--border);
-      border: 1px solid var(--border);
-      box-shadow: 0 4px 16px var(--shadow);
+      margin: 0; min-width: 0; overflow: hidden; border-radius: var(--radius);
+      flex: 1 0 var(--desktop-width); border: 0; padding: 0; background: none; cursor: pointer;
     }
-    .gallery-photo.gallery-large {
-      flex: 0 0 53%;
-      aspect-ratio: 3 / 4;           /* 竖版 3:4 */
+    .gallery-photo:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+    .gallery-photo[aria-expanded="true"] { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+    #hero-caption {
+      flex: 0 0 100%; min-width: 0; padding: 9px 12px;
+      border-left: 3px solid var(--accent-dark); border-radius: 4px;
+      background: var(--bg-card); color: var(--text-dark);
+      font: 13px/1.55 var(--font-sans); overflow-wrap: anywhere;
     }
-    .gallery-right-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .gallery-right-col .gallery-photo {
-      aspect-ratio: 4 / 3;           /* 横版 4:3 */
-      width: 100%;
-    }
-    .gallery-photo img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: transform 0.4s ease;
-    }
-    .gallery-photo:hover img { transform: scale(1.04); }
-    .gallery-photo figcaption { display: none; }
-    .gallery-photo .no-img { display: none; font-family: var(--font-sans); font-size: 11px; color: var(--text-light); text-align: center; position: absolute; inset: 0; align-items: center; justify-content: center; padding: 8px; line-height: 1.5; }
-    .gallery-photo.img-error .no-img { display: flex; }
+    .gallery-photo img { display: block; width: 100%; height: auto; }
 
     .hero-cards { display: flex; flex-direction: column; gap: 36px; padding-top: calc(clamp(2.4rem, 5vw, 3.6rem) * 1.725 + 22px); }
     .hero-card { display: block; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px 24px; text-decoration: none; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition); position: relative; overflow: hidden; }
@@ -251,6 +227,17 @@
     .modal-title { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; }
     .modal-tags { margin-bottom: 20px; }
     .modal-body { font-size: 14px; color: var(--text-mid); line-height: 1.8; }
+    .field-study h3 { margin: 26px 0 7px; font: 600 17px var(--font-sans); color: var(--text-dark); }
+    .field-study a { color: var(--accent-dark); text-underline-offset: 3px; }
+    .field-study .source-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: 20px 16px; margin-top: 12px; }
+    .field-study figure { margin: 0; min-width: 0; }
+    .field-study figure img, .field-study .team-account { display: block; width: 100%; border: 1px solid var(--border); border-radius: 7px; }
+    .field-study figure img { height: 200px; object-fit: contain; background: var(--bg); }
+    .field-study figcaption { margin-top: 5px; font-size: 13px; }
+    .field-study figcaption small { display: block; color: var(--text-mid); }
+    .field-study .team-account { margin: 10px 0 6px; }
+    .field-study .journal-entry { display: inline-flex; align-items: center; gap: 16px; margin-top: 8px; }
+    .field-study .journal-entry img { width: 94px; height: auto; border-radius: 4px; }
     .modal-coming-soon {
       text-align: center; padding: 40px 20px;
       font-family: var(--font-sans); color: var(--text-light); font-size: 15px;
@@ -412,10 +399,7 @@
       .hamburger { display: flex; }
       .hero-inner { grid-template-columns: 1fr; gap: 36px; }
       .hero-cards { padding-top: 0; }
-      .hero-gallery { flex-direction: column; }
-      .gallery-photo.gallery-large { flex: none; width: 100%; aspect-ratio: 4 / 3; }
-      .gallery-right-col { flex-direction: row; }
-      .gallery-right-col .gallery-photo { flex: 1; aspect-ratio: 1 / 1; }
+      .gallery-photo { flex-basis: var(--mobile-width); }
       .portfolio-grid { grid-template-columns: 1fr; }
       section { padding: 56px 0; }
       .modal-box { padding: 32px 20px 24px; }
@@ -453,33 +437,25 @@
         <div class="hero-left fade-up">
           <h1 class="hero-name" id="hero-name">李思莹<em>Hana</em></h1>
           <p class="hero-tagline" id="hero-tagline">中山大学管理学院 · 意大利博科尼交流生</p>
-          <p class="hero-bio" id="hero-bio-1"></p>
-          <p class="hero-bio" id="hero-bio-2"></p>
+          <div id="hero-bio"></div>
           <div class="hero-divider"></div>
-          <!-- 方案 C：三格画廊 -->
-          <div class="hero-gallery fade-up">
-            <!-- 左：竖版 3:4 -->
-            <figure class="gallery-photo gallery-large">
-              <div class="no-img">图片加载失败<br>请重新部署整个文件夹</div>
-              <img src="images/moment-1.jpg" alt="尼泊尔 · 瑜伽认证"
-                   onerror="this.style.display='none';this.parentElement.classList.add('img-error')" />
-              <figcaption id="gcap-1">尼泊尔 · 瑜伽认证</figcaption>
-            </figure>
-            <!-- 右：两张横版 4:3 -->
-            <div class="gallery-right-col">
-              <figure class="gallery-photo">
-                <div class="no-img">图片加载失败<br>请重新部署整个文件夹</div>
-                <img src="images/moment-2.jpg" alt="米兰 · 博科尼"
-                     onerror="this.style.display='none';this.parentElement.classList.add('img-error')" />
-                <figcaption id="gcap-2">米兰 · 博科尼</figcaption>
-              </figure>
-              <figure class="gallery-photo">
-                <div class="no-img">图片加载失败<br>请重新部署整个文件夹</div>
-                <img src="images/moment-3.jpg" alt="欧洲旅途"
-                     onerror="this.style.display='none';this.parentElement.classList.add('img-error')" />
-                <figcaption id="gcap-3">欧洲旅途</figcaption>
-              </figure>
-            </div>
+          <div class="hero-gallery fade-up" id="hero-photos">
+            <button type="button" class="gallery-photo" aria-expanded="false" aria-controls="hero-caption" style="--desktop-width:calc(26.8143% - 5.403px); --mobile-width:calc(49.2290% - 4.963px)">
+              <img src="images/moment-1.jpg?v=ee91b15bbe84" width="959" height="1440" alt="">
+            </button>
+            <button type="button" class="gallery-photo" aria-expanded="false" aria-controls="hero-caption" style="--desktop-width:calc(27.6542% - 5.571px); --mobile-width:calc(50.7710% - 5.117px)">
+              <img src="images/moment-2.jpg?v=8b9c7174d3fc" width="772" height="1124" alt="">
+            </button>
+            <button type="button" class="gallery-photo" aria-expanded="false" aria-controls="hero-caption" style="--desktop-width:calc(45.5315% - 9.146px); --mobile-width:calc(60.1242% - 6.052px)">
+              <img src="images/moment-3.jpg?v=a724aea2d8d9" width="484" height="428" alt="">
+            </button>
+            <button type="button" class="gallery-photo" aria-expanded="false" aria-controls="hero-caption" style="--desktop-width:calc(29.6727% - 3.007px); --mobile-width:calc(39.8758% - 4.028px)">
+              <img src="images/moment-4.jpg?v=c92cf3d276d2" width="1080" height="1440" alt="">
+            </button>
+            <button type="button" class="gallery-photo" aria-expanded="false" aria-controls="hero-caption" style="--desktop-width:calc(70.3273% - 7.073px); --mobile-width:100%">
+              <img src="images/moment-5.jpg?v=e528d2e24784" width="967" height="544" alt="">
+            </button>
+            <span id="hero-caption" hidden></span>
           </div>
         </div>
         <div class="hero-cards">
@@ -518,7 +494,7 @@
 
         <!-- 项目经历 全宽 2列 -->
         <div>
-          <div class="resume-block-title" id="resume-exp-label">项目经历（非实习经历）</div>
+          <div class="resume-block-title" id="resume-exp-label">项目经历</div>
           <div class="timeline" id="resume-exp"></div>
         </div>
 
@@ -754,8 +730,19 @@ const COPY = {
   zh: {
     navResume: "我的简历", navPortfolio: "项目作品集", navThinking: "最近在思考", navBooking: "预约时间",
     heroTagline: "中山大学管理学院 · 意大利博科尼交流生",
-    heroBio1: "你好！👋 我是来自中山大学管理学院的李思莹。<br>我在大学第一个暑假去尼泊尔考了瑜伽证书，由此因缘，第二年自己申请去到了意大利博科尼商学院交流学习，幸遇十分优秀的教授们，带我走进了AI Agent的世界、学习了组织网络分析的原理等。与此同时，我也利用在博科尼这学期的一些小长假，在欧洲四处游荡，行万里路。",
-    heroBio2: "我还在探索我人生的多种面向和可能性，走走又停停。",
+    galleryCaptions: [
+      "2026-04，巴塞罗那的一家书店背后，有一个小庭院和咖啡馆，院子里有一棵漂亮的橙子树。",
+      "2026-05，博科尼大学Social Network in Organization的pre",
+      "迷上在东操玩飞盘，像狗一样疯跑的时候",
+      "2026-08，在广州乐活融合餐厅看精神康复小伙伴做面包",
+      "2026-09，在广州市越秀区康园工疗站，和相处了一整个暑假的小伙伴们告别",
+    ],
+    heroBio: [
+      "你好！👋 我是来自中山大学管理学院的李思莹，Hana。",
+      "我曾独自去尼泊尔学瑜伽；自己寻找机会、争取到了前往米兰交换的资格；也曾背着包在欧洲四处游荡，认识了许多有趣又温暖的人。回国后，我又和伙伴们花了一个夏天走进广州的工疗站与支持性就业现场，尝试去认识和理解另一群人的意愿与选择，困境与坚持。",
+      "我喜欢跑步、攀岩、阅读和写随笔，也对 AI、组织、心理学、哲学（等人文社科），以及人与人之间的关系保持着好奇。从前的我更喜欢随心所欲地体验世界，如今也开始认真思考，如何积累知识与能力，如何让自己具备捍卫心中理想的魄力与底气。",
+      "我还没有找到未来的标准答案，依然在探索人生的许多面向和可能性。希望自己能够成为一个善良、真诚、勇敢、灵活、自律的人，有能力和魄力去做自己认为有价值的事情，也始终保有对生活的热爱，以及那份拿得起、放得下的平静。",
+    ],
     heroCardResume: "我的简历", heroCardResumeDesc: "教育经历 · 项目 · 技能",
     heroCardPortfolio: "项目作品集", heroCardPortfolioDesc: "数据分析 · 可视化 · 咨询 · 创业项目",
     heroCardThinking: "最近在思考", heroCardThinkingDesc: "随笔",
@@ -791,8 +778,7 @@ const COPY = {
     bookingValidationTopic: "请填写你想聊的内容",
     bookingSuccessMain: "我已经收到了你的邀约，会尽快回复并与你确认！",
     bookingSuccessSub: "请留意你填写的邮箱 / 微信，期待和你聊聊 ✦",
-    galleryCaptions: ["尼泊尔 · 瑜伽认证", "米兰 · 博科尼", "欧洲旅途"],
-    resumeTitle: "简历", resumeEduTitle: "教育经历", resumeExpTitle: "项目经历（非实习经历）", resumeSkillTitle: "技能",
+    resumeTitle: "简历", resumeEduTitle: "教育经历", resumeExpTitle: "项目经历", resumeSkillTitle: "技能",
     portfolioTitle: "项目作品集",
     portfolioHint: "点击任意卡片查看详情",
     portfolioFilterAll: "全部", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "研究分析", portfolioFilterContent: "内容运营",
@@ -808,7 +794,6 @@ const COPY = {
         degree: "工商管理本科·辅修信息管理",
         period: "2024.09 — 2028.07",
         bullets: [
-          "绩点年级排名前15%",
           "相关课程：管理学原理（排名前5%）、营销学原理、概率统计、数据可视化（Tableau）",
         ],
       },
@@ -833,6 +818,16 @@ const COPY = {
 
     // 项目经历：project = 项目名（显示大），role = 身份（显示小）
     experience: [
+      {
+        project: "南风窗 2026「调研中国」｜自主同行队（全国十强队伍）队长",
+        role: "《从工疗站到布草房：支持性就业中精智障者何以走向自主》",
+        period: "2026 年 6–9 月",
+        portfolioId: "nanfengchuang",
+        bullets: [
+          "带队制定调研计划、联系合作机构，协调广州四处田野点的走访。我们想了解，支持性就业怎样帮助精神或智力障碍者在工作中表达意愿、作出选择，并在需要时获得支持。",
+          "与队友一起访谈了当事人、家属、一线工作人员和机构负责人。我们对半结构化访谈材料进行质性编码，归档 12 份转写稿，共同撰写调研报告，并提出试岗、拆分任务和灵活排班等建议。",
+        ],
+      },
       {
         project: "Handcue — 手势驱动的 Vibe Coding 工具<br>（Agent Builder Hackathon · 深圳 2026）",
         role: "创意构思 · UI 设计 · 美术资产",
@@ -934,8 +929,20 @@ const COPY = {
   en: {
     navResume: "Resume", navPortfolio: "Portfolio", navThinking: "Thinking", navBooking: "Book a Time",
     heroTagline: "Sun Yat-sen University · Bocconi Exchange Student",
-    heroBio1: "Hi! 👋 I'm Siying Li from the School of Management at Sun Yat-sen University.<br>In my first university summer break, I traveled to Nepal and earned a yoga teaching certificate — which somehow led me to apply for an exchange at Bocconi University in Milan the following year. There I was lucky to learn from brilliant professors who introduced me to AI Agents and organizational network analysis, among other things. I also made the most of Bocconi's long weekends to wander across Europe.",
-    heroBio2: "I'm still exploring the many facets and possibilities of my life, wandering and pausing along the way.",
+    galleryCaptions: [
+      "April 2026 · Behind a bookshop in Barcelona, there’s a little courtyard with a café and a beautiful orange tree.",
+      "May 2026 · Giving my presentation for Social Network in Organization at Bocconi.",
+      "Back when I got hooked on playing frisbee at the east sports field, running around like a dog with the zoomies.",
+      "August 2026 · Watching friends in mental health recovery bake bread at Lehuo, an inclusive restaurant in Guangzhou.",
+      "September 2026 · Saying goodbye to the friends I’d spent the whole summer with at Kangyuan, a community rehabilitation center in Guangzhou’s Yuexiu District.",
+    ],
+    heroBio: [
+      "Hi there! 👋 I'm Hana (Li Siying), a Business Administration student at Sun Yat-sen University.",
+      "I've traveled to Nepal on my own to study yoga, found and pursued an opportunity to study abroad at Bocconi University in Milan, and wandered through Europe with a backpack, meeting many wonderful people along the way. After returning to China, I spent a summer with my teammates conducting field research in Guangzhou, visiting community rehabilitation centers and supported employment programs to better understand how others live, what matters to them, and the choices they hope to make for themselves.",
+      "I love running, climbing, reading, and writing about the little things in life. I'm also curious about AI, business, organizations, and, perhaps most of all, people and the ways we connect with one another.",
+      "I used to be more interested in simply experiencing the world, following my curiosity wherever it took me. These days, I'm learning to think more seriously about the knowledge and abilities I want to develop, the kind of person I hope to become, and how to turn the things I believe in into something I can actually do.",
+      "I haven't figured out exactly where life will take me, and I'm still exploring its many possibilities. Along the way, I hope to grow into someone who is kind, sincere, courageous, adaptable, and self-disciplined — someone with the ability and conviction to stand up for what matters, while never losing my love for life or the quiet strength to know when to hold on and when to let go.",
+    ],
     heroCardResume: "Resume", heroCardResumeDesc: "Education · Experience · Skills",
     heroCardPortfolio: "Portfolio", heroCardPortfolioDesc: "Data Analysis · Visualization · Consulting · Startups",
     heroCardThinking: "Recently Thinking", heroCardThinkingDesc: "Thoughts",
@@ -971,8 +978,7 @@ const COPY = {
     bookingValidationTopic: "Please describe what you'd like to discuss",
     bookingSuccessMain: "Your request has been received! I'll reply to confirm as soon as I can.",
     bookingSuccessSub: "Keep an eye on your email / WeChat. Looking forward to chatting! ✦",
-    galleryCaptions: ["Nepal · Yoga Cert", "Milan · Bocconi", "Traveling Europe"],
-    resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Project Experience (Non-Internship)", resumeSkillTitle: "Skills",
+    resumeTitle: "Resume", resumeEduTitle: "Education", resumeExpTitle: "Project Experience", resumeSkillTitle: "Skills",
     portfolioTitle: "Portfolio",
     portfolioHint: "Click any card to learn more",
     portfolioFilterAll: "All", portfolioFilterWeb: "Vibe Coding", portfolioFilterResearch: "Research", portfolioFilterContent: "Content",
@@ -988,7 +994,6 @@ const COPY = {
         degree: "B.B.A. in Business Administration · Minor in Information Management",
         period: "Sep 2024 — Jul 2028",
         bullets: [
-          "GPA Ranking: Top 15% in cohort",
           "Courses: Principles of Management (top 5%), Marketing, Probability & Statistics, Data Visualization (Tableau)",
         ],
       },
@@ -1012,6 +1017,16 @@ const COPY = {
     ],
 
     experience: [
+      {
+        project: "Nanfengchuang “Research China” 2026 | Team Lead, National Top 10",
+        role: "From a Vocational Rehabilitation Center to a Laundry Workplace: Autonomy in Supported Employment for People with Psychosocial or Intellectual Disabilities",
+        period: "June–September 2026",
+        portfolioId: "nanfengchuang",
+        bullets: [
+          "Led research planning, contacted community partners, and coordinated fieldwork across four sites in Guangzhou. We studied how supported employment can help people with psychosocial or intellectual disabilities express their preferences, make choices at work, and get support when they need it.",
+          "Conducted semi-structured interviews with participants, family members, frontline staff, and program leaders alongside teammates. We coded the interviews, archived 12 transcripts, and co-wrote a report recommending trial shifts, ways to break tasks into smaller steps, and flexible schedules.",
+        ],
+      },
       {
         project: "Handcue — Gesture-Driven Vibe Coding Tool<br>(Agent Builder Hackathon · Shenzhen 2026)",
         role: "Ideation · UI Design · Art Assets",
@@ -1112,6 +1127,40 @@ const COPY = {
 };
 
 // ── 项目数据（title = 项目名，detail = 详细内容，留空则显示 coming soon）──
+function nanfengchuangDetail(lang) {
+  const t = (zh, en) => lang === "zh" ? zh : en;
+  const assets = "images/nanfengchuang/";
+  const nfplus = "https://static.nfnews.com/content/202609/09/c12803238.html?colID=12168&amp;firstColID=12168&amp;appversion=14000&amp;from=weChatMessage&amp;enterColumnId=12168";
+  const sources = [
+    ["nfplus.jpg", "南方+", t("送你一朵小红花：7 个大学生和一群特殊朋友的夏天", "A Little Red Flower: A Summer with Seven Students and Their New Friends"), nfplus],
+    ["wechat.jpg", t("南风窗 · 李思莹", "Nanfengchuang · Siying Li"), t("送出去的那朵小红花，落在了我们手中", "The Little Red Flower We Gave Away Came Back to Us"), "https://mp.weixin.qq.com/s/FzAT-pALOudjuqw-uGoeCA"],
+    ["facebook-archive.jpg", "Guangzhou China · Facebook", t("送你一朵小红花", "A Little Red Flower"), "https://www.facebook.com/share/v/1B22YzYJ3n/?mibextid=wwXIfr", true],
+    ["guangzhou.jpg", t("广州（阿语）· Facebook", "Guangzhou China (Arabic) · Facebook"), t("一朵木棉花，一座有温度的广州", "A Kapok Flower and the Warmth of Guangzhou"), "https://facebook.com/reel/1145122948198828/"],
+  ];
+  const reports = sources.map(([image, outlet, title, url, archived]) => `
+    <figure>
+      <a href="${assets}${image}" target="_blank" rel="noopener"><img loading="lazy" src="${assets}${image}" alt="${outlet} · ${title}"></a>
+      <figcaption><small>${outlet}${archived ? t(" · 团队归档截图", " · Team archive screenshot") : ""}</small>
+        <a href="${url}" target="_blank" rel="noopener">${title} ↗</a>
+      </figcaption>
+    </figure>`).join("");
+  return `<div class="field-study">
+    <p>${t("在广州四处田野点，我和队友访谈了当事人、家属、一线工作人员和机构负责人。我们从 12 份访谈转写稿中梳理出四层就业支持：本人意愿、亲属支持、社会支持和制度保障。", "Across four field sites in Guangzhou, my teammates and I spoke with participants, relatives, frontline staff, and program leaders. Our analysis of 12 interview transcripts identified four layers of employment support: the person’s own preferences, family support, community and workplace support, and institutional safeguards.")}</p>
+    <h3>${t("调研报告节选", "Research report excerpts")}</h3>
+    <p>${t("从摘要读起，了解四层支持如何衔接，再读团队为何从一间布草房出发，以及我们想感谢的人。", "Start with the abstract and the four layers of support, then read how the idea for a laundry workplace brought us into the field. The excerpts close with the team’s acknowledgments.")}</p>
+    <a href="files/nanfengchuang-report-excerpts.pdf" target="_blank" rel="noopener">${t("阅读中文节选（PDF）", "Read excerpts in Chinese (PDF)")} ↗</a>
+    <h3>${t("媒体报道", "Media coverage")}</h3>
+    <div class="source-grid">${reports}</div>
+    <h3>${t("团队影像", "Team videos")}</h3>
+    <p>${t("三条成果视频由自主同行队共同创作。我们的抖音账号是「自主同行的田野日记」，抖音号 24231553459。", "Our team made three videos together. We share our fieldwork on Douyin as 自主同行的田野日记 (Field Diary of the Zizhu Tongxing Team), account ID 24231553459.")}</p>
+    <img class="team-account" src="${assets}douyin.webp" loading="lazy" alt="${t("团队抖音主页，展示账号名称和作品封面", "Our team’s Douyin profile and video covers")}">
+    <a href="${nfplus}" target="_blank" rel="noopener">${t("在南方+观看成果视频", "Watch the team video on Nanfang Plus")} ↗</a>
+    <h3>${t("互动田野手帐", "Interactive Field Journal")}</h3>
+    <p>${t("我用 Vibe Coding 把团队的田野路线、照片和现场声音做成了一本可以翻页的手帐。手帐的排版在 72 小时内完成。", "I used vibe coding to bring our team’s field route, photos, and sound recordings together in a journal you can flip through. The layout was completed within 72 hours.")}</p>
+    <a class="journal-entry" href="https://zztxlog.netlify.app/" target="_blank" rel="noopener"><img src="${assets}journal.webp" loading="lazy" alt="${t("自主同行队田野手帐封面", "Cover of the team’s field journal")}"><span>${t("翻开田野手帐", "Open the field journal")} ↗</span></a>
+  </div>`;
+}
+
 const PROJECTS = {
   zh: [
     {
@@ -1145,6 +1194,14 @@ const PROJECTS = {
       desc: "上传任意学习材料（PDF / Word），AI 自动生成可导入幕布的层级知识框架，支持多语言输出。两种模式分别对应学期初搭框架与考前话术提炼。",
       tags: ["Python", "Claude Code", "AI Native"],
       detail: `<p style="margin-bottom:16px">学期初需要快速搭知识框架，期末前需要从讲义里提炼答题话术——StudyMap 为这两个场景各设计了一种模式：上传任意学习材料（PDF 或 Word），AI 自动完成结构梳理，输出可直接导入幕布的 Markdown。本质上是对任何学习材料做结构化提取，课件、学术文献、整本书均适用。</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px"><a href="https://web-production-1cf24.up.railway.app" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">打开工具 →</a></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">两种模式</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>填充模式</strong>（学期初建框架）：快速略读全文，生成层级大纲，约 30 秒</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>复习模式</strong>（考前全文精析）：深度分析全文，额外提取论述题高频话术，约 2–5 分钟</li></ul></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">近期迭代</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>用户引导：</strong>顶部加入可折叠使用说明，默认收起不干扰老用户，点击展开。文案刻意避开课件/课本等词，因为工具本质上适用于任何学习材料</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>多语言输出：</strong>新增三档选项——保持原文、翻译（用户自选语言对）、中英双语。刻意不调用 Google 翻译，而是让读过完整材料的同一个 AI 负责翻译，在学科术语选择上比通用翻译工具更准确</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>移动端适配：</strong>部署在 Railway，手机和 iPad 直接打开链接即可使用。加入响应式断点，手机排版与桌面版一致</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>表单顺序优化：</strong>从「填名称 → 选模式 → 上传文件」调整为「选模式 → 上传文件 → 填名称」，符合用户实际操作思路</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>数据采集：</strong>接入 Google Analytics，追踪页面访问量、用户地区、设备类型和停留时长，方便后续基于数据洞察用户行为、判断迭代方向</li></ul></div><div><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">技术细节</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>支持格式：PDF 与 Word（.docx）</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>自动检测目录：有目录取章节结构，无目录则略读全文生成提纲</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>导出格式：带层级序号的 Markdown，可直接导入幕布思维导图</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>技术栈：Python · DeepSeek API · Railway 部署</li></ul></div>`,
+    },
+    {
+      id: "nanfengchuang",
+      category: "research",
+      title: "从工疗站到布草房：支持性就业中精智障者何以走向自主",
+      desc: "在支持性就业中，谁来决定一个人可以尝试哪些工作？当本人说「不想做了」，周围的人怎样回应？自主同行队走进广州四处田野点，研究精智障者如何在工作中实现自主。项目入选南风窗 2026「调研中国」全国十强。",
+      tags: ["支持性就业","田野访谈","质性编码"],
+      detail: nanfengchuangDetail("zh"),
     },
     {
       id: "milan",
@@ -1219,6 +1276,14 @@ const PROJECTS = {
       desc: "Upload any learning material (PDF / Word) — AI generates a layered knowledge framework with multilingual output options, exportable to Mubu. Two modes: semantic scaffold for the start of semester, rhetoric extraction before exams.",
       tags: ["Python", "Claude Code", "AI Native"],
       detail: `<p style="margin-bottom:16px">At the start of a semester, you need a knowledge scaffold. Before exams, you need to pull high-frequency essay phrases from dense lecture notes. StudyMap is built for both: upload any learning material (PDF or Word), and AI handles the structural work — outputting a Mubu-ready outline, or extracting exam rhetoric on demand. The tool works on any text-heavy material: course slides, academic papers, or whole books.</p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px"><a href="https://web-production-1cf24.up.railway.app" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent-dark);color:#fff;font-family:var(--font-sans);font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;text-decoration:none">Open Tool →</a></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Two Modes</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Fill Mode</strong> (start of semester): Skims the document and generates a layered outline — around 30 seconds</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Review Mode</strong> (before exams): Deep-reads the full text and also extracts high-frequency academic phrases for essay questions — 2–5 minutes</li></ul></div><div style="margin-bottom:20px"><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Recent Iterations</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Onboarding design:</strong> Added a collapsible guide at the top — collapsed by default so returning users aren't disrupted, expanded on click. Copy intentionally avoids "slides" or "lecture notes" since the tool works on any learning material</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Multilingual output:</strong> Three options — keep original language, translate (user-chosen language pair), or bilingual. Deliberately bypasses Google Translate: the same AI that read the full document handles translation, producing more accurate discipline-specific terminology</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Mobile-responsive:</strong> Deployed on Railway, accessible directly from phone or iPad. Added responsive breakpoints so mobile layout matches the desktop version</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Form order fix:</strong> Reordered from "name → mode → upload" to "mode → upload → name" — matching the user's natural decision sequence</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span><strong>Analytics:</strong> Integrated Google Analytics to track page views, user geography, device type, and session duration — providing a data foundation to understand user behavior and inform future iterations</li></ul></div><div><div style="font-family:var(--font-sans);font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">How It Works</div><ul style="list-style:none;display:flex;flex-direction:column;gap:8px"><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Supported formats: PDF and Word (.docx)</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Auto-detects table of contents: if found, extracts chapter structure; if not, skims the full text</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Export format: Markdown with hierarchical numbering, importable directly into Mubu</li><li style="font-size:14px;color:var(--text-mid);padding-left:14px;position:relative"><span style="position:absolute;left:0;color:var(--accent-dark);font-weight:700">·</span>Stack: Python · DeepSeek API · Railway</li></ul></div>`,
+    },
+    {
+      id: "nanfengchuang",
+      category: "research",
+      title: "From a Vocational Rehabilitation Center to a Laundry Workplace",
+      desc: "Who decides which tasks someone tries, and what happens when they want to stop? Across four sites in Guangzhou, our team studied how people with psychosocial or intellectual disabilities can exercise autonomy at work. Our study placed in the national top 10 in Nanfengchuang’s 2026 “Research China” program.",
+      tags: ["Supported employment","Fieldwork","Qualitative coding"],
+      detail: nanfengchuangDetail("en"),
     },
     {
       id: "milan",
@@ -1297,12 +1362,19 @@ function renderHero(lang) {
   const c = COPY[lang];
   document.getElementById("hero-name").innerHTML = lang === "zh" ? "李思莹<em>Hana</em>" : "Siying Li<em>Hana</em>";
   document.getElementById("hero-tagline").textContent = c.heroTagline;
-  document.getElementById("hero-bio-1").innerHTML = c.heroBio1;
-  document.getElementById("hero-bio-2").textContent = c.heroBio2;
-  c.galleryCaptions.forEach((cap, i) => {
-    const el = document.getElementById(`gcap-${i + 1}`);
-    if (el) el.textContent = cap;
+  document.querySelectorAll(".gallery-photo").forEach((photo, i) => {
+    const caption = c.galleryCaptions[i];
+    photo.setAttribute("aria-label", caption);
+    if (photo.getAttribute("aria-expanded") === "true") {
+      document.getElementById("hero-caption").textContent = caption;
+    }
   });
+  document.getElementById("hero-bio").replaceChildren(...c.heroBio.map(text => {
+    const paragraph = document.createElement("p");
+    paragraph.className = "hero-bio";
+    paragraph.textContent = text;
+    return paragraph;
+  }));
   document.getElementById("card-resume-title").textContent = c.heroCardResume;
   document.getElementById("card-resume-desc").textContent = c.heroCardResumeDesc;
   document.getElementById("card-portfolio-title").textContent = c.heroCardPortfolio;
@@ -1311,6 +1383,46 @@ function renderHero(lang) {
   document.getElementById("card-thinking-desc").textContent = c.heroCardThinkingDesc;
   document.getElementById("card-booking-title").textContent = c.heroCardBooking;
   document.getElementById("card-booking-desc").textContent = c.heroCardBookingDesc;
+}
+
+function initHeroGallery() {
+  const gallery = document.querySelector(".hero-gallery");
+  const caption = document.getElementById("hero-caption");
+  let active = null;
+
+  function show(photo) {
+    if (active) active.setAttribute("aria-expanded", "false");
+    active = photo;
+    caption.hidden = !photo;
+    if (!photo) return;
+    photo.setAttribute("aria-expanded", "true");
+    caption.textContent = photo.getAttribute("aria-label");
+  }
+
+  gallery.querySelectorAll(".gallery-photo").forEach(photo => {
+    photo.addEventListener("pointerenter", event => {
+      if (event.pointerType === "mouse") show(photo);
+    });
+    photo.addEventListener("pointerleave", event => {
+      if (event.pointerType === "mouse" && active === photo) show(null);
+    });
+    photo.addEventListener("click", event => {
+      if (event.pointerType === "mouse") show(photo);
+      else show(active === photo ? null : photo);
+    });
+    photo.addEventListener("focus", () => {
+      if (photo.matches(":focus-visible")) show(photo);
+    });
+    photo.addEventListener("blur", () => {
+      if (active === photo) show(null);
+    });
+  });
+  document.addEventListener("pointerdown", event => {
+    if (active && !event.target.closest(".gallery-photo")) show(null);
+  });
+  document.addEventListener("keydown", event => {
+    if (active && event.key === "Escape") show(null);
+  });
 }
 
 function renderResume(lang) {
@@ -1377,7 +1489,7 @@ function renderFilteredCards(lang, filter) {
       <div class="project-card-desc">${p.desc}</div>
       <div class="project-card-footer">
         <div class="tags">${renderTags(p.tags)}</div>
-        <span class="project-card-cta">查看详情 →</span>
+        <span class="project-card-cta">${lang === "zh" ? "查看详情" : "View project"} →</span>
       </div>
     </div>`;
   }).join("");
@@ -1467,6 +1579,11 @@ function openPhotoGallery(gallery, title) {
 
 // ── 跳转到作品集并高亮对应卡片 ──
 function scrollToPortfolioCard(portfolioId) {
+  const project = PROJECTS[currentLang].find(p => p.id === portfolioId);
+  if (!project) return;
+  if (currentFilter !== "all" && currentFilter !== project.category) {
+    document.querySelector(`.filter-btn[data-filter="${project.category}"]`).click();
+  }
   document.getElementById("portfolio").scrollIntoView({ behavior: "smooth" });
   setTimeout(() => {
     const card = document.querySelector(`[data-portfolio-id="${portfolioId}"]`);
@@ -1535,6 +1652,7 @@ function switchLang(lang) {
 
 // ── 初始化 ──
 document.addEventListener("DOMContentLoaded", async () => {
+  initHeroGallery();
   renderNav(currentLang); renderHero(currentLang); renderResume(currentLang);
   renderPortfolio(currentLang); renderFooter(currentLang); renderBookingCopy(currentLang);
   await loadNotionPosts();
